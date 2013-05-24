@@ -1,0 +1,33 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lessonTextContent"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent">
+
+    <!-- Dummy content. -->
+    <LinearLayout android:id="@+id/pageContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView android:id="@+id/lessonTitle"
+            style="?android:textAppearanceLarge"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+        	        
+       	<TextView android:id="@+id/lessonPageText"
+	            style="?android:textAppearanceMedium"
+	            android:lineSpacingMultiplier="1.2"
+	            android:layout_width="match_parent"
+	            android:layout_height="fill_parent"
+	            android:scrollbars="vertical"
+	            android:text="@string/lorem_ipsum" />     	
+
+
+    </LinearLayout>
+    
+
+
+</ScrollView>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_not_connected">Network connection failed, please check network setting</string>
+    <string name="xml_parser_failed">Data parser eception</string>
+    <string name="io_exception_error">File stream exception</string>
+    <string name="http_status_code_error">network exception，Error Code：%d</string>
+    <string name="http_exception_error">Network exception, request timeout</string>
+    <string name="socket_exception_error">Network exception, read time-out</string>
+    <string name="app_run_code_error">Application Running Error</string>
+    
+    <string name="app_menu_surelogout">Sure to Quit?</string>
+    <string name="sure">Sure</string>
+    <string name="cancle">Cancel</string>
+    
+    <string name="app_error">Application error</string>
+    <string name="app_error_message">Sorry, application error and will quit。\nPlease submit the error report, we will deal with that soon！</string>
+    <string name="submit_report">submit report</string>
+    
+    <string name="load_more">more</string>
+    <string name="load_ing">Loading···</string>
+    <string name="load_full">full loaded</string>
+    <string name="load_empty">no data</string>
+    <string name="load_error">loading data error</string>
+    
+    <string name="new_data_toast_message"> %d updated</string>
+    <string name="new_data_toast_none">No update</string>    
+
+    <string name="msg_load_is_null">read error, maybe has been deleted</string>
+    <string name="msg_login_email_error">Invalide email address</string>
+    <string name="msg_login_email_null">Enter your email address</string>
+    <string name="msg_login_pwd_null">Enter your password</string>
+    <string name="msg_login_success">Login sucessfully</string>
+    <string name="msg_login_fail">Login failed</string>
+    <string name="msg_login_error">User login error</string>
+    <string name="msg_load_userface_fail">User pic loading error</string>
+    <string name="msg_load_image_fail">Pic loading error</string>
+    <string name="msg_read_detail_fail">can not read detail info</string>
+    <string name="msg_noaccess_delete">no delete permission</string>
+   	
+
+</resources>

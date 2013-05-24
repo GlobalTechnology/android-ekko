@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector"
+    android:orientation="vertical"
+    android:padding="5dip" >
+
+    
+   <ImageView
+        android:id="@+id/course_listitem_thumbnail"
+        android:layout_width="fill_parent"
+        android:layout_height="180dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/course_banner" />
+
+    <TextView
+        android:id="@+id/course_listitem_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/course_listitem_thumbnail"
+        android:layout_alignTop="@+id/course_listitem_thumbnail"
+        android:layout_alignRight="@+id/course_listitem_thumbnail"
+        android:layout_alignBottom="@+id/course_listitem_thumbnail"
+        android:layout_margin="1dp"
+        android:gravity="center"
+        android:text="course title"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF" />
+
+      <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="fill_parent"
+        android:layout_height="5dp"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_alignLeft="@+id/course_listitem_thumbnail"
+        android:layout_alignTop="@+id/course_listitem_thumbnail"
+        android:layout_alignRight="@+id/course_listitem_thumbnail"
+        android:layout_alignBottom="@+id/course_listitem_thumbnail"
+        android:gravity="bottom"   
+        android:max="100" 
+        android:layout_margin="1dp" 
+        android:visibility='gone' />
+      
+     <!-- Rightend Arrow -->    
+     <ImageView android:layout_width="wrap_content"
+     	android:layout_height="wrap_content"
+     	android:src="@drawable/arrow"
+     	android:layout_alignParentRight="true"
+     	android:layout_centerVertical="true"/>
+
+</RelativeLayout>

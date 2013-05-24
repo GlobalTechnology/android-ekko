@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory 
+	    android:layout="@layout/preference_category" 
+	    android:title="Account Admin">
+	    <Preference 
+	        android:layout="@layout/preference" 
+	        android:title="User Login" 
+	        android:key="account" />
+	    <Preference 
+	        android:layout="@layout/preference" 
+	        android:title="My Profile" 
+	        android:key="myinfo" 
+	        android:summary="My info, favorates"/>
+    </PreferenceCategory>
+    <PreferenceCategory 
+	    android:layout="@layout/preference_category" 
+	    android:title="Features">
+		<CheckBoxPreference 
+		    android:layout="@layout/preference" 
+		    android:title="HTTPS Login" 
+	        android:key="httpslogin" 
+	        android:summary="HTTP Login" 
+		    android:defaultValue="false"/>
+		<CheckBoxPreference 
+		    android:layout="@layout/preference" 
+		    android:title="Loading Pic" 
+	        android:key="loadimage" 
+	        android:summary="Load pic" 
+		    android:defaultValue="true"/>
+		<CheckBoxPreference 
+		    android:layout="@layout/preference" 
+		    android:title="Horizontal Scroll" 
+	        android:key="scroll" 
+	        android:summary="Horizontal Scroll Disabled" 
+		    android:defaultValue="false"/>
+		<CheckBoxPreference 
+		    android:layout="@layout/preference" 
+		    android:title="Alert Voice" 
+	        android:key="voice" 
+	        android:summary="Alert Voice enabled" 
+		    android:defaultValue="true"/>
+		<CheckBoxPreference 
+		    android:layout="@layout/preference" 
+		    android:title="Booting update enabled" 
+	        android:key="checkup" 
+	        android:summary="Check update when starting" 
+		    android:defaultValue="true"/>
+    </PreferenceCategory>
+    <PreferenceCategory 
+	    android:layout="@layout/preference_category" 
+	    android:title="Cache setting">
+	    <Preference 
+	        android:layout="@layout/preference" 
+	        android:title="Clean cache" 
+	        android:key="cache" 
+	        android:summary="0KB"/>
+    </PreferenceCategory>
+    <PreferenceCategory 
+	    android:layout="@layout/preference_category" 
+	    android:title="Misc">
+        <Preference 
+	        android:layout="@layout/preference" 
+	        android:title="Feedback" 
+	        android:key="feedback" 
+	        android:summary="User feedback"/>
+        <Preference 
+	        android:layout="@layout/preference" 
+	        android:title="Check new Version" 
+	        android:key="update" 
+	        android:summary="Check new version"/>
+        <Preference 
+	        android:layout="@layout/preference" 
+	        android:title="About" 
+	        android:key="about" 
+	        android:summary="About us"/>
+    </PreferenceCategory>
+</PreferenceScreen>
