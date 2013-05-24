@@ -15,6 +15,7 @@
   <name>Ekko</name>
 
   <properties>
+    <signpost.version>1.2.1.2</signpost.version>
   </properties>
 
   <dependencies>
@@ -26,6 +27,18 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-android</artifactId>
+    </dependency>
+
+    <!-- Signpost OAuth -->
+    <dependency>
+      <groupId>oauth.signpost</groupId>
+      <artifactId>signpost-core</artifactId>
+      <version>${signpost.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>oauth.signpost</groupId>
+      <artifactId>signpost-commonshttp4</artifactId>
+      <version>${signpost.version}</version>
     </dependency>
   </dependencies>
 
