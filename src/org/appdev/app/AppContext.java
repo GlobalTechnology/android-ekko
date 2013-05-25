@@ -60,7 +60,7 @@ import android.webkit.CacheManager;
  */
 public class AppContext extends Application {
 	private static AppContext instance;
-	public static boolean production = false;
+	public static boolean production = true;
 	
 	private static String sessionID;
 	
@@ -854,7 +854,7 @@ public class AppContext extends Application {
 	public int  getCurrentLessonIndex(){
 		int lessonSize = AppContext.curCourse.getLessonList().size();
 		if(lessonSize<=0){
-			return 0;
+			return -1;
 		}else if(curCourse.getLessonIndex()+1>lessonSize){
 			curCourse.setLessonIndex(lessonSize-1);
 			return lessonSize-1;

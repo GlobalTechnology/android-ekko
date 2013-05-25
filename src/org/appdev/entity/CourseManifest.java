@@ -18,6 +18,7 @@ public class CourseManifest extends Entity{
 	public final static String NODE_ROOT ="course";
 	public final static String NODE_ROOT_ATTR_ID = "id";
 	public final static String NODE_ROOT_ATTR_VER = "version";
+	public final static String NODE_ROOT_ATTR_URI = "uri";
 	public final static String NODE_ROOT_ATTR_SCHEMA_VER = "schemaVersion";
 	public final static String NODE_ROOT_ATTR_ZIP_URI= "zipUri";
 
@@ -62,6 +63,7 @@ public class CourseManifest extends Entity{
 	public final static String NODE_RESOURCE_ATTR_SIZE = "size";
 	public final static String NODE_RESOURCE_ATTR_TYPE = "type";
 	public final static String NODE_RESOURCE_ATTR_PROVIDER = "provider";
+	public final static String NODE_RESOURCE_ATTR_MIME_TYPE = "mimeType";
 	
 		
 	public static Course parse(InputStream inputStream) throws IOException, AppException {
@@ -89,6 +91,7 @@ public class CourseManifest extends Entity{
 			    			course.setCourseGUID(xmlParser.getAttributeValue(null, NODE_ROOT_ATTR_ID));
 			    			course.setCourseVersion(xmlParser.getAttributeValue(null, NODE_ROOT_ATTR_VER));		
 			    			course.setCourseZipUri(xmlParser.getAttributeValue(null, NODE_ROOT_ATTR_ZIP_URI));
+			    			course.setCourseURI(xmlParser.getAttributeValue(null, NODE_ROOT_ATTR_URI));
 			    			
 			    		}
 			    		else if(course != null)
@@ -153,6 +156,7 @@ public class CourseManifest extends Entity{
 				            	resource.setResourceSha1(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_SHA1));
 				            	resource.setResourceFile(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_FILE));
 				            	resource.setResourceType(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_TYPE));
+				            	resource.setResourceMimeType(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_MIME_TYPE));
 				            	resource.setResourceSize(StringUtils.toLong(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_SIZE)));
 				            	resourceMap.put(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_ID), resource);
 				            

@@ -44,7 +44,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,7 +52,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 
 import android.view.KeyEvent;
@@ -71,7 +69,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -158,9 +155,7 @@ public class Main extends SlidingFragmentActivity {
 	protected ListFragment mCourseListMenuFrag;
 	protected ListFragment mAppSettingListMenuFrag;
 	
-	
-
-	
+		
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	setTheme(com.actionbarsherlock.R.style.Theme_Sherlock_Light_NoActionBar);
@@ -503,6 +498,9 @@ public class Main extends SlidingFragmentActivity {
     	vpLessonTextPager = (ViewPager)findViewById(R.id.frame_lesson_text_pager);
     	int lessonIndex = AppContext.getInstance().getCurrentLessonIndex();
     
+    	if(lessonIndex == -1){
+    		Log.w("Main", "no lesson list");
+    	}
     	int pageNum = course.getLessonList().get(lessonIndex).getPagedTextList().getElements().size();
     	
     	mTextPagerAdapter = new LessonTextPagerAdapter(getSupportFragmentManager(), pageNum);
@@ -1150,10 +1148,10 @@ public class Main extends SlidingFragmentActivity {
 				 * 2. Update the progress bar.
 				 */
 				case MESSAGE_UPDATE_PROGRESS_BAR:
-					if(courseProgressBar != null)
+					if(progressDialog != null)
 					{
 						int currentProgress = msg.arg1;
-						courseProgressBar.setProgress(currentProgress);
+						progressDialog.setProgress(currentProgress);
 					}
 					break;
 				

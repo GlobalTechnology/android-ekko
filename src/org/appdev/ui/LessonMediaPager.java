@@ -27,6 +27,7 @@ import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
 import org.appdev.entity.Resource;
 import org.appdev.utils.FileUtils;
+import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
 import org.appdev.view.ImageZoomDialog;
 
@@ -134,17 +135,27 @@ public class LessonMediaPager extends Fragment implements OnTouchListener, andro
 			        Media media =  lesson.getLessonMedia().getElements().get(mPageNumber);
 					
 						HashMap<String, Resource> hashMap = curCourse.getResourceMap();
-						if( hashMap.get(media.getMediaThumbnailID()) != null){
+						Resource resource=hashMap.get(media.getMediaResourceID());
+						
+						if( resource.isSupportedVideoType() ){
 							//play video
 							String videoURL = hashMap.get(media.getMediaResourceID()).getResourceFile();							
+							String videoFile = FileUtils.EkkoCourseSetRootPath() + curCourse.getCourseGUID() + "/" + videoURL;
+							File file = new File(videoFile);
+							if(file.exists()){
+								UIController.playVideo(AppContext.getInstance(), videoFile);
+							} else if(!StringUtils.isEmpty(resource.getResourceURI(curCourse.getCourseURI()))){//streaming 
+								UIController.playVideo(AppContext.getInstance(), resource.getResourceURI(curCourse.getCourseURI()));
+							}
 							
-							UIController.playVideo(AppContext.getInstance(), FileUtils.EkkoCourseSetRootPath() + curCourse.getCourseGUID() + "/" + videoURL);
-						}else{
+						}else if(resource.isSupportedImageType()){
 							//zoom in picture or flip the picture to show description
 							//flipPic();
 							//zoom pic
 							String picURL = hashMap.get(media.getMediaResourceID()).getResourceFile();
 							UIController.showImageZoomDialog(v.getContext(), FileUtils.EkkoCourseSetRootPath() + curCourse.getCourseGUID() + "/" + picURL);
+						}else{
+							UIController.ToastMessage(v.getContext(), "The media format is not supported", 200);
 						}
 						
 					

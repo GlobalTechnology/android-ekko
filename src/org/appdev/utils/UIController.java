@@ -124,7 +124,7 @@ public class UIController {
 	{
 		//default file
 		if(StringUtils.isEmpty(imgURL) ){
-			Bitmap bmp = BitmapFactory.decodeResource(imgView.getResources(), R.drawable.widget_dface);
+			Bitmap bmp = BitmapFactory.decodeResource(imgView.getResources(), R.drawable.course_banner);
 			imgView.setImageBitmap(bmp);
 			return;
 		}

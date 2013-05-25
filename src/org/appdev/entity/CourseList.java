@@ -56,12 +56,14 @@ public class CourseList extends Entity{
 	public final static String RESOURCETYPE_IMAGE_PNG = "image/png";
 	public final static String RESOURCETYPE_VIDEO_MP4 = "video/mp4";
 	public final static String RESOURCETYPE_IMAGE_JPEG = "image/jpeg";
+
 	
 	public final static String NODE_RESOURCE_ATTR_ID = "id";
 	public final static String NODE_RESOURCE_ATTR_FILE = "file";
 	public final static String NODE_RESOURCE_ATTR_SHA1 = "sha1";
 	public final static String NODE_RESOURCE_ATTR_SIZE = "size";
 	public final static String NODE_RESOURCE_ATTR_TYPE = "type";
+	public final static String NODE_RESOURCE_ATTR_MIME_TYPE = "mimeType";
 
 	private int catalog;
 	private int start;
@@ -154,6 +156,7 @@ public class CourseList extends Entity{
 					            	resource.setResourceSha1(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_SHA1));
 					            	resource.setResourceFile(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_FILE));
 					            	resource.setResourceType(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_TYPE));
+					            	resource.setResourceMimeType(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_MIME_TYPE));
 					            	resource.setResourceSize(StringUtils.toLong(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_SIZE)));
 					            	resourceMap.put(xmlParser.getAttributeValue(null, NODE_RESOURCE_ATTR_ID), resource);
 					            

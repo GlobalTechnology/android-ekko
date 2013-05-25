@@ -1,6 +1,6 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">mLearning</string>
+    <string name="app_name">EKKO</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
@@ -36,7 +36,7 @@
     <string name="error_message_file_not_found">Error: File not found!</string>
     <string name="error_message_general">Error downloading file!</string>
     
-    <string name="login_dialog_logo">mLearning</string>
+    <string name="login_dialog_logo">EKKO</string>
     <string name="login_dialog_account">Account:</string>
     <string name="login_dialog_account_hint">Enter User Name</string>
     <string name="login_dialog_password">Pasword:</string>
