@@ -104,19 +104,19 @@ public class User {
 	public static User parse(InputStream stream) throws IOException, AppException {
 		User user = new User();
 		Result res = null;
-		// »ñµÃXmlPullParser½âÎöÆ÷
+		// è·å¾—XmlPullParserè§£æå™¨
 		XmlPullParser xmlParser = Xml.newPullParser();
 		try {
 			xmlParser.setInput(stream, "UTF-8");
-			// »ñµÃ½âÎöµ½µÄÊÂ¼şÀà±ğ£¬ÕâÀïÓĞ¿ªÊ¼ÎÄµµ£¬½áÊøÎÄµµ£¬¿ªÊ¼±êÇ©£¬½áÊø±êÇ©£¬ÎÄ±¾µÈµÈÊÂ¼ş¡£
+			// è·å¾—è§£æåˆ°çš„äº‹ä»¶ç±»åˆ«ï¼Œè¿™é‡Œæœ‰å¼€å§‹æ–‡æ¡£ï¼Œç»“æŸæ–‡æ¡£ï¼Œå¼€å§‹æ ‡ç­¾ï¼Œç»“æŸæ ‡ç­¾ï¼Œæ–‡æœ¬ç­‰ç­‰äº‹ä»¶ã€‚
 			int evtType = xmlParser.getEventType();
-			// Ò»Ö±Ñ­»·£¬Ö±µ½ÎÄµµ½áÊø
+			// ä¸€ç›´å¾ªç¯ï¼Œç›´åˆ°æ–‡æ¡£ç»“æŸ
 			while (evtType != XmlPullParser.END_DOCUMENT) {
 				String tag = xmlParser.getName();
 				switch (evtType) {
 
 				case XmlPullParser.START_TAG:
-					// Èç¹ûÊÇ±êÇ©¿ªÊ¼£¬ÔòËµÃ÷ĞèÒªÊµÀı»¯¶ÔÏóÁË
+					// å¦‚æœæ˜¯æ ‡ç­¾å¼€å§‹ï¼Œåˆ™è¯´æ˜éœ€è¦å®ä¾‹åŒ–å¯¹è±¡äº†
 					if (tag.equalsIgnoreCase("result")) {
 						res = new Result();
 					} else if (tag.equalsIgnoreCase("errorCode")) {
@@ -137,13 +137,13 @@ public class User {
 					}
 					break;
 				case XmlPullParser.END_TAG:
-					//Èç¹ûÓöµ½±êÇ©½áÊø£¬Ôò°Ñ¶ÔÏóÌí¼Ó½ø¼¯ºÏÖĞ
+					//å¦‚æœé‡åˆ°æ ‡ç­¾ç»“æŸï¼Œåˆ™æŠŠå¯¹è±¡æ·»åŠ è¿›é›†åˆä¸­
 			       	if (tag.equalsIgnoreCase("result") && res != null) { 
 			       		user.setValidate(res);
 			       	}
 					break;
 				}
-				// Èç¹ûxmlÃ»ÓĞ½áÊø£¬Ôòµ¼º½µ½ÏÂÒ»¸ö½Úµã
+				// å¦‚æœxmlæ²¡æœ‰ç»“æŸï¼Œåˆ™å¯¼èˆªåˆ°ä¸‹ä¸€ä¸ªèŠ‚ç‚¹
 				evtType = xmlParser.next();
 			}
 

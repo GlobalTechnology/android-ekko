@@ -80,8 +80,8 @@ public class FileUtils
 	}
 
 	/**
-	 * Ğ´ÎÄ±¾ÎÄ¼ş
-	 * ÔÚAndroidÏµÍ³ÖĞ£¬ÎÄ¼ş±£´æÔÚ /data/data/PACKAGE_NAME/files Ä¿Â¼ÏÂ
+	 * å†™æ–‡æœ¬æ–‡ä»¶
+	 * åœ¨Androidç³»ç»Ÿä¸­ï¼Œæ–‡ä»¶ä¿å­˜åœ¨ /data/data/PACKAGE_NAME/files ç›®å½•ä¸‹
 	 * @param context
 	 * @param msg
 	 */
@@ -103,7 +103,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * ¶ÁÈ¡ÎÄ±¾ÎÄ¼ş
+	 * è¯»å–æ–‡æœ¬æ–‡ä»¶
 	 * @param context
 	 * @param fileName
 	 * @return
@@ -205,7 +205,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * ¸ù¾İÎÄ¼ş¾ø¶ÔÂ·¾¶»ñÈ¡ÎÄ¼şÃû
+	 * æ ¹æ®æ–‡ä»¶ç»å¯¹è·¯å¾„è·å–æ–‡ä»¶å
 	 * @param filePath
 	 * @return
 	 */
@@ -215,7 +215,7 @@ public class FileUtils
 		return filePath.substring( filePath.lastIndexOf( File.separator )+1 );
 	}
 	/**
-	 * ¸ù¾İÎÄ¼şµÄ¾ø¶ÔÂ·¾¶»ñÈ¡ÎÄ¼şÃûµ«²»°üº¬À©Õ¹Ãû
+	 * æ ¹æ®æ–‡ä»¶çš„ç»å¯¹è·¯å¾„è·å–æ–‡ä»¶åä½†ä¸åŒ…å«æ‰©å±•å
 	 * @param filePath
 	 * @return
 	 */
@@ -228,7 +228,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * »ñÈ¡ÎÄ¼şÀ©Õ¹Ãû
+	 * è·å–æ–‡ä»¶æ‰©å±•å
 	 * @param fileName
 	 * @return
 	 */
@@ -241,7 +241,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * »ñÈ¡ÎÄ¼ş´óĞ¡
+	 * è·å–æ–‡ä»¶å¤§å°
 	 * @param filePath
 	 * @return
 	 */
@@ -259,7 +259,7 @@ public class FileUtils
 	
 	/**
 	 * get the size string of a file
-	 * @param size ×Ö½Ú
+	 * @param size å­—èŠ‚
 	 * @return
 	 */
 	public static String getFileSize(long size) 
@@ -278,7 +278,7 @@ public class FileUtils
 	}
 
 	/**
-	 * ×ª»»ÎÄ¼ş´óĞ¡
+	 * è½¬æ¢æ–‡ä»¶å¤§å°
 	 * @param fileS
 	 * @return B/KB/MB/GB
 	 */
@@ -298,7 +298,7 @@ public class FileUtils
     }
 
 	/**
-	 * »ñÈ¡Ä¿Â¼ÎÄ¼ş´óĞ¡
+	 * è·å–ç›®å½•æ–‡ä»¶å¤§å°
 	 * @param dir
 	 * @return
 	 */
@@ -316,14 +316,14 @@ public class FileUtils
 	    		dirSize += file.length();
 	    	} else if (file.isDirectory()) {
 	    		dirSize += file.length();
-	    		dirSize += getDirSize(file); //µİ¹éµ÷ÓÃ¼ÌĞøÍ³¼Æ
+	    		dirSize += getDirSize(file); //é€’å½’è°ƒç”¨ç»§ç»­ç»Ÿè®¡
 	    	}
 	    }
 	    return dirSize;
 	}
 	
 	/**
-	 * »ñÈ¡Ä¿Â¼ÎÄ¼ş¸öÊı
+	 * è·å–ç›®å½•æ–‡ä»¶ä¸ªæ•°
 	 * @param f
 	 * @return
 	 */
@@ -333,7 +333,7 @@ public class FileUtils
         count = files.length;
         for (File file : files) {
             if (file.isDirectory()) {
-            	count = count + getFileList(file);//µİ¹é
+            	count = count + getFileList(file);//é€’å½’
             	count--;
             }
         }
@@ -354,7 +354,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * ¼ì²éÎÄ¼şÊÇ·ñ´æÔÚ
+	 * æ£€æŸ¥æ–‡ä»¶æ˜¯å¦å­˜åœ¨
 	 * @param name
 	 * @return
 	 */
@@ -372,8 +372,8 @@ public class FileUtils
 	}
 	
 	/**
-	 * ¼ÆËãSD¿¨µÄÊ£Óà¿Õ¼ä
-	 * @return ·µ»Ø-1£¬ËµÃ÷Ã»ÓĞ°²×°sd¿¨
+	 * è®¡ç®—SDå¡çš„å‰©ä½™ç©ºé—´
+	 * @return è¿”å›-1ï¼Œè¯´æ˜æ²¡æœ‰å®‰è£…sdå¡
 	 */
 	public static long getFreeDiskSpace() {
 		String status = Environment.getExternalStorageState();
@@ -395,7 +395,7 @@ public class FileUtils
 	}
 
 	/**
-	 * ĞÂ½¨Ä¿Â¼
+	 * æ–°å»ºç›®å½•
 	 * @param directoryName
 	 * @return
 	 */
@@ -412,7 +412,7 @@ public class FileUtils
 	}
 
 	/**
-	 * ¼ì²éÊÇ·ñ°²×°SD¿¨
+	 * æ£€æŸ¥æ˜¯å¦å®‰è£…SDå¡
 	 * @return
 	 */
 	public static boolean checkSaveLocationExists() {

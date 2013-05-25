@@ -40,12 +40,12 @@ public class Setting extends PreferenceActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		//Ìí¼ÓActivityµ½¶ÑÕ»
+		//æ·»åŠ Activityåˆ°å †æ ˆ
 		AppManager.getAppManager().addActivity(this);
 		
-		//ÉèÖÃÏÔÊ¾Preferences
+		//è®¾ç½®æ˜¾ç¤ºPreferences
 		addPreferencesFromResource(R.xml.preferences);
-		//»ñµÃSharedPreferences
+		//è·å¾—SharedPreferences
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);		
 		
 		ListView localListView = getListView();
@@ -123,7 +123,7 @@ public class Setting extends PreferenceActivity{
 			}
 		});
 		
-		//×óÓÒ»¬¶¯
+		//å·¦å³æ»‘åŠ¨
 		scroll = (CheckBoxPreference)findPreference("scroll");
 		scroll.setChecked(ac.isScroll());
 		if(ac.isScroll()){
@@ -143,7 +143,7 @@ public class Setting extends PreferenceActivity{
 			}
 		});
 		
-		//ÌáÊ¾ÉùÒô
+		//æç¤ºå£°éŸ³
 		voice = (CheckBoxPreference)findPreference("voice");
 		voice.setChecked(ac.isVoice());
 		if(ac.isVoice()){
@@ -245,7 +245,7 @@ public class Setting extends PreferenceActivity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//½áÊøActivity&´Ó¶ÑÕ»ÖĞÒÆ³ı
+		//ç»“æŸActivity&ä»å †æ ˆä¸­ç§»é™¤
 		AppManager.getAppManager().finishActivity(this);
 	}	
 }

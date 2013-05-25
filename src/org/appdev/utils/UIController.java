@@ -131,7 +131,7 @@ public class UIController {
 			
 		//cache file
     	final String filename = FileUtils.getFileName(imgURL);
-    	//Environment.getExternalStorageDirectory();·µ»Ø/sdcard
+    	//Environment.getExternalStorageDirectory();è¿”å›/sdcard
     	String filepath = imgView.getContext().getFilesDir() + File.separator + filename;
     	File file = new File(filepath);
 		if(file.exists()){
@@ -140,7 +140,7 @@ public class UIController {
 			return;
     	}
 		
-		//´ÓÍøÂç»ñÈ¡&Ğ´ÈëÍ¼Æ¬»º´æ
+		//ä»ç½‘ç»œè·å–&å†™å…¥å›¾ç‰‡ç¼“å­˜
 		String _errMsg = imgView.getContext().getString(R.string.msg_load_image_fail);
 		if(!StringUtils.isEmpty(errMsg))
 			_errMsg = errMsg;
@@ -150,7 +150,7 @@ public class UIController {
 				if(msg.what==1 && msg.obj != null){
 					imgView.setImageBitmap((Bitmap)msg.obj);
 					try {
-                    	//Ğ´Í¼Æ¬»º´æ
+                    	//å†™å›¾ç‰‡ç¼“å­˜
 						ImageUtils.saveImage(imgView.getContext(), filename, (Bitmap)msg.obj);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -201,7 +201,7 @@ public class UIController {
 	}
 	
 	/**
-	 * ´ò¿ªä¯ÀÀÆ÷
+	 * æ‰“å¼€æµè§ˆå™¨
 	 * @param context
 	 * @param url
 	 */
@@ -217,7 +217,7 @@ public class UIController {
 	}
 		
 	/**
-	 * »ñÈ¡webviewClient¶ÔÏó
+	 * è·å–webviewClientå¯¹è±¡
 	 * @return
 	 */
 	public static WebViewClient getWebViewClient(){
@@ -231,7 +231,7 @@ public class UIController {
 	}
 	
 	/**
-	 * »ñÈ¡TextWatcher¶ÔÏó
+	 * è·å–TextWatcherå¯¹è±¡
 	 * @param context
 	 * @param tmlKey
 	 * @return
@@ -239,7 +239,7 @@ public class UIController {
 	public static TextWatcher getTextWatcher(final Activity context, final String temlKey) {
 		return new TextWatcher() {		
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				//±£´æµ±Ç°EditTextÕıÔÚ±à¼­µÄÄÚÈİ
+				//ä¿å­˜å½“å‰EditTextæ­£åœ¨ç¼–è¾‘çš„å†…å®¹
 				((AppContext)context.getApplication()).setProperty(temlKey, s.toString());
 			}		
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}		
@@ -249,21 +249,21 @@ public class UIController {
 	
 	
 	/**
-	 * ×éºÏ¶¯Ì¬µÄ»Ø¸´ÎÄ±¾
+	 * ç»„åˆåŠ¨æ€çš„å›å¤æ–‡æœ¬
 	 * @param name
 	 * @param body
 	 * @return
 	 */
 	public static SpannableString parseActiveReply(String name,String body){
-		SpannableString sp = new SpannableString(name+"£º"+body);
-		//ÉèÖÃÓÃ»§Ãû×ÖÌå¼Ó´Ö¡¢¸ßÁÁ 
+		SpannableString sp = new SpannableString(name+"ï¼š"+body);
+		//è®¾ç½®ç”¨æˆ·åå­—ä½“åŠ ç²—ã€é«˜äº® 
 		sp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sp.setSpan(new ForegroundColorSpan(Color.parseColor("#0e5986")), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sp;
 	}
 	
 	/**
-	 * ×éºÏÏûÏ¢ÎÄ±¾
+	 * ç»„åˆæ¶ˆæ¯æ–‡æœ¬
 	 * @param name
 	 * @param body
 	 * @return
@@ -273,35 +273,35 @@ public class UIController {
 		int start = 0;
 		int end = 0;
 		if(StringUtils.isEmpty(action)){
-			sp = new SpannableString(name + "£º" + body);
+			sp = new SpannableString(name + "ï¼š" + body);
 			end = name.length();
 		}else{
-			sp = new SpannableString(action + name + "£º" + body);
+			sp = new SpannableString(action + name + "ï¼š" + body);
 			start = action.length();
 			end = start + name.length();
 		}
-		//ÉèÖÃÓÃ»§Ãû×ÖÌå¼Ó´Ö¡¢¸ßÁÁ 
+		//è®¾ç½®ç”¨æˆ·åå­—ä½“åŠ ç²—ã€é«˜äº® 
 		sp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		sp.setSpan(new ForegroundColorSpan(Color.parseColor("#0e5986")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sp;
 	}
 	
 	/**
-	 * ×éºÏ»Ø¸´ÒıÓÃÎÄ±¾
+	 * ç»„åˆå›å¤å¼•ç”¨æ–‡æœ¬
 	 * @param name
 	 * @param body
 	 * @return
 	 */
 	public static SpannableString parseQuoteSpan(String name,String body){
-		SpannableString sp = new SpannableString("»Ø¸´£º"+name+"\n"+body);
-		//ÉèÖÃÓÃ»§Ãû×ÖÌå¼Ó´Ö¡¢¸ßÁÁ 
+		SpannableString sp = new SpannableString("å›å¤ï¼š"+name+"\n"+body);
+		//è®¾ç½®ç”¨æˆ·åå­—ä½“åŠ ç²—ã€é«˜äº® 
 		sp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 3, 3+name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sp.setSpan(new ForegroundColorSpan(Color.parseColor("#0e5986")), 3, 3+name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sp;
 	}
 	
 	/**
-	 * µ¯³öToastÏûÏ¢
+	 * å¼¹å‡ºToastæ¶ˆæ¯
 	 * @param msg
 	 */
 	public static void ToastMessage(Context cont,String msg)
@@ -318,7 +318,7 @@ public class UIController {
 	}
 	
 	/**
-	 * µã»÷·µ»Ø¼àÌıÊÂ¼ş
+	 * ç‚¹å‡»è¿”å›ç›‘å¬äº‹ä»¶
 	 * @param activity
 	 * @return
 	 */
@@ -359,7 +359,7 @@ public class UIController {
 	}
 	
 	/**
-	 * ¿ì½İÀ¸ÏÔÊ¾µÇÂ¼ÓëµÇ³ö
+	 * å¿«æ·æ æ˜¾ç¤ºç™»å½•ä¸ç™»å‡º
 	 * @param activity
 	 * @param qa
 	 */
@@ -375,7 +375,7 @@ public class UIController {
 	}
 	
 	/**
-	 * ¿ì½İÀ¸ÊÇ·ñÏÔÊ¾ÎÄÕÂÍ¼Æ¬
+	 * å¿«æ·æ æ˜¯å¦æ˜¾ç¤ºæ–‡ç« å›¾ç‰‡
 	 * @param activity
 	 * @param qa
 	 */
@@ -473,8 +473,8 @@ public class UIController {
 				dialog.dismiss();
 				//Send Exception Report
 				Intent i = new Intent(Intent.ACTION_SEND);
-				//i.setType("text/plain"); //Ä£ÄâÆ÷
-				i.setType("message/rfc822") ; //Õæ»ú
+				//i.setType("text/plain"); //æ¨¡æ‹Ÿå™¨
+				i.setType("message/rfc822") ; //çœŸæœº
 				i.putExtra(Intent.EXTRA_EMAIL, new String[]{"zaiqiangliu@gmail.com"});
 				i.putExtra(Intent.EXTRA_SUBJECT,"mLearning-Android: error report");
 				i.putExtra(Intent.EXTRA_TEXT,crashReport);

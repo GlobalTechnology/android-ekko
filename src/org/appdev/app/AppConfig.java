@@ -125,10 +125,10 @@ public class AppConfig{
 		FileInputStream fis = null;
 		Properties props = new Properties();
 		try{
-			//¶ÁÈ¡filesÄ¿Â¼ÏÂµÄconfig
+			//è¯»å–filesç›®å½•ä¸‹çš„config
 			//fis = activity.openFileInput(APP_CONFIG);
 			
-			//¶ÁÈ¡app_configÄ¿Â¼ÏÂµÄconfig
+			//è¯»å–app_configç›®å½•ä¸‹çš„config
 			File dirConf = mContext.getDir(APP_CONFIG, Context.MODE_PRIVATE);
 			fis = new FileInputStream(dirConf.getPath() + File.separator + APP_CONFIG);
 			
@@ -145,10 +145,10 @@ public class AppConfig{
 	private void setProps(Properties p) {
 		FileOutputStream fos = null;
 		try{
-			//°Ñconfig½¨ÔÚfilesÄ¿Â¼ÏÂ
+			//æŠŠconfigå»ºåœ¨filesç›®å½•ä¸‹
 			//fos = activity.openFileOutput(APP_CONFIG, Context.MODE_PRIVATE);
 			
-			//°Ñconfig½¨ÔÚ(×Ô¶¨Òå)app_configµÄÄ¿Â¼ÏÂ
+			//æŠŠconfigå»ºåœ¨(è‡ªå®šä¹‰)app_configçš„ç›®å½•ä¸‹
 			File dirConf = mContext.getDir(APP_CONFIG, Context.MODE_PRIVATE);
 			File conf = new File(dirConf, APP_CONFIG);
 			fos = new FileOutputStream(conf);

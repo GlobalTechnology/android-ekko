@@ -1012,7 +1012,7 @@ public class Main extends SlidingFragmentActivity {
 
 				}
 				else if(msg.what == -1){
-					//ÓĞÒì³£--ÏÔÊ¾¼ÓÔØ³ö´í & µ¯³ö´íÎóÏûÏ¢
+					//æœ‰å¼‚å¸¸--æ˜¾ç¤ºåŠ è½½å‡ºé”™ & å¼¹å‡ºé”™è¯¯æ¶ˆæ¯
 					lv.setTag(UIController.LISTVIEW_DATA_MORE);
 					more.setText(R.string.load_error);
 					Log.e("Main-getLvHandler", msg.obj.toString());

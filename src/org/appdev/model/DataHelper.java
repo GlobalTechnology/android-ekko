@@ -17,9 +17,9 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 public class DataHelper {
-    //Êı¾İ¿âÃû³Æ
+    //æ•°æ®åº“åç§°
     private static String DB_NAME = "myLearning.db";
-    //Êı¾İ¿â°æ±¾
+    //æ•°æ®åº“ç‰ˆæœ¬
     private static int DB_VERSION = 2;
     private SQLiteDatabase db;
     private SqliteHelper dbHelper;
@@ -35,7 +35,7 @@ public class DataHelper {
         db.close();
         dbHelper.close();
     }
-    //get the UserID¡¢Access Token¡¢Access Secret record from the users table
+    //get the UserIDã€Access Tokenã€Access Secret record from the users table
     public List<UserInfo> GetUserList(Boolean isSimple)
     {
         List<UserInfo> userList = new ArrayList<UserInfo>();
@@ -60,7 +60,7 @@ public class DataHelper {
         return userList;
     }
     
-    //ÅĞ¶Ïusers±íÖĞµÄÊÇ·ñ°üº¬Ä³¸öUserIDµÄ¼ÇÂ¼
+    //åˆ¤æ–­usersè¡¨ä¸­çš„æ˜¯å¦åŒ…å«æŸä¸ªUserIDçš„è®°å½•
     public Boolean HaveUserInfo(String UserId)
     {
         Boolean b=false;
@@ -73,23 +73,23 @@ public class DataHelper {
         return b;
     }
     
-    //¸üĞÂusers±íµÄ¼ÇÂ¼£¬¸ù¾İUserId¸üĞÂÓÃ»§êÇ³ÆºÍÓÃ»§Í¼±ê
+    //æ›´æ–°usersè¡¨çš„è®°å½•ï¼Œæ ¹æ®UserIdæ›´æ–°ç”¨æˆ·æ˜µç§°å’Œç”¨æˆ·å›¾æ ‡
     public int UpdateUserInfo(String userName,Bitmap userIcon,String UserId)
     {
         ContentValues values = new ContentValues();
         values.put(UserInfo.USERNAME, userName);
-        // BLOBÀàĞÍ  
+        // BLOBç±»å‹  
         final ByteArrayOutputStream os = new ByteArrayOutputStream();  
-        // ½«BitmapÑ¹Ëõ³ÉPNG±àÂë£¬ÖÊÁ¿Îª100%´æ´¢          
+        // å°†Bitmapå‹ç¼©æˆPNGç¼–ç ï¼Œè´¨é‡ä¸º100%å­˜å‚¨          
         userIcon.compress(Bitmap.CompressFormat.PNG, 100, os);   
-        // ¹¹ÔìSQLiteµÄContent¶ÔÏó£¬ÕâÀïÒ²¿ÉÒÔÊ¹ÓÃraw  
+        // æ„é€ SQLiteçš„Contentå¯¹è±¡ï¼Œè¿™é‡Œä¹Ÿå¯ä»¥ä½¿ç”¨raw  
         values.put(UserInfo.USERICON, os.toByteArray());
         int id= db.update(UserInfo.TABLE_NAME, values, UserInfo.USERID + "=" + UserId, null);
         Log.e("UpdateUserInfo2",id+"");
         return id;
     }
     
-    //¸üĞÂusers±íµÄ¼ÇÂ¼
+    //æ›´æ–°usersè¡¨çš„è®°å½•
     public int UpdateUserInfo(UserInfo user)
     {
         ContentValues values = new ContentValues();
@@ -102,7 +102,7 @@ public class DataHelper {
         return id;
     }
     
-    //Ìí¼Óusers±íµÄ¼ÇÂ¼
+    //æ·»åŠ usersè¡¨çš„è®°å½•
     public Long SaveUserInfo(UserInfo user)
     {
         ContentValues values = new ContentValues();
@@ -114,7 +114,7 @@ public class DataHelper {
         return uid;
     }
     
-    //É¾³ıusers±íµÄ¼ÇÂ¼
+    //åˆ é™¤usersè¡¨çš„è®°å½•
     public int DelUserInfo(String UserId){
         int id=  db.delete(UserInfo.TABLE_NAME, UserInfo.USERID +"="+UserId, null);
         Log.e("DelUserInfo",id+"");
@@ -156,9 +156,9 @@ public class DataHelper {
         values.put(Course.DIR_NAME, course.getDirName());
         final ByteArrayOutputStream os = new ByteArrayOutputStream();  
         if (courseIcon != null) {
-	        // ½«BitmapÑ¹Ëõ³ÉPNG±àÂë£¬ÖÊÁ¿Îª100%´æ´¢          
+	        // å°†Bitmapå‹ç¼©æˆPNGç¼–ç ï¼Œè´¨é‡ä¸º100%å­˜å‚¨          
 	        courseIcon.compress(Bitmap.CompressFormat.PNG, 100, os);   
-	        // ¹¹ÔìSQLiteµÄContent¶ÔÏó£¬ÕâÀïÒ²¿ÉÒÔÊ¹ÓÃraw  
+	        // æ„é€ SQLiteçš„Contentå¯¹è±¡ï¼Œè¿™é‡Œä¹Ÿå¯ä»¥ä½¿ç”¨raw  
 	        values.put(CourseAdapter.COURSE_ICON, os.toByteArray());
         }
     

@@ -182,7 +182,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler{
 	}
 
 	/**
-	 * »ñÈ¡APPÒì³£±ÀÀ£´¦Àí¶ÔÏó
+	 * è·å–APPå¼‚å¸¸å´©æºƒå¤„ç†å¯¹è±¡
 	 * @param context
 	 * @return
 	 */
@@ -201,7 +201,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler{
 	/**
 	 * exception handler: collect error message and send report
 	 * @param ex
-	 * @return true:´¦ÀíÁË¸ÃÒì³£ĞÅÏ¢;·ñÔò·µ»Øfalse
+	 * @return true:å¤„ç†äº†è¯¥å¼‚å¸¸ä¿¡æ¯;å¦åˆ™è¿”å›false
 	 */
 	private boolean handleException(Throwable ex) {
 		if(ex == null) {
@@ -215,7 +215,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler{
 		}
 		
 		final String crashReport = getCrashReport(context, ex);
-		//ÏÔÊ¾Òì³£ĞÅÏ¢&·¢ËÍ±¨¸æ
+		//æ˜¾ç¤ºå¼‚å¸¸ä¿¡æ¯&å‘é€æŠ¥å‘Š
 		new Thread() {
 			public void run() {
 				Looper.prepare();

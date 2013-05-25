@@ -101,7 +101,7 @@ public abstract class DataBaseAdapter {
 			
 		}
 		
-/*		//¸üÐÂÁÐ
+/*		//æ›´æ–°åˆ—
 		public void updateColumn(SQLiteDatabase db, String oldColumn, String newColumn, String typeColumn){
 	        try{
 	            db.execSQL("ALTER TABLE " +

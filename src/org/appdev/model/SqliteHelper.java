@@ -24,7 +24,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
 		super(context, name, factory, version);
 	}
 
-	//´´½¨±í
+	//åˆ›å»ºè¡¨
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		
@@ -74,7 +74,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
 				);
 	        Log.e("Database","onCreate");
 	}
-	//¸üÐÂ±í
+	//æ›´æ–°è¡¨
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL("DROP TABLE IF EXISTS " + UserInfo.TABLE_NAME);
@@ -86,7 +86,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         onCreate(db);
         Log.w("Database","Upgrading database from version " + oldVersion + " to " + newVersion +", which will destroy all old data.");
 	}
-	//¸üÐÂÁÐ
+	//æ›´æ–°åˆ—
 	public void updateColumn(SQLiteDatabase db, String oldColumn, String newColumn, String typeColumn){
         try{
             db.execSQL("ALTER TABLE " +

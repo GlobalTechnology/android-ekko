@@ -13,7 +13,7 @@ import android.os.Message;
 import android.widget.ImageView;
 
 public class AsyncImageLoader {
-    //SoftReferenceÊÇÈíÒıÓÃ£¬ÊÇÎªÁË¸üºÃµÄÎªÁËÏµÍ³»ØÊÕ±äÁ¿
+    //SoftReferenceæ˜¯è½¯å¼•ç”¨ï¼Œæ˜¯ä¸ºäº†æ›´å¥½çš„ä¸ºäº†ç³»ç»Ÿå›æ”¶å˜é‡
     private HashMap<String, SoftReference<Drawable>> imageCache;
     public AsyncImageLoader() {
         imageCache = new HashMap<String, SoftReference<Drawable>>();
@@ -21,7 +21,7 @@ public class AsyncImageLoader {
     
     public Drawable loadDrawable(final String imageUrl,final ImageView imageView, final ImageCallback imageCallback){
         if (imageCache.containsKey(imageUrl)) {
-            //´Ó»º´æÖĞ»ñÈ¡
+            //ä»ç¼“å­˜ä¸­è·å–
             SoftReference<Drawable> softReference = imageCache.get(imageUrl);
             Drawable drawable = softReference.get();
             if (drawable != null) {
@@ -33,7 +33,7 @@ public class AsyncImageLoader {
                 imageCallback.imageLoaded((Drawable) message.obj, imageView,imageUrl);
             }
         };
-        //½¨Á¢ĞÂÒ»¸öĞÂµÄÏß³ÌÏÂÔØÍ¼Æ¬
+        //å»ºç«‹æ–°ä¸€ä¸ªæ–°çš„çº¿ç¨‹ä¸‹è½½å›¾ç‰‡
         new Thread() {
             @Override
             public void run() {
@@ -61,7 +61,7 @@ public class AsyncImageLoader {
         return d;
     }
     
-    //»Øµ÷½Ó¿Ú
+    //å›è°ƒæ¥å£
     public interface ImageCallback {
         public void imageLoaded(Drawable imageDrawable,ImageView imageView, String imageUrl);
     }

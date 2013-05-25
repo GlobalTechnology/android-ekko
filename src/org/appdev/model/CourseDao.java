@@ -163,9 +163,9 @@ public class CourseDao extends DataBaseAdapter {
         values.put(VISITED, visited);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();  
         if (courseIcon != null) {
-	        // 将Bitmap压缩成PNG编码，质量为100%存储          
+	        // 灏咮itmap鍘嬬缉鎴怭NG缂栫爜锛岃川閲忎负100%瀛樺偍          
 	        courseIcon.compress(Bitmap.CompressFormat.PNG, 100, os);   
-	        // 构造SQLite的Content对象，这里也可以使用raw  
+	        // 鏋勯�燬QLite鐨凜ontent瀵硅薄锛岃繖閲屼篃鍙互浣跨敤raw  
 	        values.put(CourseDao.COURSE_ICON, os.toByteArray());
         }
     	
@@ -184,9 +184,9 @@ public class CourseDao extends DataBaseAdapter {
         
         final ByteArrayOutputStream os = new ByteArrayOutputStream();  
         if (courseIcon != null) {
-	        // 将Bitmap压缩成PNG编码，质量为100%存储          
+	        // 灏咮itmap鍘嬬缉鎴怭NG缂栫爜锛岃川閲忎负100%瀛樺偍          
 	        courseIcon.compress(Bitmap.CompressFormat.PNG, 100, os);   
-	        // 构造SQLite的Content对象，这里也可以使用raw  
+	        // 鏋勯�燬QLite鐨凜ontent瀵硅薄锛岃繖閲屼篃鍙互浣跨敤raw  
 	        values.put(COURSE_ICON, os.toByteArray());
         }
     

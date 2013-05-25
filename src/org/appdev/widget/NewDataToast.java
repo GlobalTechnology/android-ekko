@@ -58,10 +58,10 @@ public class NewDataToast extends Toast{
 	}
 	
 	/**
-	 * 获取控件实例
+	 * 鑾峰彇鎺т欢瀹炰緥
 	 * @param context
-	 * @param text 提示消息
-	 * @param isSound 是否播放声音
+	 * @param text 鎻愮ず娑堟伅
+	 * @param isSound 鏄惁鎾斁澹伴煶
 	 * @return
 	 */
 	public static NewDataToast makeText(Context context, CharSequence text, boolean isSound) {
@@ -72,7 +72,7 @@ public class NewDataToast extends Toast{
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         
         View v = inflate.inflate(R.layout.new_data_toast, null);
-        v.setMinimumWidth(dm.widthPixels);//设置控件最小宽度为手机屏幕宽度
+        v.setMinimumWidth(dm.widthPixels);//璁剧疆鎺т欢鏈�灏忓搴︿负鎵嬫満灞忓箷瀹藉害
         
         TextView tv = (TextView)v.findViewById(R.id.new_data_toast_message);
         tv.setText(text);

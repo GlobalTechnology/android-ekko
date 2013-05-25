@@ -135,7 +135,7 @@ public class AppContext extends Application {
 
 	/**
 	 * get the network type
-	 * @return 0：no network   1：WIFI   2：WAP    3：NET
+	 * @return 0锛歯o network   1锛歐IFI   2锛歐AP    3锛歂ET
 	 */
 	public int getNetworkType() {
 		int netType = 0;
@@ -272,7 +272,7 @@ public class AppContext extends Application {
 			setProperty("user.face", FileUtils.getFileName(user.getFace()));//User Pic-file
 			setProperty("user.account", user.getAccount());
 			
-			setProperty("user.isRememberMe", String.valueOf(user.isRememberMe()));//是否记住我的信息
+			setProperty("user.isRememberMe", String.valueOf(user.isRememberMe()));//鏄惁璁颁綇鎴戠殑淇℃伅
 		}});		
 	}
 	
@@ -433,7 +433,7 @@ public class AppContext extends Application {
 	public boolean isHttpsLogin()
 	{
 		String perf_httpslogin = getProperty(AppConfig.CONF_HTTPS_LOGIN);
-		//默认是http
+		//榛樿鏄痟ttp
 		if(StringUtils.isEmpty(perf_httpslogin))
 			return false;
 		else
@@ -519,7 +519,7 @@ public class AppContext extends Application {
 		//clean data cache
 		clearCacheFolder(getFilesDir(),System.currentTimeMillis());
 		clearCacheFolder(getCacheDir(),System.currentTimeMillis());
-		//2.2版本才有将应用缓存转移到sd卡的功能
+		//2.2鐗堟湰鎵嶆湁灏嗗簲鐢ㄧ紦瀛樿浆绉诲埌sd鍗＄殑鍔熻兘
 		if(isMethodsCompat(android.os.Build.VERSION_CODES.FROYO)){
 			clearCacheFolder(MethodsCompat.getExternalCacheDir(this),System.currentTimeMillis());
 		}

@@ -36,8 +36,8 @@ public class OAuth {
     
     public OAuth()
     {    
-        // µÚÒ»×é£º£¨App KeyºÍApp Secret£©
-        // Õâ×é²ÎÊı¾ÍÊÇ±¾ÏµÁĞÎÄ±¾µÚÒ»ÆªÌáµ½µÄ½¨Ò»¸öĞÂµÄÓ¦ÓÃ»ñÈ¡App KeyºÍApp Secret¡£
+        // ç¬¬ä¸€ç»„ï¼šï¼ˆApp Keyå’ŒApp Secretï¼‰
+        // è¿™ç»„å‚æ•°å°±æ˜¯æœ¬ç³»åˆ—æ–‡æœ¬ç¬¬ä¸€ç¯‡æåˆ°çš„å»ºä¸€ä¸ªæ–°çš„åº”ç”¨è·å–App Keyå’ŒApp Secretã€‚
         this("30632531","f539cb169860ed99cf8c1861c5da34f6");
         Log.d("OAuth", "OAuth succuss");
     }
@@ -102,8 +102,8 @@ public class OAuth {
         } catch (UnsupportedEncodingException e) {
              e.printStackTrace();
         }
-        //¹Ø±ÕExpect:100-ContinueÎÕÊÖ
-        //100-ContinueÎÕÊÖĞè½÷É÷Ê¹ÓÃ£¬ÒòÎªÓöµ½²»Ö§³ÖHTTP/1.1Ğ­ÒéµÄ·şÎñÆ÷»òÕß´úÀíÊ±»áÒıÆğÎÊÌâ
+        //å…³é—­Expect:100-Continueæ¡æ‰‹
+        //100-Continueæ¡æ‰‹éœ€è°¨æ…ä½¿ç”¨ï¼Œå› ä¸ºé‡åˆ°ä¸æ”¯æŒHTTP/1.1åè®®çš„æœåŠ¡å™¨æˆ–è€…ä»£ç†æ—¶ä¼šå¼•èµ·é—®é¢˜
         post.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
         return SignRequest(token,tokenSecret,post);
     }
@@ -121,7 +121,7 @@ public class OAuth {
         } catch (OAuthCommunicationException e) {
             e.printStackTrace();
         }
-        //È¡µÃHTTP response
+        //å–å¾—HTTP response
         try {
             response = new DefaultHttpClient().execute(post);
         } catch (ClientProtocolException e) {

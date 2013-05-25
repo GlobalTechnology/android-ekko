@@ -41,7 +41,7 @@ public class Result {
 
 		try {
 			xmlParser.setInput(stream, Base.UTF8);
-			// get event type of parsed xml¡£
+			// get event type of parsed xmlã€‚
 			int evtType = xmlParser.getEventType();
 	
 			while (evtType != XmlPullParser.END_DOCUMENT) {

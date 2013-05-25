@@ -28,7 +28,7 @@ public class About extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about);
 		
-		//Ìí¼ÓActivityµ½¶ÑÕ»
+		//æ·»åŠ Activityåˆ°å †æ ˆ
 		AppManager.getAppManager().addActivity(this);
 		
         try { 
@@ -50,7 +50,7 @@ public class About extends Activity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//½áÊøActivity&´Ó¶ÑÕ»ÖĞÒÆ³ı
+		//ç»“æŸActivity&ä»å †æ ˆä¸­ç§»é™¤
 		AppManager.getAppManager().finishActivity(this);
 	}
 }

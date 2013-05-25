@@ -12,7 +12,7 @@ public class UserInfo {
 	public static final String TABLE_NAME = "users";
 
 	private String id;
-	private String userId;//ÓÃ»§id
+	private String userId;//ç”¨æˆ·id
 	private String token;
 	private String tokenSecret;
 	private String userName;

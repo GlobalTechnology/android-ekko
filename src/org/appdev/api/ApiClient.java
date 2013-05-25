@@ -127,10 +127,10 @@ public class ApiClient {
 		if(appUserAgent == null || appUserAgent == "") {
 			StringBuilder ua = new StringBuilder("EKKO");
 			ua.append('/'+appContext.getPackageInfo().versionName+'_'+appContext.getPackageInfo().versionCode);//App version
-			ua.append("/Android");//ÊÖ»úÏµÍ³Æ½Ì¨
-			ua.append("/"+android.os.Build.VERSION.RELEASE);//ÊÖ»úÏµÍ³°æ±¾
-			ua.append("/"+android.os.Build.MODEL); //ÊÖ»úĞÍºÅ
-			ua.append("/"+appContext.getAppId());//¿Í»§¶ËÎ¨Ò»±êÊ¶
+			ua.append("/Android");//æ‰‹æœºç³»ç»Ÿå¹³å°
+			ua.append("/"+android.os.Build.VERSION.RELEASE);//æ‰‹æœºç³»ç»Ÿç‰ˆæœ¬
+			ua.append("/"+android.os.Build.MODEL); //æ‰‹æœºå‹å·
+			ua.append("/"+appContext.getAppId());//å®¢æˆ·ç«¯å”¯ä¸€æ ‡è¯†
 			appUserAgent = ua.toString();
 		}
 		return appUserAgent;
@@ -297,7 +297,7 @@ public class ApiClient {
 					} catch (InterruptedException e1) {} 
 					continue;
 				}
-				// ·¢ÉúÍøÂçÒì³£
+				// å‘ç”Ÿç½‘ç»œå¼‚å¸¸
 				e.printStackTrace();
 				throw AppException.network(e);
 			} finally {
@@ -368,7 +368,7 @@ public class ApiClient {
 	}
 	
 	/**
-	 * Log in£¬ Auto-process cookie
+	 * Log inï¼Œ Auto-process cookie
 	 * @param url
 	 * @param username
 	 * @param pwd

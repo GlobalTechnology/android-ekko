@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 /** 
- * ×Ö·û´®²Ù×÷¹¤¾ß°ü
+ * å­—ç¬¦ä¸²æ“ä½œå·¥å…·åŒ…
  * @author liux 
  * @version 1.0
  * @created 2012-3-21
@@ -33,7 +33,7 @@ public class StringUtils
 	};
 	
 	/**
-	 * ½«×Ö·û´®×ªÎ»ÈÕÆÚÀàĞÍ
+	 * å°†å­—ç¬¦ä¸²è½¬ä½æ—¥æœŸç±»å‹
 	 * @param sdate
 	 * @return
 	 */
@@ -46,7 +46,7 @@ public class StringUtils
 	}
 	
 	/**
-	 * ÒÔÓÑºÃµÄ·½Ê½ÏÔÊ¾Ê±¼ä
+	 * ä»¥å‹å¥½çš„æ–¹å¼æ˜¾ç¤ºæ—¶é—´
 	 * @param sdate
 	 * @return
 	 */
@@ -58,15 +58,15 @@ public class StringUtils
 		String ftime = "";
 		Calendar cal = Calendar.getInstance();
 		
-		//ÅĞ¶ÏÊÇ·ñÊÇÍ¬Ò»Ìì
+		//åˆ¤æ–­æ˜¯å¦æ˜¯åŒä¸€å¤©
 		String curDate = dateFormater2.get().format(cal.getTime());
 		String paramDate = dateFormater2.get().format(time);
 		if(curDate.equals(paramDate)){
 			int hour = (int)((cal.getTimeInMillis() - time.getTime())/3600000);
 			if(hour == 0)
-				ftime = Math.max((cal.getTimeInMillis() - time.getTime()) / 60000,1)+"·ÖÖÓÇ°";
+				ftime = Math.max((cal.getTimeInMillis() - time.getTime()) / 60000,1)+"åˆ†é’Ÿå‰";
 			else 
-				ftime = hour+"Ğ¡Ê±Ç°";
+				ftime = hour+"å°æ—¶å‰";
 			return ftime;
 		}
 		
@@ -76,18 +76,18 @@ public class StringUtils
 		if(days == 0){
 			int hour = (int)((cal.getTimeInMillis() - time.getTime())/3600000);
 			if(hour == 0)
-				ftime = Math.max((cal.getTimeInMillis() - time.getTime()) / 60000,1)+"·ÖÖÓÇ°";
+				ftime = Math.max((cal.getTimeInMillis() - time.getTime()) / 60000,1)+"åˆ†é’Ÿå‰";
 			else 
-				ftime = hour+"Ğ¡Ê±Ç°";
+				ftime = hour+"å°æ—¶å‰";
 		}
 		else if(days == 1){
-			ftime = "×òÌì";
+			ftime = "æ˜¨å¤©";
 		}
 		else if(days == 2){
-			ftime = "Ç°Ìì";
+			ftime = "å‰å¤©";
 		}
 		else if(days > 2 && days <= 10){ 
-			ftime = days+"ÌìÇ°";			
+			ftime = days+"å¤©å‰";			
 		}
 		else if(days > 10){			
 			ftime = dateFormater2.get().format(time);
@@ -96,7 +96,7 @@ public class StringUtils
 	}
 	
 	/**
-	 * ÅĞ¶Ï¸ø¶¨×Ö·û´®Ê±¼äÊÇ·ñÎª½ñÈÕ
+	 * åˆ¤æ–­ç»™å®šå­—ç¬¦ä¸²æ—¶é—´æ˜¯å¦ä¸ºä»Šæ—¥
 	 * @param sdate
 	 * @return boolean
 	 */
@@ -115,9 +115,9 @@ public class StringUtils
 	}
 	
 	/**
-	 * ÅĞ¶Ï¸ø¶¨×Ö·û´®ÊÇ·ñ¿Õ°×´®¡£
-	 * ¿Õ°×´®ÊÇÖ¸ÓÉ¿Õ¸ñ¡¢ÖÆ±í·û¡¢»Ø³µ·û¡¢»»ĞĞ·û×é³ÉµÄ×Ö·û´®
-	 * ÈôÊäÈë×Ö·û´®Îªnull»ò¿Õ×Ö·û´®£¬·µ»Øtrue
+	 * åˆ¤æ–­ç»™å®šå­—ç¬¦ä¸²æ˜¯å¦ç©ºç™½ä¸²ã€‚
+	 * ç©ºç™½ä¸²æ˜¯æŒ‡ç”±ç©ºæ ¼ã€åˆ¶è¡¨ç¬¦ã€å›è½¦ç¬¦ã€æ¢è¡Œç¬¦ç»„æˆçš„å­—ç¬¦ä¸²
+	 * è‹¥è¾“å…¥å­—ç¬¦ä¸²ä¸ºnullæˆ–ç©ºå­—ç¬¦ä¸²ï¼Œè¿”å›true
 	 * @param input
 	 * @return boolean
 	 */
@@ -138,7 +138,7 @@ public class StringUtils
 	}
 
 	/**
-	 * ÅĞ¶ÏÊÇ²»ÊÇÒ»¸öºÏ·¨µÄµç×ÓÓÊ¼şµØÖ·
+	 * åˆ¤æ–­æ˜¯ä¸æ˜¯ä¸€ä¸ªåˆæ³•çš„ç”µå­é‚®ä»¶åœ°å€
 	 * @param email
 	 * @return
 	 */
@@ -148,7 +148,7 @@ public class StringUtils
 	    return emailer.matcher(email).matches();
 	}
 	/**
-	 * ×Ö·û´®×ªÕûÊı
+	 * å­—ç¬¦ä¸²è½¬æ•´æ•°
 	 * @param str
 	 * @param defValue
 	 * @return
@@ -160,18 +160,18 @@ public class StringUtils
 		return defValue;
 	}
 	/**
-	 * ¶ÔÏó×ªÕûÊı
+	 * å¯¹è±¡è½¬æ•´æ•°
 	 * @param obj
-	 * @return ×ª»»Òì³£·µ»Ø 0
+	 * @return è½¬æ¢å¼‚å¸¸è¿”å› 0
 	 */
 	public static int toInt(Object obj) {
 		if(obj==null) return 0;
 		return toInt(obj.toString(),0);
 	}
 	/**
-	 * ¶ÔÏó×ªÕûÊı
+	 * å¯¹è±¡è½¬æ•´æ•°
 	 * @param obj
-	 * @return ×ª»»Òì³£·µ»Ø 0
+	 * @return è½¬æ¢å¼‚å¸¸è¿”å› 0
 	 */
 	public static long toLong(String obj) {
 		try{
@@ -180,9 +180,9 @@ public class StringUtils
 		return 0;
 	}
 	/**
-	 * ×Ö·û´®×ª²¼¶ûÖµ
+	 * å­—ç¬¦ä¸²è½¬å¸ƒå°”å€¼
 	 * @param b
-	 * @return ×ª»»Òì³£·µ»Ø false
+	 * @return è½¬æ¢å¼‚å¸¸è¿”å› false
 	 */
 	public static boolean toBool(String b) {
 		try{
