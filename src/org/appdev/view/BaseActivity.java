@@ -1,16 +1,9 @@
 package org.appdev.view;
 
-import org.appdev.R;
 import org.appdev.app.AppManager;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.slidingmenu.lib.app.SlidingFragmentActivity;
-
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 /**
  * Activity Base class
