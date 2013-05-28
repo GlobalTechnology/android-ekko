@@ -11,32 +11,26 @@ import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.appdev.app.AppException;
+import org.appdev.R;
+import org.appdev.api.ApiClient;
 import org.appdev.entity.Course;
 import org.appdev.entity.CourseList;
 import org.appdev.entity.CourseManifest;
 import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
-import org.appdev.entity.Notice;
 import org.appdev.entity.Resource;
-
-import org.appdev.api.ApiClient;
 import org.appdev.entity.User;
-import org.appdev.utils.CyptoUtils;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.ImageUtils;
 import org.appdev.utils.MethodsCompat;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
-
-import org.appdev.R;
 
 import android.app.Application;
 import android.content.Context;
@@ -44,15 +38,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.webkit.CacheManager;
 
 /**
  * Global Application class:
@@ -503,13 +496,6 @@ public class AppContext extends Application {
 	public void clearAppCache()
 	{
 		//clean webview cache
-		File file = CacheManager.getCacheFileBaseDir();  
-		if (file != null && file.exists() && file.isDirectory()) {  
-		    for (File item : file.listFiles()) {  
-		    	item.delete();  
-		    }  
-		    file.delete();  
-		}  		  
 		deleteDatabase("webview.db");  
 		deleteDatabase("webview.db-shm");  
 		deleteDatabase("webview.db-wal");  
