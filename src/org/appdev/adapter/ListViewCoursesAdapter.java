@@ -86,14 +86,19 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 		listItemView.title.setText(course.getCourseTitle());
 		listItemView.title.setTag(course);
 		String bannerKey = course.getCourseBanner();
-		String res = course.getResourceMap().get(bannerKey).getResourceFile();
-		File resFile = new File(FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() +"/" + res);
-		if(resFile.exists()){
-			listItemView.thumbnail.setImageURI(Uri.fromFile(resFile));
+		if(bannerKey != null){
+			String res = course.getResourceMap().get(bannerKey).getResourceFile();
+			File resFile = new File(FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() +"/" + res);
+			if(resFile.exists()){
+				listItemView.thumbnail.setImageURI(Uri.fromFile(resFile));
+			} else {
+				String uriString = course.getCourseURI()+"/resources/resource/" + course.getResourceMap().get(bannerKey).getResourceSha1();
+				UIController.showLoadImage(listItemView.thumbnail, uriString,  null);
+			}
 		}else{
-			String uriString = course.getCourseURI()+"/resources/resource/" + course.getResourceMap().get(bannerKey).getResourceSha1();
-			UIController.showLoadImage(listItemView.thumbnail, uriString,  null);
+			UIController.showLoadImage(listItemView.thumbnail, "",  null);
 		}
+			
 		
 		
 /*		listItemView.date.setText(StringUtils.friendly_time(course.getPubDate()));

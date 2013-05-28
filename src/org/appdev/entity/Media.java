@@ -25,6 +25,5 @@ public class Media implements Serializable{
 	public void setMediaThumbnailID(String media_thumbnail) {
 		this.media_thumbnail = media_thumbnail;
 	}
-
 	
 }

@@ -36,6 +36,7 @@ public class Course extends Entity {
 	
 	private ArrayList<Lesson> lessonList;
 	
+	
 	public void addLesson(Lesson lesson) {
 		this.lessonList.add(lesson);
 	}
@@ -181,5 +182,6 @@ public class Course extends Entity {
 	public void setCourseZipUri(String course_zipuri) {
 		this.course_zipuri = course_zipuri;
 	}
+
 
 }

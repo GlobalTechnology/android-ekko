@@ -62,8 +62,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.slidingmenu.lib.SlidingMenu;
+import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.LinePageIndicator;
 
@@ -343,9 +343,10 @@ public class Main extends SlidingFragmentActivity {
         		}
         		if(course == null) return;
         		
-        		
         		String courseGUID = course.getCourseGUID();
         		String courseZipURI = course.getCourseZipUri();
+        		String courseLatestVer = course.getCourseVersion();
+        		String courseCurVer= "";
         		
         		
         		//Check if it has been downloaded
@@ -354,25 +355,40 @@ public class Main extends SlidingFragmentActivity {
         		if(courseManifestFile.exists()){ //need to add the version checking later
         			//if network is connected, check if there is a new version of a course
         			if(appContext.isNetworkConnected()){
-        				String courseURI = course.getCourseURI();;
-        				if(StringUtils.isEmpty(courseURI)){
-        					
+        				String courseURI = course.getCourseURI();
+        				
+        				if(!StringUtils.isEmpty(courseURI)){
+        					try {
+								courseLatestVer = AppContext.getInstance().getCourseVer(courseURI);
+							} catch (AppException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
         				}
         			}
         					
         			//exist and just load the native manifest.xml file
         			//set the current course to the new one
+        			//to do: need to merge the course information from hub and manifest
+        			
         			Course courseNew = (Course) appContext.readObject(courseGUID);
 					try {
 						if(courseNew == null){
 							
 							courseNew = AppContext.getInstance().instanceCourse(courseManifestFile);
+							courseCurVer = courseNew.getCourseVersion();
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}finally{
 						courseManifestFile=null;
+					}
+					
+					//notify user to update the course
+					//To do: add a course update dialog
+					if(StringUtils.toInt(courseLatestVer) > StringUtils.toInt(courseCurVer)){
+						UIController.ToastMessage(appContext, "A new version course existed online");
 					}
 					
 					if(courseNew !=null ){
@@ -383,6 +399,12 @@ public class Main extends SlidingFragmentActivity {
 	        				if(AppContext.getPreCourse().getCourseGUID() != AppContext.getInstance().getCurCourse().getCourseGUID()){
 	        					AppContext.setPreCourse(appContext.getCurCourse());
 	        				}
+	        				
+	        				//merge the information from ekko_hub to the new course if available 
+	        				
+	        				courseNew.setCourseURI(course.getAuthorUrl());
+	        				courseNew.setCourseZipUri(course.getCourseZipUri());
+	        				
 	        				//save the courses state. may use the sha1 of the course package  
 	        				appContext.saveObject(appContext.getCurCourse(), appContext.getCurCourse().getCourseGUID());
 	        			}
@@ -471,22 +493,13 @@ public class Main extends SlidingFragmentActivity {
      */
     private void initCourseDetailsView()
     {
-    	try {
-			AppContext.getInstance().instanceCourse(null);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
+    
     	// init course data
     	Course course = AppContext.getInstance().getCurCourse();
          //init the lesson text pager  
     	vpLessonTextPager = (ViewPager)findViewById(R.id.frame_lesson_text_pager);
     	int lessonIndex = AppContext.getInstance().getCurrentLessonIndex();
-    
-    	if(lessonIndex == -1){
-    		Log.w("Main", "no lesson list");
-    	}
+   
     	int pageNum = course.getLessonList().get(lessonIndex).getPagedTextList().getElements().size();
     	
     	mTextPagerAdapter = new LessonTextPagerAdapter(getSupportFragmentManager(), pageNum);
@@ -494,7 +507,6 @@ public class Main extends SlidingFragmentActivity {
     	// restore the last accessed lesson    	
     	
     	vpLessonTextPager.setAdapter(mTextPagerAdapter);
-    	
     	
       	mLesson_title = (Button)findViewById(R.id.frame_btn_lesson_title);
       	mLesson_next = (Button) findViewById(R.id.frame_btn_next_lesson);
@@ -560,9 +572,6 @@ public class Main extends SlidingFragmentActivity {
 
     	vpLessonMedia = (ViewPager)findViewById(R.id.frame_lesson_media_slideshow);
     	mMediaPagerIndicator = (CirclePageIndicator)findViewById(R.id.frame_lesson_media_indicator);   	
-        
-    	// To animate view slide out from bottom to top
-
     	
     	//get the media list of a lesson
     	List<Drawable> lessonMedia = null;
@@ -586,15 +595,8 @@ public class Main extends SlidingFragmentActivity {
         	  
               switch (event.getAction()) {  
               case MotionEvent.ACTION_DOWN:  
-              case MotionEvent.ACTION_MOVE: 
-            	  //Toast.makeText(appContext, "Slideshow touched", 200).show();
-            	 //  vpLessonTextPager.setCurrentItem(6);
-                //   mScrollLayout.setIsScroll(false);
-                   //test to play video
-                 //  final String TEST_STREAM_REMOTE = "http://www.denivip.ru/sites/default/files/trailer2.mp4"; 
-                  // Intent intent = VideoPlayer.createIntent(appContext, null, TEST_STREAM_REMOTE );
-                  // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-                  // appContext.startActivity(intent);              
+              case MotionEvent.ACTION_MOVE:
+                
                   break;  
               case MotionEvent.ACTION_UP:  
                    

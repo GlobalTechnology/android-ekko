@@ -3,6 +3,8 @@ package org.appdev.entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.appdev.app.AppContext;
+
 public class Lesson extends Entity{
 	
 	/**
@@ -29,6 +31,25 @@ public class Lesson extends Entity{
 	public Lesson(){
 		
 	}
+	
+	public static Lesson getNumbLesson(){
+		Lesson lesson = null;
+		lesson = new Lesson();
+		lesson.setLesson_title("no content");
+		
+		//add the text elements
+		TextElements textElement = new TextElements();
+		textElement.addElement("Empty content!");
+		lesson.setPagedTextList(textElement);
+		
+		//add default media element
+		MediaElements mediaElement = new MediaElements();
+		Media media = new Media();
+		media.setMediaThumbnailID(""); //to do: add a default media later
+		mediaElement.addElement(media);
+		return lesson;
+	}
+	
 	
 	public Lesson(TextElements pagedText, MediaElements lessonMedia){
 		this.pagedTextList = pagedText;

@@ -62,6 +62,6 @@ public class MediaElements extends Entity{
 
 	public void setThumbnailResource(String resource_thumbnail) {
 		this.resource_thumbnail = resource_thumbnail;
-	}	
-
+	}
+	
 }

@@ -4,7 +4,7 @@ import org.appdev.R;
 import org.appdev.app.AppManager;
 
 import android.app.Activity;
-//import org.appdev.utils.UpdateManager;
+import org.appdev.utils.UpdateManager;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -40,7 +40,7 @@ public class About extends Activity{
         mUpdate = (Button)findViewById(R.id.about_update);
         mUpdate.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-			//	UpdateManager.getUpdateManager().checkAppUpdate(About.this, true);
+				UpdateManager.getUpdateManager().checkAppUpdate(About.this, true);
 			}
 		});        
 	}

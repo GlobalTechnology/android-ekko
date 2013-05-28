@@ -742,6 +742,19 @@ public class AppContext extends Application {
 		return list;
 	}
 	
+	public String getCourseVer(String courseUrl) throws AppException {
+		String ver="";
+		if(isNetworkConnected()){
+			try{
+				ver = ApiClient.getCourseVer(AppContext.this, courseUrl);
+			}catch(AppException e){
+				Log.w("AppContext-getCourseVer", e.toString());
+				
+			}
+		}
+		return ver;
+	}
+	
 	public static String getCourseID( String resUrl )
 	{
 		if( StringUtils.isEmpty(resUrl) )	return "";
@@ -787,6 +800,14 @@ public class AppContext extends Application {
 	 * @return
 	 */
 	public Course getCurCourse(){
+		if(curCourse == null) {
+			try {
+				curCourse = instanceCourse(null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return curCourse;
 	}
 	
@@ -841,7 +862,8 @@ public class AppContext extends Application {
 		
 		int lessonSize = AppContext.curCourse.getLessonList().size();
 		if(lessonSize<=0){
-			return -1;
+			curCourse.addLesson(Lesson.getNumbLesson()); //add numb lesson
+			return 0;
 		}else if(curCourse.getLessonIndex()+1>lessonSize){
 			curCourse.setLessonIndex(lessonSize-1);
 			return lessonSize-1;
@@ -875,6 +897,7 @@ public class AppContext extends Application {
     	
     	if(lessonIndex<0) {
     		lessonIndex=0;
+    		Log.w("AppContex-getCurlessonMediaList", "Index is out of the boundary");
     	};
     	
     	if(lessonIndex>lessonList.size()-1) {
@@ -921,7 +944,6 @@ public class AppContext extends Application {
 	public static void setPreCourse(Course preCourse) {
 		AppContext.preCourse = preCourse;
 	}
-	
 
 	
 
