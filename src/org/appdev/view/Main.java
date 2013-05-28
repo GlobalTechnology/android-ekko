@@ -1,45 +1,38 @@
 package org.appdev.view;
 
+import greendroid.widget.CustomizedQuickAction;
+import greendroid.widget.QuickActionGrid;
+import greendroid.widget.QuickActionWidget;
+import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.appdev.widget.NewDataToast;
-import org.appdev.entity.Course;
-import org.appdev.entity.CourseList;
-
-import org.appdev.entity.Notice;
-import org.appdev.utils.CoursePackageDownloaderThread;
-
-import org.appdev.widget.PullToRefreshListView;
-
+import org.appdev.R;
 import org.appdev.adapter.LessonMediaPagerAdapter;
 import org.appdev.adapter.LessonTextPagerAdapter;
 import org.appdev.adapter.ListViewCoursesAdapter;
-
 import org.appdev.api.SlideMenuListener;
 import org.appdev.app.AppContext;
 import org.appdev.app.AppException;
 import org.appdev.app.AppManager;
-
-
-import org.appdev.R;
-
+import org.appdev.entity.Course;
+import org.appdev.entity.CourseList;
+import org.appdev.entity.Notice;
 import org.appdev.ui.AppSlidingMenu;
 import org.appdev.ui.CourseListSlidingMenu;
 import org.appdev.ui.LessonListSlidingMenu;
-
+import org.appdev.utils.CoursePackageDownloaderThread;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
 import org.appdev.utils.UpdateManager;
+import org.appdev.widget.NewDataToast;
+import org.appdev.widget.PullToRefreshListView;
 import org.appdev.widget.ScrollLayout;
-
-import com.slidingmenu.lib.SlidingMenu;
-import com.slidingmenu.lib.app.SlidingFragmentActivity;
-
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -48,22 +41,18 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -73,11 +62,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import greendroid.widget.CustomizedQuickAction;
-import greendroid.widget.QuickActionGrid;
-import greendroid.widget.QuickActionWidget;
-import greendroid.widget.QuickActionWidget.OnQuickActionClickListener;
-
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.LinePageIndicator;
 
