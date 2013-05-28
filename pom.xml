@@ -30,12 +30,25 @@
       <artifactId>slf4j-android</artifactId>
     </dependency>
 
+    <!-- Actionbar Sherlock -->
+    <dependency>
+      <groupId>com.actionbarsherlock</groupId>
+      <artifactId>actionbarsherlock</artifactId>
+      <type>apklib</type>
+    </dependency>
+
+    <!-- Slidingmenu Library -->
+    <dependency>
+      <groupId>com.jeremyfeinstein.slidingmenu</groupId>
+      <artifactId>slidingmenu</artifactId>
+      <type>apklib</type>
+    </dependency>
+
     <!-- Viewpager Indicator -->
     <dependency>
       <groupId>com.viewpagerindicator</groupId>
       <artifactId>library</artifactId>
       <type>apklib</type>
-      <version>2.4.1</version>
     </dependency>
 
     <!-- JSoup HTML parser -->
