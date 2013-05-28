@@ -18,9 +18,9 @@
 	    android:title="Features">
 		<CheckBoxPreference 
 		    android:layout="@layout/preference" 
-		    android:title="HTTPS Login" 
-	        android:key="httpslogin" 
-	        android:summary="HTTP Login" 
+		    android:title="Production Version" 
+	        android:key="productionEnv" 
+	        android:summary="Retrive Course from Production Site" 
 		    android:defaultValue="false"/>
 		<CheckBoxPreference 
 		    android:layout="@layout/preference" 

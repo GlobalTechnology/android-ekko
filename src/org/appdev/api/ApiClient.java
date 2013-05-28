@@ -127,10 +127,10 @@ public class ApiClient {
 		if(appUserAgent == null || appUserAgent == "") {
 			StringBuilder ua = new StringBuilder("EKKO");
 			ua.append('/'+appContext.getPackageInfo().versionName+'_'+appContext.getPackageInfo().versionCode);//App version
-			ua.append("/Android");//手机系统平台
-			ua.append("/"+android.os.Build.VERSION.RELEASE);//手机系统版本
-			ua.append("/"+android.os.Build.MODEL); //手机型号
-			ua.append("/"+appContext.getAppId());//客户端唯一标识
+			ua.append("/Android");//
+			ua.append("/"+android.os.Build.VERSION.RELEASE);
+			ua.append("/"+android.os.Build.MODEL); 
+			ua.append("/"+appContext.getAppId());
 			appUserAgent = ua.toString();
 		}
 		return appUserAgent;
@@ -230,23 +230,6 @@ public class ApiClient {
     }  
 
 	
-	/**
-	 * get request URL
-	 * @param url
-	 * @throws AppException 
-	 */
-	
-	public static InputStream getInputStreamFromUrl(String url) {
-		  InputStream content = null;
-		  try {
-		    DefaultHttpClient httpclient = new DefaultHttpClient();
-		    HttpResponse response = httpclient.execute(new HttpGet(url));
-		    content = response.getEntity().getContent();
-		  } catch (Exception e) {
-		    Log.i("[GET REQUEST]", "Network exception", e);
-		  }
-		    return content;
-	}
 	
 
 	/**
@@ -297,7 +280,6 @@ public class ApiClient {
 					} catch (InterruptedException e1) {} 
 					continue;
 				}
-				// 发生网络异常
 				e.printStackTrace();
 				throw AppException.network(e);
 			} finally {
@@ -316,8 +298,13 @@ public class ApiClient {
 	 * @return
 	 */
 	public static Update checkVersion(AppContext appContext) throws AppException {
-
-		return null;
+		try{
+			return Update.parse(retrieveStream(SOAHUB.UPDATE_VERSION));		
+		}catch(Exception e){
+			if(e instanceof AppException)
+				throw (AppException)e;
+			throw AppException.network(e);
+		}
 	}
 	
 	/**
@@ -389,7 +376,7 @@ public class ApiClient {
 		
 		String serviceURL = null;
 		String authURL = null;
-		if(AppContext.production){
+		if(AppContext.getInstance().isProductionEnv()){
 			//serviceURL="https://services.gcx.org/ekko/auth/service";
 			serviceURL = SOAHUB.URL_EKKO_AUTH_SERVICE_PRODUCTION;
 			//authURL = "https://services.gcx.org/ekko/auth/login?";
@@ -599,7 +586,7 @@ public class ApiClient {
 		}
 		else{
 			String newUrl = null;
-			if(AppContext.production){
+			if(AppContext.getInstance().isProductionEnv()){
 				newUrl = SOAHUB.URL_EKKO_ROOT_SERVICE_PRODUCTION  +  AppContext.getSessionID() + SOAHUB.URL_REL_COURSELIST;
 			}else{
 				newUrl = SOAHUB.URL_EKKO_ROOT_SERVICE  +  AppContext.getSessionID() + SOAHUB.URL_REL_COURSELIST;

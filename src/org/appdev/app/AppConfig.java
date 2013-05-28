@@ -26,7 +26,7 @@ public class AppConfig{
 	public final static String CONF_EXPIRESIN = "expiresIn";
 	public final static String CONF_DISPLAY_IMAGE = "perf_loadimage";
 	public final static String CONF_SCROLL = "perf_scroll";
-	public final static String CONF_HTTPS_LOGIN = "perf_httpslogin";
+	public final static String CONF_PRODUCTION_ENV = "perf_production";
 	public final static String CONF_VOICE = "perf_voice";
 	public final static String CONF_CHECKUP = "perf_checkup";
 	public final static String CONF_COURSES_DIR = "perf_coursedir";
@@ -125,10 +125,8 @@ public class AppConfig{
 		FileInputStream fis = null;
 		Properties props = new Properties();
 		try{
-			//读取files目录下的config
-			//fis = activity.openFileInput(APP_CONFIG);
 			
-			//读取app_config目录下的config
+			//fis = activity.openFileInput(APP_CONFIG);
 			File dirConf = mContext.getDir(APP_CONFIG, Context.MODE_PRIVATE);
 			fis = new FileInputStream(dirConf.getPath() + File.separator + APP_CONFIG);
 			
@@ -145,10 +143,8 @@ public class AppConfig{
 	private void setProps(Properties p) {
 		FileOutputStream fos = null;
 		try{
-			//把config建在files目录下
 			//fos = activity.openFileOutput(APP_CONFIG, Context.MODE_PRIVATE);
 			
-			//把config建在(自定义)app_config的目录下
 			File dirConf = mContext.getDir(APP_CONFIG, Context.MODE_PRIVATE);
 			File conf = new File(dirConf, APP_CONFIG);
 			fos = new FileOutputStream(conf);

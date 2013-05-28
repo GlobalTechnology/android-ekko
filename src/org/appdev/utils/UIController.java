@@ -140,7 +140,6 @@ public class UIController {
 			return;
     	}
 		
-		//从网络获取&写入图片缓存
 		String _errMsg = imgView.getContext().getString(R.string.msg_load_image_fail);
 		if(!StringUtils.isEmpty(errMsg))
 			_errMsg = errMsg;
@@ -217,7 +216,7 @@ public class UIController {
 	}
 		
 	/**
-	 * 获取webviewClient对象
+	 * webview client
 	 * @return
 	 */
 	public static WebViewClient getWebViewClient(){
@@ -359,7 +358,7 @@ public class UIController {
 	}
 	
 	/**
-	 * 快捷栏显示登录与登出
+	 *Show setting Login or logout
 	 * @param activity
 	 * @param qa
 	 */
@@ -375,7 +374,7 @@ public class UIController {
 	}
 	
 	/**
-	 * 快捷栏是否显示文章图片
+	 * show setting display Image or not
 	 * @param activity
 	 * @param qa
 	 */

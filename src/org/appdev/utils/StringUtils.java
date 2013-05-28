@@ -7,10 +7,7 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 /** 
- * 字符串操作工具包
- * @author liux 
- * @version 1.0
- * @created 2012-3-21
+ * Api used for dealing with String
  */
 public class StringUtils 
 {
@@ -33,7 +30,7 @@ public class StringUtils
 	};
 	
 	/**
-	 * 将字符串转位日期类型
+	 * convert a string to date
 	 * @param sdate
 	 * @return
 	 */
@@ -46,7 +43,7 @@ public class StringUtils
 	}
 	
 	/**
-	 * 以友好的方式显示时间
+	 * friendly time string
 	 * @param sdate
 	 * @return
 	 */
@@ -96,7 +93,7 @@ public class StringUtils
 	}
 	
 	/**
-	 * 判断给定字符串时间是否为今日
+	 * check if it is today
 	 * @param sdate
 	 * @return boolean
 	 */
@@ -115,9 +112,7 @@ public class StringUtils
 	}
 	
 	/**
-	 * 判断给定字符串是否空白串。
-	 * 空白串是指由空格、制表符、回车符、换行符组成的字符串
-	 * 若输入字符串为null或空字符串，返回true
+	 * check if a string is empty
 	 * @param input
 	 * @return boolean
 	 */
@@ -138,7 +133,7 @@ public class StringUtils
 	}
 
 	/**
-	 * 判断是不是一个合法的电子邮件地址
+	 * check if a string is an email address
 	 * @param email
 	 * @return
 	 */
@@ -148,7 +143,7 @@ public class StringUtils
 	    return emailer.matcher(email).matches();
 	}
 	/**
-	 * 字符串转整数
+	 * Convert a string to Int
 	 * @param str
 	 * @param defValue
 	 * @return
@@ -160,18 +155,18 @@ public class StringUtils
 		return defValue;
 	}
 	/**
-	 * 对象转整数
+	 * Convert an obj to Int
 	 * @param obj
-	 * @return 转换异常返回 0
+	 * @return int or 0
 	 */
 	public static int toInt(Object obj) {
 		if(obj==null) return 0;
 		return toInt(obj.toString(),0);
 	}
 	/**
-	 * 对象转整数
+	 * convert an obj to Long
 	 * @param obj
-	 * @return 转换异常返回 0
+	 * @return long
 	 */
 	public static long toLong(String obj) {
 		try{
@@ -180,9 +175,9 @@ public class StringUtils
 		return 0;
 	}
 	/**
-	 * 字符串转布尔值
+	 * convert a string to boolean
 	 * @param b
-	 * @return 转换异常返回 false
+	 * @return boolean
 	 */
 	public static boolean toBool(String b) {
 		try{

@@ -8,6 +8,7 @@ import org.appdev.R;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.MethodsCompat;
 import org.appdev.utils.UIController;
+import org.appdev.utils.UpdateManager;
 
 
 import android.content.Intent;
@@ -30,7 +31,7 @@ public class Setting extends PreferenceActivity{
 	Preference feedback;
 	Preference update;
 	Preference about;
-	CheckBoxPreference httpslogin;
+	CheckBoxPreference productionEnv;
 	CheckBoxPreference loadimage;
 	CheckBoxPreference scroll;
 	CheckBoxPreference voice;
@@ -83,21 +84,21 @@ public class Setting extends PreferenceActivity{
 			}
 		});
 		
-		//https login
-		httpslogin = (CheckBoxPreference)findPreference("httpslogin");
-		httpslogin.setChecked(ac.isHttpsLogin());
-		if(ac.isHttpsLogin()){
-			httpslogin.setSummary("Login with HTTPS");
+		//Production Env
+		productionEnv = (CheckBoxPreference)findPreference("productionEnv");
+		productionEnv.setChecked(ac.isProductionEnv());
+		if(ac.isProductionEnv()){
+			productionEnv.setSummary("Production Environment");
 		}else{
-			httpslogin.setSummary("Login with HTTP");
+			productionEnv.setSummary("Development Environment");
 		}
-		httpslogin.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+		productionEnv.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				ac.setConfigHttpsLogin(httpslogin.isChecked());
-				if(httpslogin.isChecked()){
-					httpslogin.setSummary("Login with HTTPS");
+				ac.setConfigProductionEnv(productionEnv.isChecked());
+				if(productionEnv.isChecked()){
+					productionEnv.setSummary("Production Environment");
 				}else{
-					httpslogin.setSummary("Login with HTTP");
+					productionEnv.setSummary("Development Environment");
 				}
 				return true;
 			}
@@ -123,7 +124,7 @@ public class Setting extends PreferenceActivity{
 			}
 		});
 		
-		//左右滑动
+		//Scroll allowed?
 		scroll = (CheckBoxPreference)findPreference("scroll");
 		scroll.setChecked(ac.isScroll());
 		if(ac.isScroll()){
@@ -143,7 +144,7 @@ public class Setting extends PreferenceActivity{
 			}
 		});
 		
-		//提示声音
+		//Play voice
 		voice = (CheckBoxPreference)findPreference("voice");
 		voice.setChecked(ac.isVoice());
 		if(ac.isVoice()){
@@ -204,7 +205,7 @@ public class Setting extends PreferenceActivity{
 		feedback = (Preference)findPreference("feedback");
 		feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				//UIHelper.showFeedBack(Setting.this);
+				//UIController.showFeedBack(Setting.this);
 				return true;
 			}
 		});
@@ -213,7 +214,7 @@ public class Setting extends PreferenceActivity{
 		update = (Preference)findPreference("update");
 		update.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
-				//UpdateManager.getUpdateManager().checkAppUpdate(Setting.this, true);
+				UpdateManager.getUpdateManager().checkAppUpdate(Setting.this, true);
 				return true;
 			}
 		});
@@ -245,7 +246,7 @@ public class Setting extends PreferenceActivity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//结束Activity&从堆栈中移除
+		
 		AppManager.getAppManager().finishActivity(this);
 	}	
 }

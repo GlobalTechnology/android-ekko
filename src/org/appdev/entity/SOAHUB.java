@@ -37,7 +37,7 @@ public class SOAHUB implements Serializable {
 	public final static String LOGIN_VALIDATE_HTTPS = HTTPS + HOST + URL_SPLITTER + "action/api/login_validate";
 
 	public final static String PORTRAIT_UPDATE = URL_API_HOST+"action/api/portrait_update";
-	public final static String UPDATE_VERSION = URL_API_HOST+"MobileAppVersion.xml";	
+	public final static String UPDATE_VERSION = "http://www.liudev.com/ekkoupdate.xml";	
 
 	
 	public final static int URL_OBJ_TYPE_OTHER = 0x000;

@@ -34,6 +34,7 @@ import org.appdev.ui.LessonListSlidingMenu;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
+import org.appdev.utils.UpdateManager;
 import org.appdev.widget.ScrollLayout;
 
 import com.slidingmenu.lib.SlidingMenu;
@@ -102,7 +103,6 @@ public class Main extends SlidingFragmentActivity {
     
 	private Thread downloaderThread;
 	private ProgressDialog progressDialog;
-	private ProgressBar courseProgressBar;
 
 	private ScrollLayout mScrollLayout;
 	private RadioButton[] mButtons;
@@ -181,7 +181,7 @@ public class Main extends SlidingFragmentActivity {
         
         //check new version
         if(appContext.isCheckUp()){
-//        	UpdateManager.getUpdateManager().checkAppUpdate(this, false);
+        	UpdateManager.getUpdateManager().checkAppUpdate(this, false);
         }        
 
     }    
@@ -1010,7 +1010,6 @@ public class Main extends SlidingFragmentActivity {
 
 				}
 				else if(msg.what == -1){
-					//有异常--显示加载出错 & 弹出错误消息
 					lv.setTag(UIController.LISTVIEW_DATA_MORE);
 					more.setText(R.string.load_error);
 					Log.e("Main-getLvHandler", msg.obj.toString());

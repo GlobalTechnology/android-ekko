@@ -80,8 +80,7 @@ public class FileUtils
 	}
 
 	/**
-	 * 写文本文件
-	 * 在Android系统中，文件保存在 /data/data/PACKAGE_NAME/files 目录下
+	 * write file to folder: /data/data/PACKAGE_NAME/files 
 	 * @param context
 	 * @param msg
 	 */
@@ -103,7 +102,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * 读取文本文件
+	 * read file
 	 * @param context
 	 * @param fileName
 	 * @return
@@ -241,7 +240,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * 获取文件大小
+	 * Get file size
 	 * @param filePath
 	 * @return
 	 */

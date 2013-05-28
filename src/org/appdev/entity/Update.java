@@ -18,7 +18,7 @@ import android.util.Xml;
 public class Update implements Serializable{
 	
 	public final static String UTF8 = "UTF-8";
-	public final static String NODE_ROOT = "EKKO";
+	public final static String NODE_ROOT = "ekko";
 	
 	private int versionCode;
 	private String versionName;

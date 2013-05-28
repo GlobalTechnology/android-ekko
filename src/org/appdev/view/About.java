@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 /**
  * About
- * @author Henry
  * @version 1.0
  * 
  */
@@ -28,7 +27,6 @@ public class About extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about);
 		
-		//添加Activity到堆栈
 		AppManager.getAppManager().addActivity(this);
 		
         try { 
@@ -50,7 +48,6 @@ public class About extends Activity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//结束Activity&从堆栈中移除
 		AppManager.getAppManager().finishActivity(this);
 	}
 }

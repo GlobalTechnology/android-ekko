@@ -225,14 +225,7 @@ public class ImageUtils{
     	return fileName;
     }
     
-    /**
-     * 获取照相机使用的目录
-     * @return
-     */
-    public static String getCamerPath()
-    {
-    	return Environment.getExternalStorageDirectory() + File.separator +  "FounderNews" + File.separator;
-    }
+
     
 	/**
 	 * 判断当前Url是否标准的content://样式，如果不是，则返回绝对路径

@@ -427,26 +427,26 @@ public class AppContext extends Application {
 	}
 	
 	/**
-	 * Https login or not
+	 * Used for Production or development
 	 * @return
 	 */
-	public boolean isHttpsLogin()
+	public boolean isProductionEnv()
 	{
-		String perf_httpslogin = getProperty(AppConfig.CONF_HTTPS_LOGIN);
-		//默认是http
-		if(StringUtils.isEmpty(perf_httpslogin))
+		String perf_production = getProperty(AppConfig.CONF_PRODUCTION_ENV);
+		
+		if(StringUtils.isEmpty(perf_production))
 			return false;
 		else
-			return StringUtils.toBool(perf_httpslogin);
+			return StringUtils.toBool(perf_production);
 	}
 	
 	/**
-	 * set https login
+	 * set Production Env
 	 * @param b
 	 */
-	public void setConfigHttpsLogin(boolean b)
+	public void setConfigProductionEnv(boolean b)
 	{
-		setProperty(AppConfig.CONF_HTTPS_LOGIN, String.valueOf(b));
+		setProperty(AppConfig.CONF_PRODUCTION_ENV, String.valueOf(b));
 	}
 	
 	/**
@@ -723,7 +723,7 @@ public class AppContext extends Application {
 	
 	/**
 	 * Get Course list by calling web service in the SOA hub
-	 * @param catalog (placehoder for future use)
+	 * @param catalog (placeholder for future use)
 	 * @param pageIndex
 	 * @param isRefresh
 	 * @return
@@ -852,6 +852,7 @@ public class AppContext extends Application {
 	}
 	
 	public int  getCurrentLessonIndex(){
+		
 		int lessonSize = AppContext.curCourse.getLessonList().size();
 		if(lessonSize<=0){
 			return -1;
