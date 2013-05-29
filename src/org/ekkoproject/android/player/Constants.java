@@ -1,5 +1,7 @@
 package org.ekkoproject.android.player;
 
+import android.net.Uri;
+
 public final class Constants {
     public final static long INVALID_COURSE = -1;
 
