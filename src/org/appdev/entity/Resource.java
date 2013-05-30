@@ -1,10 +1,15 @@
 package org.appdev.entity;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.appdev.app.AppContext;
 import org.appdev.utils.StringUtils;
+import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.util.ParserUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class Resource implements Serializable{
 
@@ -123,6 +128,58 @@ public class Resource implements Serializable{
 		this.mimeType = mimeType;
 	}
 
+    public static List<Resource> parseResources(final XmlPullParser parser, final int schemaVersion)
+            throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCES);
+        return parseResourceNodes(parser, schemaVersion);
+    }
 
-	
+    public static Resource parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        return new Resource().parseInternal(parser, schemaVersion);
+    }
+
+    private Resource parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCE);
+
+        this.id = parser.getAttributeValue(null, XML.ATTR_RESOURCE_ID);
+        this.type = parser.getAttributeValue(null, XML.ATTR_RESOURCE_TYPE);
+        this.sha1 = parser.getAttributeValue(null, XML.ATTR_RESOURCE_SHA1);
+        this.file = parser.getAttributeValue(null, XML.ATTR_RESOURCE_FILE);
+        this.mimeType = parser.getAttributeValue(null, XML.ATTR_RESOURCE_MIMETYPE);
+        this.provider = parser.getAttributeValue(null, XML.ATTR_RESOURCE_PROVIDER);
+
+        // handle any nested resources
+        if ("dynamic".equals(this.type)) {
+            this.items = parseResourceNodes(parser, schemaVersion);
+        } else {
+            ParserUtils.skip(parser);
+        }
+
+        return this;
+    }
+
+    private static List<Resource> parseResourceNodes(final XmlPullParser parser, final int schemaVersion)
+            throws XmlPullParserException, IOException {
+        final List<Resource> resources = new ArrayList<Resource>();
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+
+            // process recognized nodes
+            final String ns = parser.getNamespace();
+            final String name = parser.getName();
+            if (XML.NS_EKKO.equals(ns) && XML.ELEMENT_RESOURCE.equals(name)) {
+                resources.add(Resource.parse(parser, schemaVersion));
+                continue;
+            }
+
+            // skip unrecognized nodes
+            ParserUtils.skip(parser);
+        }
+
+        return resources;
+    }
 }

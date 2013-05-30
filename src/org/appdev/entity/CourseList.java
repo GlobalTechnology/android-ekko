@@ -1,6 +1,5 @@
 package org.appdev.entity;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -9,7 +8,8 @@ import java.util.List;
 
 import org.appdev.app.AppException;
 import org.appdev.utils.StringUtils;
-
+import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -232,5 +232,36 @@ public class CourseList extends Entity{
 	public void setMoreURI(String moreURI) {
 		this.moreURI = moreURI;
 	}
-}
 
+    public static CourseList parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
+        return new CourseList().parseInternal(parser);
+    }
+
+    private CourseList parseInternal(final XmlPullParser parser) throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSES);
+
+        this.start = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSES_START));
+        this.limit = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSES_LIMIT));
+        this.hasMore = StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_COURSES_HASMORE));
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+
+            // process recognized nodes
+            final String ns = parser.getNamespace();
+            final String name = parser.getName();
+            if (XML.NS_HUB.equals(ns) && XML.ELEMENT_COURSE.equals(name)) {
+                final Course course = Course.parse(parser);
+                this.courseList.add(course);
+                continue;
+            }
+
+            // skip unrecognized nodes
+            ParserUtils.skip(parser);
+        }
+
+        return this;
+    }
+}
