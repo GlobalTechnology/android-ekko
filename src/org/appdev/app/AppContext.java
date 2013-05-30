@@ -882,9 +882,7 @@ public class AppContext extends Application {
 	 * @return
 	 */
 	public int getCurLessonTextPagerCount(){
-	
-		return curCourse.getLessonList().get(getCurrentLessonIndex()).getPagedTextList().getElements().size();
-				
+        return curCourse.getLessonList().get(getCurrentLessonIndex()).getText().size();
 	}
 	
 	public List<Drawable> getCurLessonMediaList(Course course, int lessonIndex){
@@ -906,9 +904,7 @@ public class AppContext extends Application {
     	}
     	    	
     	Lesson curLesson = lessonList.get(lessonIndex);
-    	ArrayList<Media> lessonMediaElements= curLesson.getLessonMedia().getElements();
-    	for(int i=0; i<lessonMediaElements.size(); i++) {
-    		Media media = lessonMediaElements.get(i);
+        for (final Media media : curLesson.getMedia()) {
     		Resource resource = course.getResourceMap().get(media.getMediaThumbnailID());
     		if (resource == null ) {
     			resource = course.getResourceMap().get(media.getMediaResourceID());

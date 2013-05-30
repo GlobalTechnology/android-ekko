@@ -509,7 +509,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	vpLessonTextPager = (ViewPager)findViewById(R.id.frame_lesson_text_pager);
     	int lessonIndex = AppContext.getInstance().getCurrentLessonIndex();
    
-    	int pageNum = course.getLessonList().get(lessonIndex).getPagedTextList().getElements().size();
+        final int pageNum = course.getLessonList().get(lessonIndex).getText().size();
     	
     	mTextPagerAdapter = new LessonTextPagerAdapter(getSupportFragmentManager(), pageNum);
     	
