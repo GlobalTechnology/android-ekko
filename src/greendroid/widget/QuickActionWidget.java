@@ -21,9 +21,8 @@ import java.util.List;
 import org.appdev.R;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -104,8 +103,10 @@ public abstract class QuickActionWidget extends PopupWindow {
         setHeight(LayoutParams.WRAP_CONTENT);
 
         final WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-        mScreenWidth = windowManager.getDefaultDisplay().getWidth();
-        mScreenHeight = windowManager.getDefaultDisplay().getHeight();
+        final Point size = new Point();
+        windowManager.getDefaultDisplay().getSize(size);
+        mScreenWidth = size.x;
+        mScreenHeight = size.y;
     }
 
     /**

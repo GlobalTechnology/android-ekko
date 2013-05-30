@@ -50,6 +50,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -62,8 +63,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.slidingmenu.lib.SlidingMenu;
-import com.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.LinePageIndicator;
 
@@ -72,7 +75,7 @@ import com.viewpagerindicator.LinePageIndicator;
  * @version 1.0
  * @created 2013-4-5
  */
-public class Main extends SlidingFragmentActivity {
+public class Main extends SherlockFragmentActivity implements SlidingActivityBase {
 	
 	// Used to communicate state changes in the CoursePackage DownloaderThread
 	public static final int MESSAGE_DOWNLOAD_STARTED = 1000;
@@ -141,11 +144,17 @@ public class Main extends SlidingFragmentActivity {
 	protected ListFragment mCourseListMenuFrag;
 	protected ListFragment mAppSettingListMenuFrag;
 	
+    private SlidingActivityHelper menuHelper;
 		
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	setTheme(com.actionbarsherlock.R.style.Theme_Sherlock_Light_NoActionBar);
         super.onCreate(savedInstanceState);
+
+        // create SlidingMenuHelper
+        this.menuHelper = new SlidingActivityHelper(this);
+        this.menuHelper.onCreate(savedInstanceState);
+
         setContentView(R.layout.main);
         
 		//Add Activity to stack
@@ -1291,8 +1300,95 @@ public class Main extends SlidingFragmentActivity {
 			Toast.makeText(Main.this, message, Toast.LENGTH_SHORT).show();
 		}
 	}
-	
-	
-  
-  }
 
+    /** Sliding Menu integration overrides */
+
+    @Override
+    public void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        this.menuHelper.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    public View findViewById(final int id) {
+        final View v = super.findViewById(id);
+        if (v != null)
+            return v;
+        return this.menuHelper.findViewById(id);
+    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        this.menuHelper.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void setContentView(final int id) {
+        this.setContentView(getLayoutInflater().inflate(id, null));
+    }
+
+    @Override
+    public void setContentView(final View v) {
+        this.setContentView(v, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
+
+    @Override
+    public void setContentView(final View v, final LayoutParams params) {
+        super.setContentView(v, params);
+        this.menuHelper.registerAboveContentView(v, params);
+    }
+
+    @Override
+    public boolean onKeyUp(final int keyCode, final KeyEvent event) {
+        boolean b = this.menuHelper.onKeyUp(keyCode, event);
+        if (b)
+            return b;
+        return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public void setBehindContentView(final int id) {
+        this.setBehindContentView(getLayoutInflater().inflate(id, null));
+    }
+
+    @Override
+    public void setBehindContentView(final View v) {
+        this.setBehindContentView(v, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+    }
+
+    @Override
+    public void setBehindContentView(final View v, final LayoutParams params) {
+        this.menuHelper.setBehindContentView(v, params);
+    }
+
+    @Override
+    public SlidingMenu getSlidingMenu() {
+        return this.menuHelper.getSlidingMenu();
+    }
+
+    @Override
+    public void toggle() {
+        this.menuHelper.toggle();
+    }
+
+    @Override
+    public void showContent() {
+        this.menuHelper.showContent();
+    }
+
+    @Override
+    public void showMenu() {
+        this.menuHelper.showMenu();
+    }
+
+    @Override
+    public void showSecondaryMenu() {
+        this.menuHelper.showSecondaryMenu();
+    }
+
+    @Override
+    public void setSlidingActionBarEnabled(final boolean b) {
+        this.menuHelper.setSlidingActionBarEnabled(b);
+    }
+}
