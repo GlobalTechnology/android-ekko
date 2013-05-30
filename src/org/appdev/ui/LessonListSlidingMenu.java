@@ -57,17 +57,8 @@ public class LessonListSlidingMenu extends ListFragment implements MainActivityL
 		
 		//set lesson adapter
 		lessonListAdapter = new MenuAdapter(getActivity());
-		ArrayList<Lesson> lessonList = AppContext.getInstance().getCurCourse().getLessonList();
-		if(lessonList == null)  return;
-		
-		for(int i=0; i<lessonList.size(); i++){
-	
-			lessonListAdapter.add(new LessonListMenuItem(lessonList.get(i).getLesson_title(), android.R.drawable.ic_menu_view));
-	
-		}
-
+		updateLessonListAdapter();
 		setListAdapter(lessonListAdapter);
-
 		//set the media grid adapter 
 		mediaGridAdapter = new MediaGridAdapter(AppContext.getInstance(), getMediaList());
 		gridview = (GridView) getActivity().findViewById(R.id.lessonMediaGridview);
@@ -80,6 +71,24 @@ public class LessonListSlidingMenu extends ListFragment implements MainActivityL
 	        }
 	    });
 		
+	}
+	
+	public void updateLessonListAdapter(){
+		lessonListAdapter.clear();
+		ArrayList<Lesson> lessonList = AppContext.getInstance().getCurCourse().getLessonList();
+		if(lessonList == null)  {
+			Log.w("LessonListSlidingMenu", "lessonlist is null");
+			return;
+		}
+		
+		for(int i=0; i<lessonList.size(); i++){
+	
+			lessonListAdapter.add(new LessonListMenuItem(lessonList.get(i).getLesson_title(), android.R.drawable.ic_menu_view));
+	
+		}
+		lessonListAdapter.notifyDataSetChanged();
+		
+		return;
 	}
 
 	private List<Drawable> getMediaList() {
@@ -168,9 +177,13 @@ public class LessonListSlidingMenu extends ListFragment implements MainActivityL
 		//todo: need to find a better way to decide how a user finish a lesson.
 		
 		if(lessonList.size()>0 && courseProgress != null){
-			Log.i("LessonListSlidingMenu_progressBar",Integer.toString(((AppContext.getInstance().getCurrentLessonIndex()+1)/lessonList.size())*100 ));
+			//Log.i("LessonListSlidingMenu_progressBar",Integer.toString(((AppContext.getInstance().getCurrentLessonIndex()+1)/lessonList.size())*100 ));
 			
-			courseProgress.setProgress(((AppContext.getInstance().getCurrentLessonIndex()+1)*100/lessonList.size()));
+			//courseProgress.setProgress(((AppContext.getInstance().getCurrentLessonIndex()+1)*100/lessonList.size()));
+			int progress = AppContext.getCourseProgress(AppContext.getInstance().getCurCourse());
+			
+			courseProgress.setProgress(progress<=courseProgress.getMax()?progress:courseProgress.getMax());
+			
 		} 
 	}
 

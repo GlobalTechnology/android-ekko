@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.appdev"
-    android:versionCode="1"
+    android:versionCode="2"
     android:versionName="beta1.0" >
 
     <uses-sdk
@@ -23,7 +23,6 @@
         <activity
             android:name=".app.AppStart"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
-            android:screenOrientation="portrait"> 
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -23,6 +23,8 @@ public class Lesson extends Entity{
 	private int visited;
 	private String last_visited;
 	private String course_id;
+	private int textPagerIndex = 0;
+	private int textPagerProgressIndex =0;
 	
 	private TextElements pagedTextList;
 	
@@ -122,6 +124,22 @@ public class Lesson extends Entity{
 
 	public void setGuid(String guid) {
 		this.guid = guid;
+	}
+
+	public int getTextPagerIndex() {
+		return textPagerIndex;
+	}
+
+	public void setTextPagerIndex(int textPagerIndex) {
+		this.textPagerIndex = textPagerIndex;
+	}
+
+	public int getTextPagerProgressIndex() {
+		return textPagerProgressIndex;
+	}
+
+	public void setTextPagerProgressIndex(int textPagerProgressIndex) {
+		this.textPagerProgressIndex = textPagerProgressIndex;
 	}
 
 }

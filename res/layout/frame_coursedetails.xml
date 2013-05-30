@@ -74,7 +74,7 @@
 		      />
 		    <com.viewpagerindicator.LinePageIndicator
 	        android:id="@+id/frame_lesson_text_indicator"
-	        android:layout_height="20dp"
+	        android:layout_height="wrap_content"
 	        android:layout_width="fill_parent"
 	        />
 

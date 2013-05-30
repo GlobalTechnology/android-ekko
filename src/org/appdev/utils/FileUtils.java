@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.appdev.app.AppContext;
+
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
@@ -20,7 +22,12 @@ public class FileUtils
 {
 	
 	public static String EkkoFilePath(){
-		String path =  Environment.getExternalStorageDirectory().getAbsolutePath()+"/ekko/";
+		String path = null;
+		if(checkSaveLocationExists()){
+			path =  Environment.getExternalStorageDirectory().getAbsolutePath()+"/ekko/";
+		}else{
+			path = Environment.getRootDirectory().getAbsolutePath() + "/ekko/";  //need to test and decide if this is a good place to store the courses
+		}
 		
 		File f = new File(path);
 		if (!f.exists()) {
@@ -57,6 +64,10 @@ public class FileUtils
 			f.mkdirs();
 		}
 		return path;
+	}
+	
+	public static String getEkkoCourseManifestFile(String courseID){
+		return EkkoCourseSetRootPath() + courseID + "/" + AppContext.COURSE_MANIFEST_FILE;
 	}
 	
 	public static File generateFileFromInputStream(String fileName, InputStream inputStream) {
@@ -227,7 +238,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * 获取文件扩展名
+	 * get the extension name of a file
 	 * @param fileName
 	 * @return
 	 */
@@ -258,7 +269,7 @@ public class FileUtils
 	
 	/**
 	 * get the size string of a file
-	 * @param size 字节
+	 * @param size in byte
 	 * @return
 	 */
 	public static String getFileSize(long size) 
@@ -297,7 +308,7 @@ public class FileUtils
     }
 
 	/**
-	 * 获取目录文件大小
+	 * get the directory file size
 	 * @param dir
 	 * @return
 	 */
@@ -315,14 +326,14 @@ public class FileUtils
 	    		dirSize += file.length();
 	    	} else if (file.isDirectory()) {
 	    		dirSize += file.length();
-	    		dirSize += getDirSize(file); //递归调用继续统计
+	    		dirSize += getDirSize(file); //recursive
 	    	}
 	    }
 	    return dirSize;
 	}
 	
 	/**
-	 * 获取目录文件个数
+	 * get the count of files in a directory
 	 * @param f
 	 * @return
 	 */
@@ -353,7 +364,7 @@ public class FileUtils
 	}
 	
 	/**
-	 * 检查文件是否存在
+	 * Check if a file exist
 	 * @param name
 	 * @return
 	 */
@@ -394,7 +405,7 @@ public class FileUtils
 	}
 
 	/**
-	 * 新建目录
+	 * Creat new directory
 	 * @param directoryName
 	 * @return
 	 */
@@ -411,7 +422,7 @@ public class FileUtils
 	}
 
 	/**
-	 * 检查是否安装SD卡
+	 * Check if SD card mounted
 	 * @return
 	 */
 	public static boolean checkSaveLocationExists() {

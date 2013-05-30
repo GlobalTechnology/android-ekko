@@ -45,6 +45,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -359,7 +360,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         		
         		
         		//Check if it has been downloaded
-        		File courseManifestFile = new File(FileUtils.EkkoCourseSetRootPath() + courseGUID + "/manifest.xml");
+        		File courseManifestFile = new File(FileUtils.getEkkoCourseManifestFile(courseGUID));
         		
         		if(courseManifestFile.exists()){ //need to add the version checking later
         			//if network is connected, check if there is a new version of a course
@@ -395,7 +396,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 					}
 					
 					//notify user to update the course
-					//To do: add a course update dialog
+					//To do: add a course update dialog or better to automatically display a update button for that course.
 					if(StringUtils.toInt(courseLatestVer) > StringUtils.toInt(courseCurVer)){
 						UIController.ToastMessage(appContext, "A new version course existed online");
 					}
@@ -576,6 +577,39 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
                 return false;  
             }  
         }); 
+    	
+    	vpLessonTextPager.setOnPageChangeListener(new OnPageChangeListener(){
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				//set the current page of current lesson
+				appContext.getCurLesson().setTextPagerIndex(arg0);
+				int progress= appContext.getCurLesson().getTextPagerProgressIndex();
+				if(progress < appContext.getCurLesson().getTextPagerIndex()){
+					appContext.getCurLesson().setTextPagerProgressIndex(arg0);
+				}
+				Log.i("Main", "page selected");
+				//update progressbar
+				if(mLessonListMenuFrag != null){
+					((LessonListSlidingMenu)mLessonListMenuFrag).updateProgressBar();
+				}
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+	
+				
+			}
+    		
+    	});
     	mTextPagerIndicator = (LinePageIndicator)findViewById(R.id.frame_lesson_text_indicator);
     	mTextPagerIndicator.setViewPager(vpLessonTextPager);
 
@@ -625,8 +659,10 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	int curLessonIndex = AppContext.getInstance().getCurrentLessonIndex();
     	
     	//init pager number
-    	((LessonTextPagerAdapter) mTextPagerAdapter).setPageNumber(AppContext.getInstance().getCurLessonTextPagerCount());
-    	this.mTextPagerAdapter.notifyDataSetChanged();
+    	if(AppContext.getInstance().getCurLessonTextPagerCount()>0){
+	    	((LessonTextPagerAdapter) mTextPagerAdapter).setPageNumber(AppContext.getInstance().getCurLessonTextPagerCount());
+	    	this.mTextPagerAdapter.notifyDataSetChanged();
+    	}
     	String progressBuilder= "Lesson [" +(curLessonIndex +1) + "/" +AppContext.getInstance().getCurCourse().getLessonList().size() +"]";
     	
     	mLesson_title.setText( progressBuilder );
@@ -665,15 +701,17 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	//update indicator for textpager and media pager
     	mTextPagerIndicator.notifyDataSetChanged();
     	mMediaPagerIndicator.notifyDataSetChanged();
-    	//lessonMedia=null;
     	
     	if(mLessonListMenuFrag!=null){
     		//set the value of  progressbar
 	    	((LessonListSlidingMenu)mLessonListMenuFrag).updateProgressBar();
+	    	//update the lessons list of slidemenu of lesson list
+	    	((LessonListSlidingMenu)mLessonListMenuFrag).updateLessonListAdapter();
 	    	//set the focus of current lesson
 	    	((LessonListSlidingMenu)mLessonListMenuFrag).updateLessonFocus();
 	    	//update the medialist of slidemenu of lesson list
 	    	((LessonListSlidingMenu)mLessonListMenuFrag).updateMediaList();
+	    	
     	}
     }
 
@@ -793,8 +831,12 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 						@Override
 						public void reload(){
 							//refresh the lesson text viewpager content 
-							((LessonTextPagerAdapter) mTextPagerAdapter).setPageNumber(AppContext.getInstance().getCurLessonTextPagerCount());
-							mTextPagerAdapter.notifyDataSetChanged();
+							if(AppContext.getInstance().getCurLessonTextPagerCount()>0){
+								((LessonTextPagerAdapter) mTextPagerAdapter).setPageNumber(AppContext.getInstance().getCurLessonTextPagerCount());
+								mTextPagerAdapter.notifyDataSetChanged();
+							}else{
+								Log.w("Main", "textPager is empty");
+							}
 							
 					    	List<Drawable> lessonMedia = null;
 					    	//get the last access lesson
@@ -810,9 +852,9 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 					    	mTextPagerIndicator.notifyDataSetChanged();
 					    	mMediaPagerIndicator.notifyDataSetChanged();
 					    	
-					    	//update the text of course progress button
-					    	UpdateLessonTitleButtonText();
-					    	
+					    	//update Lesson list menu UI
+							
+							NavigateToNextLesson(0);
 							//toggle the lesson list sliding menu
 							//showSecondaryMenu();	
 							showContent();
@@ -848,6 +890,10 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 
 							updateTextAndMediaView();
 							
+							//update Lesson list menu UI
+							
+							NavigateToNextLesson(0);
+						
 						}
 
 						

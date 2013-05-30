@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TextElements extends Entity{
-	
 
 	private String lesson_id;
 	private String course_id;
 	private int visited;
 	private String last_visited;
 	
-	private ArrayList<String> elementsList = new ArrayList<String>();
+	private ArrayList<String> elementsList = null;
+	
+	public TextElements(){
+		elementsList = new ArrayList<String>();
+	}
 	
 	public void addElement(String element){
 		elementsList.add(element);

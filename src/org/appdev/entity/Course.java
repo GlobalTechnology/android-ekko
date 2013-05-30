@@ -11,7 +11,7 @@ public class Course extends Entity {
 
 	public static final String DIR_NAME ="dir_name";
 	public static final String COURSE_BANNER = "course_banner";
-	public static final String TABLE_NAME = "courses";
+	public static final String TABLE_NAME = "courses";  //for now, we didn't use the sqlite to manage data, for simplicity we just serialize the entity
 	
 	private int id;
 	private String course_title;
@@ -25,11 +25,11 @@ public class Course extends Entity {
 	private String author_name;
 	private String author_email;
 	private String author_url;
-	
 
 	private String visited;
 	private String dir_name;
 	private int lessonIndex=0;
+	private int lessonProgressIndex = 0;
 	
 	private String course_guid;
 	private HashMap<String, Resource> resourceMap;
@@ -181,6 +181,14 @@ public class Course extends Entity {
 
 	public void setCourseZipUri(String course_zipuri) {
 		this.course_zipuri = course_zipuri;
+	}
+
+	public int getLessonProgressIndex() {
+		return lessonProgressIndex;
+	}
+
+	public void setLessonProgressIndex(int lessonProgressIndex) {
+		this.lessonProgressIndex = lessonProgressIndex;
 	}
 
 

@@ -25,6 +25,7 @@ import org.appdev.entity.CourseManifest;
 import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
 import org.appdev.entity.Resource;
+import org.appdev.entity.TextElements;
 import org.appdev.entity.User;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.ImageUtils;
@@ -818,7 +819,7 @@ public class AppContext extends Application {
 			
 			try {
 				if(manifestFile == null ){
-					input = getAssets().open("manifest.xml"); //user guide course
+					input = getAssets().open(AppContext.COURSE_MANIFEST_FILE); //user guide course
 				}else{
 					input = new BufferedInputStream(new FileInputStream(manifestFile));
 					
@@ -856,6 +857,11 @@ public class AppContext extends Application {
 
 	public void setCurrentLessonIndex(int lessonIndex){
 		AppContext.curCourse.setLessonIndex(lessonIndex);
+		//set the course lesson progress Index
+		if(lessonIndex> AppContext.curCourse.getLessonProgressIndex()){
+			AppContext.curCourse.setLessonProgressIndex(lessonIndex);
+		}
+		
 	}
 	
 	public int  getCurrentLessonIndex(){
@@ -873,6 +879,7 @@ public class AppContext extends Application {
 		}
 		//return curCourse.getLessonIndex();
 	}
+	
 	public static void setCurCourse(Course curCourse) {
 		AppContext.curCourse = curCourse;
 	}
@@ -882,15 +889,17 @@ public class AppContext extends Application {
 	 * @return
 	 */
 	public int getCurLessonTextPagerCount(){
-	
-		return curCourse.getLessonList().get(getCurrentLessonIndex()).getPagedTextList().getElements().size();
+		Lesson lesson = getCurLesson();
+		if(lesson != null && lesson.getPagedTextList() != null && lesson.getPagedTextList().getElements() != null){
+			return lesson.getPagedTextList().getElements().size();
+		}else{
+			return -1;
+		}
 				
 	}
 	
 	public List<Drawable> getCurLessonMediaList(Course course, int lessonIndex){
     	List<Drawable> lessonMedia = new ArrayList<Drawable>();
-    
-    	
     	ArrayList<Lesson> lessonList = new ArrayList<Lesson>();
     	lessonList = course.getLessonList();
     	if(lessonList.size()<=0) return null;
@@ -930,6 +939,8 @@ public class AppContext extends Application {
 	    			lessonMedia.add(getResources().getDrawable(R.drawable.course_banner));
 	    		} 
     			
+    		} else{
+    			lessonMedia.add(getResources().getDrawable(R.drawable.course_banner));
     		}
     		img = null;
     		
@@ -944,7 +955,58 @@ public class AppContext extends Application {
 	public static void setPreCourse(Course preCourse) {
 		AppContext.preCourse = preCourse;
 	}
-
 	
+	/**
+	 * get the progress status of course 
+	 * @param course
+	 * @return int [0,100]
+	 */
+	public static int getCourseProgress(Course course){
+		if(course == null){
+			return -1;
+		}
+		int progress = 0;
+		int totalPageNum=0; //the pages count the course contains
+		int curTotalNum=0;
+		//get the total page number
+		if(course.getLessonList() != null){
+			for(int i=0; i< course.getLessonList().size(); i++){
+				TextElements element = course.getLessonList().get(i).getPagedTextList();
+				if(element != null && element.getElements()!=null){
+					totalPageNum += element.getElements().size();
+				}
+			}
+		}
+	
+		if (totalPageNum<=0) return -1;
+		
+		//calculate the total page number from the beginning to current viewed page of the lesson 
+		for (int i=0; i < course.getLessonProgressIndex(); i++){
+			TextElements element = course.getLessonList().get(i).getPagedTextList();
+			if(element != null && element.getElements()!=null ) {
+				curTotalNum += element.getElements().size();
+			}
+		}
+		//add the page number of the last accessed lesson
+		if(course.getLessonList()!=null){
+			curTotalNum += course.getLessonList().get(course.getLessonProgressIndex()).getTextPagerProgressIndex();
+		}
+		
+		//calculate the progress
+		progress = (int)(curTotalNum * 100.0)/totalPageNum;
+		
+		return progress;
+	}
+	
+	public Lesson getCurLesson(){
+		if(curCourse.getLessonList() != null){
+			return curCourse.getLessonList().get(getCurrentLessonIndex());
+		}else{
+			return null;
+		}
+	}
+	public static void updateCourseProgress(Course course){
+		
+	}
 
 }

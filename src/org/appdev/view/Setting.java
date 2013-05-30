@@ -41,12 +41,12 @@ public class Setting extends PreferenceActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		//添加Activity到堆栈
+		//Add Activity to stack
 		AppManager.getAppManager().addActivity(this);
 		
-		//设置显示Preferences
+		//Add Preferences
 		addPreferencesFromResource(R.xml.preferences);
-		//获得SharedPreferences
+		//get SharedPreferences
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);		
 		
 		ListView localListView = getListView();

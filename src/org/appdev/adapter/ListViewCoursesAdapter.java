@@ -6,6 +6,7 @@ import java.util.List;
 import org.appdev.R;
 import org.appdev.entity.Course;
 import org.appdev.utils.FileUtils;
+import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
 
 import android.content.Context;
@@ -86,7 +87,7 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 		listItemView.title.setText(course.getCourseTitle());
 		listItemView.title.setTag(course);
 		String bannerKey = course.getCourseBanner();
-		if(bannerKey != null){
+		if(bannerKey != null || !StringUtils.isEmpty(bannerKey)){
 			String res = course.getResourceMap().get(bannerKey).getResourceFile();
 			File resFile = new File(FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() +"/" + res);
 			if(resFile.exists()){

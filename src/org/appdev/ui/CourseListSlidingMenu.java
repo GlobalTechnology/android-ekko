@@ -112,7 +112,7 @@ public class CourseListSlidingMenu extends ListFragment {
 		Course course = null;
 		course = courseList.getCourselist().get(position);
 		String courseGUID = course.getCourseGUID();
-		File courseManifestFile = new File(FileUtils.EkkoCourseSetRootPath() + courseGUID + "/manifest.xml");
+		File courseManifestFile = new File(FileUtils.getEkkoCourseManifestFile(courseGUID));
 		if(courseManifestFile.exists()){ //need to add the version checking later
         	
 			//exist and just load the native manifest.xml file
@@ -145,12 +145,9 @@ public class CourseListSlidingMenu extends ListFragment {
 			}
 		}
 		
-		//update the main activity UI
+		//update the main activity UI and update the LessonLists slide menu UI, such as media grid, progress bar state, lesson list
 		this.listener.reload();
-		
-		//update the LessonLists slide menu UI, such as media grid, progress bar state, lesson list
-		
-		//show content
+	
 
 	}
 	public SlideMenuListener getListener() {
