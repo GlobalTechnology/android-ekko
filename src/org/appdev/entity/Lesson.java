@@ -31,9 +31,9 @@ public class Lesson extends Entity{
 	private int textPagerIndex = 0;
 	private int textPagerProgressIndex =0;
 	
-	private TextElements pagedTextList;
+    private TextElements pagedTextList = new TextElements();
 	
-	private MediaElements lessonMedia;
+    private MediaElements lessonMedia = new MediaElements();
 	
     private final List<Media> media = new ArrayList<Media>();
     private final List<String> text = new ArrayList<String>();
@@ -179,11 +179,15 @@ public class Lesson extends Entity{
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_CONTENT_MEDIA.equals(name)) {
-                    this.media.add(Media.parse(parser, schemaVersion));
+                    final Media media = Media.parse(parser, schemaVersion);
+                    this.media.add(media);
+                    this.lessonMedia.addElement(media);
                     continue;
                 } else if (XML.ELEMENT_CONTENT_TEXT.equals(name)) {
                     // TODO: we don't capture the text id currently
-                    this.text.add(parser.nextText());
+                    final String text = parser.nextText();
+                    this.text.add(text);
+                    this.pagedTextList.addElement(text);
                     parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_TEXT);
                     continue;
                 }
