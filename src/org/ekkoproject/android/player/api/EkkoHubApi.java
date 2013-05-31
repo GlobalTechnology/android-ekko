@@ -3,6 +3,7 @@ package org.ekkoproject.android.player.api;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.ekkoproject.android.player.Constants.EKKOHUB_URI;
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,40 +16,63 @@ import java.net.URLEncoder;
 
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.TheKeySocketException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.net.Uri.Builder;
+import android.os.Build;
+import android.util.Xml;
 
 public final class EkkoHubApi {
+    private static final Logger LOG = LoggerFactory.getLogger(EkkoHubApi.class);
+
+    private static final String PREFFILE_EKKOHUB = "ekkoHubApi";
+    private static final String PREF_SESSIONID = "session_id";
+
+    private final Context context;
     private final TheKey thekey;
     private final Uri hubUri;
 
-    private String sessionId = null;
-
-    public EkkoHubApi(final TheKey thekey) {
-        this(thekey, EKKOHUB_URI);
+    public EkkoHubApi(final Context context) {
+        this(context, EKKOHUB_URI);
     }
 
-    public EkkoHubApi(final TheKey thekey, final String hubUri) {
-        this(thekey, hubUri, null);
+    public EkkoHubApi(final Context context, final String hubUri) {
+        this(context, Uri.parse(hubUri.endsWith("/") ? hubUri : hubUri + "/"));
     }
 
-    public EkkoHubApi(final TheKey thekey, final Uri hubUri) {
-        this(thekey, hubUri, null);
-    }
-
-    public EkkoHubApi(final TheKey thekey, final String hubUri, final String sessionId) {
-        this(thekey, Uri.parse(hubUri.endsWith("/") ? hubUri : hubUri + "/"), sessionId);
-    }
-
-    public EkkoHubApi(final TheKey thekey, final Uri hubUri, final String sessionId) {
-        this.thekey = thekey;
+    public EkkoHubApi(final Context context, final Uri hubUri) {
+        this.context = context;
+        this.thekey = new TheKey(this.context, THEKEY_CLIENTID);
         this.hubUri = hubUri;
-        this.sessionId = sessionId;
     }
 
-    public synchronized String getSessionId() {
-        return this.sessionId;
+    private SharedPreferences getPrefs() {
+        return this.context.getSharedPreferences(PREFFILE_EKKOHUB, Context.MODE_PRIVATE);
+    }
+
+    private synchronized String getSessionId() {
+        return this.getPrefs().getString(PREF_SESSIONID, null);
+    }
+
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    private synchronized void setSessionId(final String sessionId) {
+        final Editor prefs = this.getPrefs().edit();
+        prefs.putString(PREF_SESSIONID, sessionId);
+
+        // store updates
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            prefs.apply();
+        } else {
+            prefs.commit();
+        }
     }
 
     private synchronized void establishSession() throws ApiSocketException {
@@ -60,7 +84,7 @@ public final class EkkoHubApi {
             final String ticket = this.thekey.getTicket(service);
 
             // login to the hub
-            this.sessionId = this.login(ticket);
+            this.setSessionId(this.login(ticket));
         } catch (TheKeySocketException e) {
             throw new ApiSocketException(e);
         }
@@ -85,10 +109,11 @@ public final class EkkoHubApi {
                 if (useSession) {
                     // get the session, establish a session if one doesn't exist
                     synchronized (this) {
-                        if (this.sessionId == null) {
+                        sessionId = this.getSessionId();
+                        if (sessionId == null) {
                             this.establishSession();
                         }
-                        sessionId = this.sessionId;
+                        sessionId = this.getSessionId();
                     }
 
                     // use the current sessionId in the url
@@ -106,8 +131,8 @@ public final class EkkoHubApi {
                     // reset the session
                     synchronized (this) {
                         // only reset if this is still the same session
-                        if (sessionId.equals(this.sessionId)) {
-                            this.sessionId = null;
+                        if (sessionId.equals(this.getSessionId())) {
+                            this.setSessionId(null);
                         }
                     }
 
