@@ -2,13 +2,6 @@ package org.appdev.entity;
 
 
 public abstract class Entity extends Base {
-
-	protected int id;
-
-	public int getId() {
-		return id;
-	}
-
 	protected String cacheKey;
 
 	public String getCacheKey() {

@@ -20,7 +20,7 @@ public class Course extends Entity {
 	public static final String COURSE_BANNER = "course_banner";
 	public static final String TABLE_NAME = "courses";  //for now, we didn't use the sqlite to manage data, for simplicity we just serialize the entity
 	
-    private final int id;
+    private final long id;
     private int version = 0;
 
 	private String course_title;
@@ -44,7 +44,7 @@ public class Course extends Entity {
 	
 	private ArrayList<Lesson> lessonList;
 	
-    public Course(final int id) {
+    public Course(final long id) {
         this.id = id;
     }
 
@@ -59,11 +59,11 @@ public class Course extends Entity {
 	public void setLessonList(ArrayList<Lesson> lessonList) {
 		this.lessonList = lessonList;
 	}
-	
-	public int getId() {
-		return id;
-	}
-	
+
+    public long getId() {
+        return this.id;
+    }
+
     public int getVersion() {
         return this.version;
     }
@@ -200,7 +200,7 @@ public class Course extends Entity {
     public static Course parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
-        final int courseId = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
+        final long courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
         return new Course(courseId).parseInternal(parser, schemaVersion);
     }
 
@@ -208,7 +208,7 @@ public class Course extends Entity {
     public static Course parseManifest(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
-        final int courseId = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
+        final long courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
         return new Course(courseId).parseManifestInternal(parser, schemaVersion);
     }
 
