@@ -1,9 +1,14 @@
 package org.appdev.entity;
 
-import java.io.Serializable;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.appdev.app.AppContext;
+import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.util.ParserUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class Lesson extends Entity{
 	
@@ -30,6 +35,9 @@ public class Lesson extends Entity{
 	
 	private MediaElements lessonMedia;
 	
+    private final List<Media> media = new ArrayList<Media>();
+    private final List<String> text = new ArrayList<String>();
+
 	public Lesson(){
 		
 	}
@@ -110,6 +118,14 @@ public class Lesson extends Entity{
 		this.lesson_title = lesson_title;
 	}
 
+    public List<Media> getMedia() {
+        return Collections.unmodifiableList(this.media);
+    }
+
+    public List<String> getText() {
+        return Collections.unmodifiableList(this.text);
+    }
+
 	public MediaElements getLessonMedia() {
 		return lessonMedia;
 	}
@@ -142,4 +158,41 @@ public class Lesson extends Entity{
 		this.textPagerProgressIndex = textPagerProgressIndex;
 	}
 
+    public static Lesson parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        return new Lesson().parseInternal(parser, schemaVersion);
+    }
+
+    private Lesson parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_LESSON);
+
+        this.lesson_title = parser.getAttributeValue(null, XML.ATTR_LESSON_TITLE);
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+
+            // process recognized nodes
+            final String ns = parser.getNamespace();
+            final String name = parser.getName();
+            if (XML.NS_EKKO.equals(ns)) {
+                if (XML.ELEMENT_CONTENT_MEDIA.equals(name)) {
+                    this.media.add(Media.parse(parser, schemaVersion));
+                    continue;
+                } else if (XML.ELEMENT_CONTENT_TEXT.equals(name)) {
+                    // TODO: we don't capture the text id currently
+                    this.text.add(parser.nextText());
+                    parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_TEXT);
+                    continue;
+                }
+            }
+
+            // skip unrecognized nodes
+            ParserUtils.skip(parser);
+        }
+
+        return this;
+    }
 }

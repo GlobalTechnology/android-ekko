@@ -1,14 +1,22 @@
 package org.appdev.entity;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
+
+import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.util.ParserUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class Media implements Serializable{
-
+    private String id;
 
 	private String media_resource;
 	private String media_thumbnail;	
 
+    public String getId() {
+        return this.id;
+    }
 	
 	public String getMediaResourceID() {
 		return media_resource;
@@ -25,5 +33,23 @@ public class Media implements Serializable{
 	public void setMediaThumbnailID(String media_thumbnail) {
 		this.media_thumbnail = media_thumbnail;
 	}
-	
+
+    public static Media parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        return new Media().parseInternal(parser, schemaVersion);
+    }
+
+    private Media parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_MEDIA);
+
+        this.id = parser.getAttributeValue(null, XML.ATTR_MEDIA_ID);
+        this.media_resource = parser.getAttributeValue(null, XML.ATTR_RESOURCE);
+        this.media_thumbnail = parser.getAttributeValue(null, XML.ATTR_THUMBNAIL);
+
+        // discard any nested nodes
+        ParserUtils.skip(parser);
+
+        return this;
+    }
 }
