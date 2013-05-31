@@ -1,16 +1,9 @@
 package org.appdev.ui;
 
-import java.util.List;
-
-import org.appdev.R;
-import org.appdev.api.TextViewZoomListener;
-import org.appdev.app.AppContext;
-import org.appdev.entity.Course;
-import org.appdev.entity.Lesson;
-
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +12,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import org.appdev.R;
+import org.appdev.api.TextViewZoomListener;
+import org.appdev.app.AppContext;
+import org.appdev.entity.Course;
+import org.appdev.entity.Lesson;
 
 
 
@@ -98,13 +96,12 @@ public class LessonTextPager extends Fragment implements OnTouchListener {
         // Set the title view to show the page number.
         ((TextView) rootView.findViewById(R.id.lessonTitle)).setText(
         		lesson.getLesson_title());
-        final List<String> lessonText = lesson.getText();
-        if (mPageNumber > lessonText.size() - 1) {
-            mPageNumber = lessonText.size() - 1;
+        if(mPageNumber>(lesson.getPagedTextList().getElements().size()-1)) {
+        	mPageNumber = lesson.getPagedTextList().getElements().size()-1;
         }
         
        TextView textview = (TextView) rootView.findViewById(R.id.lessonPageText);
-        textview.setText(Html.fromHtml(lessonText.get(mPageNumber)));
+       textview.setText(Html.fromHtml(lesson.getPagedTextList().getElements().get(mPageNumber)));
        textview.setOnTouchListener(new TextViewZoomListener());
         
        

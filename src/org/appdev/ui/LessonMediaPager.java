@@ -4,6 +4,22 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
+import android.support.v4.app.Fragment;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+
+
 import org.appdev.R;
 import org.appdev.app.AppContext;
 import org.appdev.entity.Course;
@@ -13,18 +29,7 @@ import org.appdev.entity.Resource;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
-
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
+import org.appdev.view.ImageZoomDialog;
 
 
 /**
@@ -124,11 +129,10 @@ public class LessonMediaPager extends Fragment implements OnTouchListener, andro
 			        int curLesson = AppContext.getInstance().getCurrentLessonIndex();
 			        
 			        Lesson lesson = curCourse.getLessonList().get(curLesson); 
-                    final List<Media> courseMedia = lesson.getMedia();
-                    if (mPageNumber > courseMedia.size() - 1) {
-                        mPageNumber = courseMedia.size() - 1;
-                    }
-                    final Media media = courseMedia.get(mPageNumber);
+			        if(mPageNumber> lesson.getLessonMedia().getElements().size()-1) {
+			        	mPageNumber = lesson.getLessonMedia().getElements().size()-1;		        	
+			        }
+			        Media media =  lesson.getLessonMedia().getElements().get(mPageNumber);
 					
 						HashMap<String, Resource> hashMap = curCourse.getResourceMap();
 						Resource resource=hashMap.get(media.getMediaResourceID());

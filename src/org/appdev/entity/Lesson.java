@@ -28,7 +28,11 @@ public class Lesson extends Entity{
 	private int visited;
 	private String last_visited;
 	private String course_id;
-
+	
+	private TextElements pagedTextList;
+	
+	private MediaElements lessonMedia;
+	
     private final List<Media> media = new ArrayList<Media>();
     private final List<String> text = new ArrayList<String>();
 
@@ -42,15 +46,35 @@ public class Lesson extends Entity{
 		lesson.setLesson_title("no content");
 		
 		//add the text elements
-        lesson.text.add("Empty content!");
+		TextElements textElement = new TextElements();
+		textElement.addElement("Empty content!");
+		lesson.setPagedTextList(textElement);
 		
 		//add default media element
+		MediaElements mediaElement = new MediaElements();
 		Media media = new Media();
 		media.setMediaThumbnailID(""); //to do: add a default media later
-        lesson.media.add(media);
+		mediaElement.addElement(media);
 		return lesson;
 	}
-
+	
+	
+	public Lesson(TextElements pagedText, MediaElements lessonMedia){
+		this.pagedTextList = pagedText;
+		this.setLessonMedia(lessonMedia);		
+		
+	}
+	
+	public void addText(String text){
+		
+		this.pagedTextList.addElement(text);
+	}
+	
+	public void addMedia(Media resource) {
+		this.lessonMedia.addElement(resource);
+	}
+	
+	
 	public String getCourseId(){
 		return this.course_id;
 	}
@@ -75,6 +99,15 @@ public class Lesson extends Entity{
 		this.last_visited = last_visited;
 	}
 
+
+	public TextElements getPagedTextList() {
+		return pagedTextList;
+	}
+
+	public void setPagedTextList(TextElements pagedTextList) {
+		this.pagedTextList = pagedTextList;
+	}
+
 	public String getLesson_title() {
 		return lesson_title;
 	}
@@ -90,6 +123,14 @@ public class Lesson extends Entity{
     public List<String> getText() {
         return Collections.unmodifiableList(this.text);
     }
+
+	public MediaElements getLessonMedia() {
+		return lessonMedia;
+	}
+
+	public void setLessonMedia(MediaElements lessonMedia) {
+		this.lessonMedia = lessonMedia;
+	}
 
 	public String getGuid() {
 		return guid;
