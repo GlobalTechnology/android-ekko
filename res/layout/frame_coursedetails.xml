@@ -60,8 +60,18 @@
 
     </LinearLayout>   
 
+	<!-- Course learing progress bar -->
+	 <ProgressBar
+        android:id="@+id/frame_course_progressbar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressDrawable="@drawable/greenprogress"
+        android:layout_width="fill_parent"
+        android:layout_height="7dip"
+        android:max="100"
+        android:visibility="visible" />
+	 
 	<!-- View pager for the lesson text content -->
-	<LinearLayout 
+	<RelativeLayout 
 		android:layout_width="fill_parent" 	
 		android:layout_height="0dip"	
 		android:layout_weight = "2"
@@ -70,14 +80,20 @@
 		    <android.support.v4.view.ViewPager
 		        android:id="@+id/frame_lesson_text_pager"
 		        android:layout_width="fill_parent"
-		        android:layout_height="fill_parent"
+		        android:layout_height="wrap_content"
+		        
 		      />
-		    <com.viewpagerindicator.LinePageIndicator
-	        android:id="@+id/frame_lesson_text_indicator"
-	        android:layout_height="wrap_content"
-	        android:layout_width="fill_parent"
-	        />
 
-    </LinearLayout>
+		    <com.viewpagerindicator.LinePageIndicator
+		        android:id="@+id/frame_lesson_text_indicator"
+		        android:layout_below="@id/frame_lesson_text_pager"
+	            android:layout_width="fill_parent"
+	            android:layout_marginTop="-25px"
+	            android:gravity="right"
+		        android:layout_height="wrap_content"
+		     />
+	
+
+    </RelativeLayout>
 	
 </LinearLayout>

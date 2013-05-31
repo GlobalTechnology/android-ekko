@@ -988,11 +988,14 @@ public class AppContext extends Application {
 		}
 		//add the page number of the last accessed lesson
 		if(course.getLessonList()!=null){
-			curTotalNum += course.getLessonList().get(course.getLessonProgressIndex()).getTextPagerProgressIndex();
+			curTotalNum += course.getLessonList().get(course.getLessonProgressIndex()).getTextPagerProgressIndex() +1;
 		}
 		
 		//calculate the progress
-		progress = (int)(curTotalNum * 100.0)/totalPageNum;
+		progress = (int)((curTotalNum * 100.0)/totalPageNum);
+		
+		Log.v("Appcontext_curtotalNum", Integer.toString(curTotalNum));
+		Log.v("Appcontext_totalNum", Integer.toString(totalPageNum));
 		
 		return progress;
 	}
