@@ -20,7 +20,7 @@ public class Course extends Entity {
 	public static final String COURSE_BANNER = "course_banner";
 	public static final String TABLE_NAME = "courses";  //for now, we didn't use the sqlite to manage data, for simplicity we just serialize the entity
 	
-	private int id;
+    private final int id;
     private int version = 0;
 
 	private String course_title;
@@ -44,8 +44,11 @@ public class Course extends Entity {
 	
 	private ArrayList<Lesson> lessonList;
 	
-	
-	public void addLesson(Lesson lesson) {
+    public Course(final int id) {
+        this.id = id;
+    }
+
+    public void addLesson(Lesson lesson) {
 		this.lessonList.add(lesson);
 	}
 	
@@ -59,10 +62,6 @@ public class Course extends Entity {
 	
 	public int getId() {
 		return id;
-	}
-	
-	public void setId(int id){
-		this.id =id;
 	}
 	
     public int getVersion() {
@@ -201,14 +200,16 @@ public class Course extends Entity {
     public static Course parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
-        return new Course().parseInternal(parser, schemaVersion);
+        final int courseId = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
+        return new Course(courseId).parseInternal(parser, schemaVersion);
     }
 
     // XXX: maybe this should be handled with a separate object
     public static Course parseManifest(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
-        return new Course().parseManifestInternal(parser, schemaVersion);
+        final int courseId = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
+        return new Course(courseId).parseManifestInternal(parser, schemaVersion);
     }
 
     private Course parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
@@ -251,6 +252,7 @@ public class Course extends Entity {
     private Course parseManifestInternal(final XmlPullParser parser, final int schemaVersion)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
+
         this.course_guid = parser.getAttributeValue(null, XML.ATTR_COURSE_ID);
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
 

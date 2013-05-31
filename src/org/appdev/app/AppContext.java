@@ -830,7 +830,7 @@ public class AppContext extends Application {
 			
 			try {
 				CourseManifest mManifest = new CourseManifest();
-				course = new Course();
+            course = new Course(-1);
 				try {
 					course = CourseManifest.parse(input);
 					if(course != null) {
