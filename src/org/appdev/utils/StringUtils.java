@@ -163,16 +163,32 @@ public class StringUtils
 		if(obj==null) return 0;
 		return toInt(obj.toString(),0);
 	}
+
+    /**
+     * convert a String to a long
+     * 
+     * @param value
+     *            the string to convert
+     * @param defValue
+     *            the default value if value is invalid
+     * @return the long value
+     */
+    public static long toLong(final String value, long defValue) {
+        try {
+            return Long.parseLong(value);
+        } catch (final Exception e) {
+        }
+
+        return defValue;
+    }
+
 	/**
 	 * convert an obj to Long
 	 * @param obj
 	 * @return long
 	 */
 	public static long toLong(String obj) {
-		try{
-			return Long.parseLong(obj);
-		}catch(Exception e){}
-		return 0;
+        return toLong(obj, 0);
 	}
 	/**
 	 * convert a string to boolean
