@@ -355,8 +355,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         		
         		String courseGUID = course.getCourseGUID();
         		String courseZipURI = course.getCourseZipUri();
-        		String courseLatestVer = course.getCourseVersion();
-        		String courseCurVer= "";
+                int courseLatestVer = course.getVersion();
+                int courseCurVer = 0;
         		
         		
         		//Check if it has been downloaded
@@ -386,7 +386,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 						if(courseNew == null){
 							
 							courseNew = AppContext.getInstance().instanceCourse(courseManifestFile);
-							courseCurVer = courseNew.getCourseVersion();
+                            courseCurVer = courseNew.getVersion();
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -397,7 +397,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 					
 					//notify user to update the course
 					//To do: add a course update dialog or better to automatically display a update button for that course.
-					if(StringUtils.toInt(courseLatestVer) > StringUtils.toInt(courseCurVer)){
+                    if (courseLatestVer > courseCurVer) {
 						UIController.ToastMessage(appContext, "A new version course existed online");
 					}
 					

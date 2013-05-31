@@ -743,17 +743,16 @@ public class AppContext extends Application {
 		return list;
 	}
 	
-	public String getCourseVer(String courseUrl) throws AppException {
-		String ver="";
+    public int getCourseVer(String courseUrl) throws AppException {
 		if(isNetworkConnected()){
 			try{
-				ver = ApiClient.getCourseVer(AppContext.this, courseUrl);
+                return ApiClient.getCourseVer(AppContext.this, courseUrl);
 			}catch(AppException e){
 				Log.w("AppContext-getCourseVer", e.toString());
 				
 			}
 		}
-		return ver;
+        return 0;
 	}
 	
 	public static String getCourseID( String resUrl )

@@ -663,23 +663,22 @@ public class ApiClient {
 	}
 
 
-	public static String getCourseVer(AppContext appContext, String courseUrl) throws AppException {
+    public static int getCourseVer(AppContext appContext, String courseUrl) throws AppException {
 		// TODO Auto-generated method stub
-		String ver = null;
 		if(AppContext.getSessionID() == null){
 			//redirect to login dialog
 			//UIController.ToastMessage(appContext, "Please log in first!");
 			appContext.Logout();
 			appContext.getUnLoginHandler().sendEmptyMessage(1);
 			
-			return null;
+            return 0;
 		}
 		Course course = null;
 		try{
 			InputStream inputStream = retrieveStream( courseUrl);
 			course = CourseManifest.parse(inputStream);	
 			if(course != null){
-				ver = course.getCourseVersion();
+                return course.getVersion();
 			}
 		}catch(Exception e){
 			if(e instanceof AppException)
@@ -687,7 +686,7 @@ public class ApiClient {
 			throw AppException.network(e);
 		}
 		
-		return ver;
+        return 0;
 	}
 	
 	

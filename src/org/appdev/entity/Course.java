@@ -21,8 +21,9 @@ public class Course extends Entity {
 	public static final String TABLE_NAME = "courses";  //for now, we didn't use the sqlite to manage data, for simplicity we just serialize the entity
 	
 	private int id;
+    private int version = 0;
+
 	private String course_title;
-	private String course_version;
 	private String course_banner;
 	private String course_description;
 	private String course_copyright;
@@ -64,6 +65,13 @@ public class Course extends Entity {
 		this.id =id;
 	}
 	
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(final int version) {
+        this.version = version;
+    }
 
 	public Resource getResource(String resourceId) {
 		return resourceMap.get(resourceId);
@@ -92,14 +100,6 @@ public class Course extends Entity {
 
 	public void setCourseTitle(String course_title) {
 		this.course_title = course_title;
-	}
-
-	public String getCourseVersion() {
-		return course_version;
-	}
-
-	public void setCourseVersion(String course_version) {
-		this.course_version = course_version;
 	}
 
 	public String getCourseBanner() {
@@ -216,7 +216,7 @@ public class Course extends Entity {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
 
         this.course_guid = parser.getAttributeValue(null, XML.ATTR_COURSE_ID);
-        this.course_version = parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION);
+        this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
         this.course_uri = parser.getAttributeValue(null, XML.ATTR_COURSE_URI);
         this.course_zipuri = parser.getAttributeValue(null, XML.ATTR_COURSE_ZIPURI);
 
@@ -252,7 +252,7 @@ public class Course extends Entity {
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
         this.course_guid = parser.getAttributeValue(null, XML.ATTR_COURSE_ID);
-        this.course_version = parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION);
+        this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
