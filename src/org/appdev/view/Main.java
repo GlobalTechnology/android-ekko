@@ -37,6 +37,7 @@ import org.appdev.widget.ScrollLayout;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -69,7 +70,6 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityBase;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingActivityHelper;
 import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.LinePageIndicator;
 
 /**
  * Application Main UI
@@ -124,8 +124,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     private PagerAdapter mTextPagerAdapter;    
     private PagerAdapter mMediaPagerAdapter;   
     
-    private LinePageIndicator mTextPagerIndicator;	
 	private CirclePageIndicator mMediaPagerIndicator;
+	private TextView mLessonProgress;
 	
 	private ProgressBar mFrameCourseProgressBar;
 	
@@ -563,32 +563,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     			NavigateToNextLesson(-1);
     		}
     	});
-    	
-    	
-    	vpLessonTextPager.setOnTouchListener(new OnTouchListener() {  
-            
-            public boolean onTouch(View v, MotionEvent event) { 
-            	
-                switch (event.getAction()) {  
-                case MotionEvent.ACTION_DOWN:  
-                case MotionEvent.ACTION_MOVE: 
-                	//Toast.makeText(appContext, "lesson text pager touched", 200).show();
-   
-                    break;  
-                case MotionEvent.ACTION_UP:  
-                  
-                    break;  
-                default:  
-                    
-                    break;  
-                }  
-                return false;  
-            }  
-        }); 
-    	
-  
-       	mTextPagerIndicator = (LinePageIndicator)findViewById(R.id.frame_lesson_text_indicator);
-    	mTextPagerIndicator.setViewPager(vpLessonTextPager);
+    
     	vpLessonMedia = (ViewPager)findViewById(R.id.frame_lesson_media_slideshow);
     	mMediaPagerIndicator = (CirclePageIndicator)findViewById(R.id.frame_lesson_media_indicator);   	
     	
@@ -601,14 +576,22 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	
     	mMediaPagerAdapter = new LessonMediaPagerAdapter(getSupportFragmentManager(), lessonMedia); 	    	
     	vpLessonMedia.setAdapter(mMediaPagerAdapter); //INFO: this has to be set before vpLessonTextPager.setOnPageChangeListner.
+
     	
     	mMediaPagerIndicator = (CirclePageIndicator)findViewById(R.id.frame_lesson_media_indicator);
     	mMediaPagerIndicator.setViewPager(vpLessonMedia);
+    	mLessonProgress = (TextView) findViewById(R.id.frame_lesson_progress_textview);
     	
       	vpLessonTextPager.setOnPageChangeListener(new OnPageChangeListener(){
 
     			@Override
     			public void onPageScrollStateChanged(int arg0) {
+    				// TODO Auto-generated method stub
+    				
+    			}
+
+    			@Override
+    			public void onPageScrolled(int arg0, float arg1, int arg2) {
     				// TODO Auto-generated method stub
     				//set the current page of current lesson
     				appContext.getCurLesson().setTextPagerIndex(arg0);
@@ -622,24 +605,34 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     					((LessonListSlidingMenu)mLessonListMenuFrag).updateProgressBar();
     				}
     				
+    				//TODO: update the progressbar state in the course list UI
+    			
+    				lvCoursesAdapter.notifyDataSetChanged();
+    				StringBuilder progressStr = new StringBuilder();
+    				progressStr.append((arg0+1));
+    				progressStr.append("/");
+    				progressStr.append(appContext.getCurLessonTextPagerCount());
     				//update the progressbar state in the course detail UI
     				mFrameCourseProgressBar.setProgress(AppContext.getCourseProgress(appContext.getCurCourse()));
-    			}
-
-    			@Override
-    			public void onPageScrolled(int arg0, float arg1, int arg2) {
-    				// TODO Auto-generated method stub
+    				mLessonProgress.setText(progressStr);
+    				mLessonProgress.setTextSize(18);
+    				mLessonProgress.setTypeface(null, Typeface.ITALIC);
+    				mLessonProgress.setVisibility(View.VISIBLE);
+    				progressStr=null;
     				
     			}
 
     			@Override
     			public void onPageSelected(int arg0) {
     				// TODO Auto-generated method stub
-    	
+    				
+
     				
     			}
         		
         	});
+      
+
     	vpLessonMedia.setOnTouchListener(new OnTouchListener() {  
     		
           public boolean onTouch(View v, MotionEvent event) {  
@@ -662,6 +655,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 
     	   				
     }
+
 
     private void UpdateLessonTitleButtonText(){
     	int curLessonIndex = AppContext.getInstance().getCurrentLessonIndex();
@@ -695,6 +689,9 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	//update lesson_title button text
     	UpdateLessonTitleButtonText();
     	
+    	//For simplicity, just hide the lesson progress textview
+    	mLessonProgress.setVisibility(View.INVISIBLE);
+    	vpLessonTextPager.setCurrentItem(0);
     	
     	//update the course progress bar
     	mFrameCourseProgressBar.setProgress(AppContext.getCourseProgress(AppContext.getInstance().getCurCourse()));
@@ -710,7 +707,6 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	vpLessonMedia.setAdapter(mMediaPagerAdapter);
     	
     	//update indicator for textpager and media pager
-    	mTextPagerIndicator.notifyDataSetChanged();
     	mMediaPagerIndicator.notifyDataSetChanged();
     	
     	if(mLessonListMenuFrag!=null){
@@ -860,7 +856,6 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 					    	vpLessonMedia.setAdapter(mMediaPagerAdapter);
 					    	
 					    	//update indicator for textpager and media pager
-					    	mTextPagerIndicator.notifyDataSetChanged();
 					    	mMediaPagerIndicator.notifyDataSetChanged();
 					    	
 					    	//update Lesson list menu UI
@@ -1173,8 +1168,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	vpLessonMedia.setAdapter(mMediaPagerAdapter);
     	
     	//update indicator for textpager and media pager
-    	mTextPagerIndicator.notifyDataSetChanged();
     	mMediaPagerIndicator.notifyDataSetChanged();
+    	
     	
     	//update the text of course progress button
     	UpdateLessonTitleButtonText();

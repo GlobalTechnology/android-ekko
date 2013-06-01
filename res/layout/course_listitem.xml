@@ -30,18 +30,18 @@
         android:textColor="#FFFFFF" />
 
       <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/course_listitem_progressBar"
         android:layout_width="fill_parent"
-        android:layout_height="5dp"
+        android:layout_height="7dp"
         style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_alignLeft="@+id/course_listitem_thumbnail"
-        android:layout_alignTop="@+id/course_listitem_thumbnail"
-        android:layout_alignRight="@+id/course_listitem_thumbnail"
         android:layout_alignBottom="@+id/course_listitem_thumbnail"
+        android:progressDrawable="@drawable/greenprogress"
+        android:max="100"
+        android:visibility="visible"
         android:gravity="bottom"   
-        android:max="100" 
         android:layout_margin="1dp" 
-        android:visibility='gone' />
+      
+         />
       
      <!-- Rightend Arrow -->    
      <ImageView android:layout_width="wrap_content"

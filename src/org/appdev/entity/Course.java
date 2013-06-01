@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.appdev.app.AppContext;
 import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
@@ -38,6 +39,7 @@ public class Course extends Entity {
 	private String dir_name;
 	private int lessonIndex=0;
 	private int lessonProgressIndex = 0;
+	private int progress = 0;
 	
 	private String course_guid;
 	private HashMap<String, Resource> resourceMap;
@@ -196,7 +198,15 @@ public class Course extends Entity {
 	public void setLessonProgressIndex(int lessonProgressIndex) {
 		this.lessonProgressIndex = lessonProgressIndex;
 	}
+	
+	public int getProgress(){
+		return progress;
+	}
 
+	public void setProgress(int progress) {
+		this.progress = progress;
+	}
+	
     public static Course parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
@@ -391,4 +401,6 @@ public class Course extends Entity {
 
         return this;
     }
+
+
 }

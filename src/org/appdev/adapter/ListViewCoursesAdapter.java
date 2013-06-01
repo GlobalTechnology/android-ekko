@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class ListViewCoursesAdapter extends BaseAdapter {
@@ -30,6 +31,7 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 		    public TextView count;
 		    public ImageView thumbnail;
 		    public ImageView flag;
+		    public ProgressBar progressbar;
 	 }  
 
 	/**
@@ -73,6 +75,7 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 			
 			listItemView.title = (TextView)convertView.findViewById(R.id.course_listitem_title);
 			listItemView.thumbnail = (ImageView)convertView.findViewById(R.id.course_listitem_thumbnail);
+			listItemView.progressbar = (ProgressBar)convertView.findViewById(R.id.course_listitem_progressBar);
 
 			//listItemView.flag= (ImageView)convertView.findViewById(R.id.course_listitem_flag);			
 			
@@ -100,6 +103,9 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 			UIController.showLoadImage(listItemView.thumbnail, "",  null);
 		}
 			
+		
+		//set the progress of the course
+		listItemView.progressbar.setProgress(course.getProgress());
 		
 		
 /*		listItemView.date.setText(StringUtils.friendly_time(course.getPubDate()));
