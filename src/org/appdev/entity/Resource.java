@@ -25,6 +25,7 @@ public class Resource implements Serializable{
 	private String file;
 	private String type;
 	private String provider;
+    private String uri;
 	private String mimeType;
 	private List<Resource> items;
 
@@ -128,6 +129,21 @@ public class Resource implements Serializable{
 		this.mimeType = mimeType;
 	}
 
+    /**
+     * @return the uri for uri type resources
+     */
+    public String getUri() {
+        return this.uri;
+    }
+
+    /**
+     * @param uri
+     *            the uri for uri type resources
+     */
+    public void setUri(final String uri) {
+        this.uri = uri;
+    }
+
     public boolean isDynamic() {
         return "dynamic".equals(this.type);
     }
@@ -153,6 +169,7 @@ public class Resource implements Serializable{
         this.file = parser.getAttributeValue(null, XML.ATTR_RESOURCE_FILE);
         this.mimeType = parser.getAttributeValue(null, XML.ATTR_RESOURCE_MIMETYPE);
         this.provider = parser.getAttributeValue(null, XML.ATTR_RESOURCE_PROVIDER);
+        this.uri = parser.getAttributeValue(null, XML.ATTR_RESOURCE_URI);
 
         // handle any nested resources
         if (this.isDynamic()) {
