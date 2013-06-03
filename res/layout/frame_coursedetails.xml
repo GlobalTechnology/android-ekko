@@ -29,7 +29,17 @@
 	      /> 
         
     </RelativeLayout>
-    
+  
+	<!-- Course learing progress bar -->
+	 <ProgressBar
+        android:id="@+id/frame_course_progressbar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressDrawable="@drawable/greenprogress"
+        android:layout_width="fill_parent"
+        android:layout_height="7dip"
+        android:max="100"
+        android:visibility="visible" />
+	   
     <!-- Lesson navigator bar -->
 	<LinearLayout 
 	    android:id="@+id/frame_course_navigator_container"
@@ -60,15 +70,6 @@
 
     </LinearLayout>   
 
-	<!-- Course learing progress bar -->
-	 <ProgressBar
-        android:id="@+id/frame_course_progressbar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:progressDrawable="@drawable/greenprogress"
-        android:layout_width="fill_parent"
-        android:layout_height="7dip"
-        android:max="100"
-        android:visibility="visible" />
 	 
 	<!-- View pager for the lesson text content -->
 	<RelativeLayout 

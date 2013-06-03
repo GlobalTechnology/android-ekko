@@ -53,6 +53,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -62,6 +66,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -480,21 +485,54 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     }
 
     
-	public void slideToTop(View view){
+	public void slideToTop(final RelativeLayout view){
 /*		TranslateAnimation animate = new TranslateAnimation(0,0,0,-view.getHeight());
 		animate.setDuration(600);
 		animate.setFillAfter(true);
 		view.startAnimation(animate);*/
+		Animation anim = AnimationUtils.loadAnimation(appContext, R.anim.slide_in_up );
+		anim.setFillAfter(true);
+		//view.setLayoutAnimation(new LayoutAnimationController(anim));
+		//view.startLayoutAnimation();
+		view.startAnimation(anim);
+		anim.setAnimationListener(new AnimationListener(){
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				// TODO Auto-generated method stub
+				view.setVisibility(View.GONE);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				// TODO Auto-generated method stub
+				//
+			}
+			
+		});
 		
-		view.setVisibility(View.GONE);
+		
 	}
 	
 	
-	public void slideToNormal(View view){
+	public void slideToNormal(RelativeLayout view){
 /*		TranslateAnimation animate = new TranslateAnimation(0,0,0,view.getHeight());
 		animate.setDuration(600);
 		animate.setFillAfter(true);
 		view.startAnimation(animate);*/
+		Animation anim = AnimationUtils.loadAnimation(appContext, R.anim.slide_out_down );
+		anim.setFillAfter(true);
+		//view.setLayoutAnimation(new LayoutAnimationController(anim));
+		//view.startLayoutAnimation();
+		view.startAnimation(anim);
+		
+		
 		view.setVisibility(View.VISIBLE);
 	}
 	
@@ -535,13 +573,13 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     		public void onClick(View v) {
     			if(normalPosition){
 	    			//slideToTop((View)findViewById(R.id.lesson_media_container));
-	    			slideToTop((View)findViewById(R.id.lesson_media_container));
+	    			slideToTop((RelativeLayout)findViewById(R.id.lesson_media_container));
 	    			//slideToTop2((View)findViewById(R.id.frame_course_navigator_container), (View)findViewById(R.id.frame_lesson_media_slideshow));
 	    			normalPosition = false;
     			} else
     			{
     				//slideToNormal((View)findViewById(R.id.lesson_media_container));
-    				slideToNormal((View)findViewById(R.id.lesson_media_container));
+    				slideToNormal((RelativeLayout)findViewById(R.id.lesson_media_container));
     				//slideToNormal2((View)findViewById(R.id.frame_course_navigator_container),(View)findViewById(R.id.frame_lesson_media_slideshow));
     				normalPosition = true;
     			}
