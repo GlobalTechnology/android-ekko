@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.appdev.R;
 import org.appdev.entity.Course;
+import org.appdev.entity.Resource;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.ImageUtils;
 import org.appdev.utils.StringUtils;
@@ -95,8 +96,9 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 		listItemView.title.setText(course.getCourseTitle());
 		listItemView.title.setTag(course);
 		String bannerKey = course.getCourseBanner();
-		if(bannerKey != null || !StringUtils.isEmpty(bannerKey)){
-			String res = course.getResourceMap().get(bannerKey).getResourceFile();
+        final Resource banner = course.getResource(bannerKey);
+        if (banner != null) {
+            String res = banner.getResourceFile();
 			File resFile = new File(FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() +"/" + res);
 			if(resFile.exists()){
 				Bitmap bitmap = BitmapFactory.decodeFile(resFile.getAbsolutePath());
@@ -109,8 +111,7 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 				
 				//listItemView.thumbnail.setImageURI(Uri.fromFile(resFile));
 			} else {
-				//TODO: get course URI on-line
-				String uriString = course.getCourseURI()+"/resources/resource/" + course.getResourceMap().get(bannerKey).getResourceSha1();
+                String uriString = course.getCourseURI() + "/resources/resource/" + banner.getResourceSha1();
 				UIController.showLoadImage(listItemView.thumbnail, uriString,  null);
 			}
 		}else{

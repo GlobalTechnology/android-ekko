@@ -2,9 +2,11 @@ package org.appdev.entity;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
-import org.appdev.app.AppContext;
 import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
@@ -42,7 +44,7 @@ public class Course extends Entity {
 	private int progress = 0;
 	
 	private String course_guid;
-	private HashMap<String, Resource> resourceMap;
+    private final HashMap<String, Resource> resourceMap = new HashMap<String, Resource>();
 	
 	private ArrayList<Lesson> lessonList;
 	
@@ -159,12 +161,14 @@ public class Course extends Entity {
 		this.course_guid = course_guid;
 	}
 
+    @Deprecated
 	public HashMap<String, Resource> getResourceMap() {
 		return resourceMap;
 	}
 
+    @Deprecated
 	public void setResourceMap(HashMap<String, Resource> resourceMap) {
-		this.resourceMap = resourceMap;
+        this.setResources(resourceMap != null ? resourceMap.values() : null);
 	}
 
 	public int getLessonIndex() {
@@ -207,6 +211,29 @@ public class Course extends Entity {
 		this.progress = progress;
 	}
 	
+    public Collection<Resource> getResources() {
+        return Collections.unmodifiableCollection(this.resourceMap.values());
+    }
+
+    public void setResources(final Collection<Resource> resources) {
+        this.resourceMap.clear();
+        this.addResources(resources);
+    }
+
+    public void addResource(final Resource resource) {
+        if (resource != null) {
+            this.resourceMap.put(resource.getId(), resource);
+        }
+    }
+
+    public void addResources(final Collection<Resource> resources) {
+        if (resources != null) {
+            for (final Resource resource : resources) {
+                this.addResource(resource);
+            }
+        }
+    }
+
     public static Course parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
@@ -244,10 +271,7 @@ public class Course extends Entity {
                     this.parseMeta(parser, schemaVersion);
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.resourceMap = new HashMap<String, Resource>();
-                    for (final Resource resource : Resource.parseResources(parser, schemaVersion)) {
-                        this.resourceMap.put(resource.getId(), resource);
-                    }
+                    this.setResources(Resource.parseResources(parser, schemaVersion));
                     continue;
                 }
 
@@ -282,10 +306,7 @@ public class Course extends Entity {
                     this.parseContent(parser, schemaVersion);
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.resourceMap = new HashMap<String, Resource>();
-                    for (final Resource resource : Resource.parseResources(parser, schemaVersion)) {
-                        this.resourceMap.put(resource.getId(), resource);
-                    }
+                    this.setResources(Resource.parseResources(parser, schemaVersion));
                     continue;
                 }
             }
