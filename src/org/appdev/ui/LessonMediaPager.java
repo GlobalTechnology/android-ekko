@@ -1,24 +1,7 @@
 package org.appdev.ui;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-
-import android.support.v4.app.Fragment;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-
 
 import org.appdev.R;
 import org.appdev.app.AppContext;
@@ -29,7 +12,18 @@ import org.appdev.entity.Resource;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
-import org.appdev.view.ImageZoomDialog;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 
 /**
@@ -134,12 +128,12 @@ public class LessonMediaPager extends Fragment implements OnTouchListener, andro
 			        }
 			        Media media =  lesson.getLessonMedia().getElements().get(mPageNumber);
 					
-						HashMap<String, Resource> hashMap = curCourse.getResourceMap();
-						Resource resource=hashMap.get(media.getMediaResourceID());
-						
-						if( resource.isSupportedVideoType() ){
+                    final Resource resource = curCourse.getResource(media.getMediaResourceID());
+                    if (resource == null) {
+                        UIController.ToastMessage(v.getContext(), "The requested media could not be found", 200);
+                    } else if (resource.isSupportedVideoType()) {
 							//play video
-							String videoURL = hashMap.get(media.getMediaResourceID()).getResourceFile();							
+                        String videoURL = resource.getResourceFile();
 							String videoFile = FileUtils.EkkoCourseSetRootPath() + curCourse.getCourseGUID() + "/" + videoURL;
 							File file = new File(videoFile);
 							if(file.exists()){
@@ -152,7 +146,7 @@ public class LessonMediaPager extends Fragment implements OnTouchListener, andro
 							//zoom in picture or flip the picture to show description
 							//flipPic();
 							//zoom pic
-							String picURL = hashMap.get(media.getMediaResourceID()).getResourceFile();
+                        String picURL = resource.getResourceFile();
 							UIController.showImageZoomDialog(v.getContext(), FileUtils.EkkoCourseSetRootPath() + curCourse.getCourseGUID() + "/" + picURL);
 						}else{
 							UIController.ToastMessage(v.getContext(), "The media format is not supported", 200);
