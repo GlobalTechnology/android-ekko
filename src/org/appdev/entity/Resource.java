@@ -128,6 +128,10 @@ public class Resource implements Serializable{
 		this.mimeType = mimeType;
 	}
 
+    public boolean isDynamic() {
+        return "dynamic".equals(this.type);
+    }
+
     public static List<Resource> parseResources(final XmlPullParser parser, final int schemaVersion)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCES);
@@ -151,7 +155,7 @@ public class Resource implements Serializable{
         this.provider = parser.getAttributeValue(null, XML.ATTR_RESOURCE_PROVIDER);
 
         // handle any nested resources
-        if ("dynamic".equals(this.type)) {
+        if (this.isDynamic()) {
             this.items = parseResourceNodes(parser, schemaVersion);
         } else {
             ParserUtils.skip(parser);
