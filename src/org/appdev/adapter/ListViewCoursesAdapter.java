@@ -6,14 +6,19 @@ import java.util.List;
 import org.appdev.R;
 import org.appdev.entity.Course;
 import org.appdev.utils.FileUtils;
+import org.appdev.utils.ImageUtils;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
+import org.appdev.widget.RoundedDrawable;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -94,8 +99,17 @@ public class ListViewCoursesAdapter extends BaseAdapter {
 			String res = course.getResourceMap().get(bannerKey).getResourceFile();
 			File resFile = new File(FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() +"/" + res);
 			if(resFile.exists()){
-				listItemView.thumbnail.setImageURI(Uri.fromFile(resFile));
+				Bitmap bitmap = BitmapFactory.decodeFile(resFile.getAbsolutePath());
+				//get rounded corner bitmap
+				//RoundedDrawable drawable = ImageUtils.getRoundedCornerBitmap(context, bitmap, 10);
+				bitmap = ImageUtils.getRoundedCornerBitmap(context, bitmap, 20);
+				//listItemView.thumbnail.setImageDrawable(drawable);
+				listItemView.thumbnail.setImageBitmap(bitmap);
+				
+				
+				//listItemView.thumbnail.setImageURI(Uri.fromFile(resFile));
 			} else {
+				//TODO: get course URI on-line
 				String uriString = course.getCourseURI()+"/resources/resource/" + course.getResourceMap().get(bannerKey).getResourceSha1();
 				UIController.showLoadImage(listItemView.thumbnail, uriString,  null);
 			}

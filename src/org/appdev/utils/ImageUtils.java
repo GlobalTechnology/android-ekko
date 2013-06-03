@@ -16,6 +16,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
@@ -27,6 +28,7 @@ import android.graphics.RectF;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -35,6 +37,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
+
+import org.appdev.widget.RoundedDrawable;
 
 /** 
  * API used for dealing with IMAGE
@@ -493,13 +497,18 @@ public class ImageUtils{
     }
 
     /**
-     * 获得圆角图片的方法
+     * 获得圆角图片的方法: 
      * @param bitmap
      * @param roundPx 一般设成14
      * @return
      */
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, float roundPx) {
+    public static Bitmap getRoundedCornerBitmap(Context context, Bitmap bitmap, float roundPx) {
 
+    	//TODO: Thinking to replace this feature with the library RoundedImageView
+    	//https://github.com/makeramen/RoundedImageView
+    	
+    	BitmapShader bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+    	
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
@@ -510,13 +519,14 @@ public class ImageUtils{
         final RectF rectF = new RectF(rect);
 
         paint.setAntiAlias(true);
+
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
+        paint.setShader(bitmapShader);
         canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
 
         paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
-
         return output;
     }
 
