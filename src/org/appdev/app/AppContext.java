@@ -917,9 +917,9 @@ public class AppContext extends Application {
     	ArrayList<Media> lessonMediaElements= curLesson.getLessonMedia().getElements();
     	for(int i=0; i<lessonMediaElements.size(); i++) {
     		Media media = lessonMediaElements.get(i);
-    		Resource resource = course.getResourceMap().get(media.getMediaThumbnailID());
+            Resource resource = course.getResource(media.getMediaThumbnailID());
     		if (resource == null ) {
-    			resource = course.getResourceMap().get(media.getMediaResourceID());
+                resource = course.getResource(media.getMediaResourceID());
     		}    		
     		
     		String imageFile = FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() + "/" +resource.getResourceFile();
