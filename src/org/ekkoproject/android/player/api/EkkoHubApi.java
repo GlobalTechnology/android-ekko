@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.appdev.entity.CourseList;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.TheKeySocketException;
 import org.slf4j.Logger;
@@ -220,6 +221,37 @@ public final class EkkoHubApi {
         } finally {
             this.closeQuietly(conn);
         }
+    }
+
+    public CourseList getCourseList() throws ApiSocketException, InvalidSessionApiException {
+        return this.getCourseList(0, 10);
+    }
+
+    public CourseList getCourseList(final int start, final int limit) throws ApiSocketException,
+            InvalidSessionApiException {
+        HttpURLConnection conn = null;
+        try {
+            conn = this.apiGetRequest("courses");
+
+            if (conn != null && conn.getResponseCode() == HTTP_OK) {
+                try {
+                    final XmlPullParser parser = Xml.newPullParser();
+                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
+                    parser.setInput(conn.getInputStream(), "UTF-8");
+                    parser.nextTag();
+                    return CourseList.parse(parser);
+                } catch (final XmlPullParserException e) {
+                    LOG.error("course list parsing error", e);
+                    return null;
+                }
+            }
+        } catch (final IOException e) {
+            throw new ApiSocketException(e);
+        } finally {
+            this.closeQuietly(conn);
+        }
+
+        return null;
     }
 
     private String toString(final InputStream in) throws IOException {
