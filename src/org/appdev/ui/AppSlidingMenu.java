@@ -1,8 +1,18 @@
 package org.appdev.ui;
 
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
+
+import org.appdev.R;
+import org.appdev.api.SlideMenuListener;
+import org.appdev.utils.UIController;
+import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +22,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.appdev.utils.UIController;
-import org.appdev.api.SlideMenuListener;
 
-import org.appdev.R;
-
-
+@SuppressLint("ValidFragment")
 public class AppSlidingMenu extends ListFragment  {
 	
 	private SlideMenuListener listener;
@@ -77,7 +83,18 @@ public class AppSlidingMenu extends ListFragment  {
 		switch (position) {
 		case 0:
 			this.listener.showcontent();
-			UIController.loginOrLogout(getActivity());
+            final FragmentManager fm = this.getFragmentManager();
+            final FragmentTransaction ft = fm.beginTransaction();
+            final Fragment prev = fm.findFragmentByTag("loginDialog");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            final LoginDialogFragment newFragment = LoginDialogFragment.newInstance(THEKEY_CLIENTID,
+                    "https://casdev.gcx.org/cas/");
+            newFragment.show(ft, "loginDialog");
 			break;
 		case 1:
 			this.listener.showcontent();
