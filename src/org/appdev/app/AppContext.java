@@ -20,10 +20,12 @@ import java.util.UUID;
 import org.appdev.R;
 import org.appdev.api.ApiClient;
 import org.appdev.entity.Course;
+import org.appdev.entity.CourseContent;
 import org.appdev.entity.CourseList;
 import org.appdev.entity.CourseManifest;
 import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
+import org.appdev.entity.Quiz;
 import org.appdev.entity.Resource;
 import org.appdev.entity.TextElements;
 import org.appdev.entity.User;
@@ -899,22 +901,24 @@ public class AppContext extends Application {
 	
 	public List<Drawable> getCurLessonMediaList(Course course, int lessonIndex){
     	List<Drawable> lessonMedia = new ArrayList<Drawable>();
-    	ArrayList<Lesson> lessonList = new ArrayList<Lesson>();
-    	lessonList = course.getLessonList();
-    	if(lessonList.size()<=0) return null;
+        final List<CourseContent> content = course.getCourseContent();
+        if (content.size() <= 0) {
+            return null;
+        }
     	
     	if(lessonIndex<0) {
     		lessonIndex=0;
     		Log.w("AppContex-getCurlessonMediaList", "Index is out of the boundary");
     	};
     	
-    	if(lessonIndex>lessonList.size()-1) {
+        if (lessonIndex > content.size() - 1) {
     		Log.w("AppContex-getCurlessonMediaList", "Index is out of the boundary");
-    		lessonIndex=lessonList.size() -1;
+            lessonIndex = content.size() - 1;
     	}
     	    	
-    	Lesson curLesson = lessonList.get(lessonIndex);
-    	ArrayList<Media> lessonMediaElements= curLesson.getLessonMedia().getElements();
+        final CourseContent contentItem = content.get(lessonIndex);
+        if (contentItem instanceof Lesson) {
+            ArrayList<Media> lessonMediaElements = ((Lesson) contentItem).getLessonMedia().getElements();
     	for(int i=0; i<lessonMediaElements.size(); i++) {
     		Media media = lessonMediaElements.get(i);
             Resource resource = course.getResource(media.getMediaThumbnailID());
@@ -943,7 +947,8 @@ public class AppContext extends Application {
     		}
     		img = null;
     		
-    	} 
+            }
+        }
     	return lessonMedia;
 	}
 
@@ -967,28 +972,45 @@ public class AppContext extends Application {
 		int progress = 0;
 		int totalPageNum=0; //the pages count the course contains
 		int curTotalNum=0;
-		//get the total page number
-		if(course.getLessonList() != null){
-			for(int i=0; i< course.getLessonList().size(); i++){
-				TextElements element = course.getLessonList().get(i).getPagedTextList();
-				if(element != null && element.getElements()!=null){
-					totalPageNum += element.getElements().size();
-				}
-			}
-		}
+
+        // get the total page number
+        final List<CourseContent> content = course.getCourseContent();
+        if (content != null) {
+            for (final CourseContent contentItem : content) {
+                if (contentItem instanceof Lesson) {
+                    final TextElements element = ((Lesson) contentItem).getPagedTextList();
+                    if (element != null && element.getElements() != null) {
+                        totalPageNum += element.getElements().size();
+                    }
+                } else if (contentItem instanceof Quiz) {
+                    // TODO
+                }
+            }
+        }
 	
 		if (totalPageNum<=0) return -1;
 		
-		//calculate the total page number from the beginning to current viewed page of the lesson 
+        // calculate the total page number from the beginning to current viewed
+        // page of the lesson
 		for (int i=0; i < course.getLessonProgressIndex(); i++){
-			TextElements element = course.getLessonList().get(i).getPagedTextList();
+            final CourseContent contentItem = content.get(i);
+            if (contentItem instanceof Lesson) {
+                TextElements element = ((Lesson) contentItem).getPagedTextList();
 			if(element != null && element.getElements()!=null ) {
 				curTotalNum += element.getElements().size();
 			}
+            } else if (contentItem instanceof Quiz) {
+                // TODO
+            }
 		}
 		//add the page number of the last accessed lesson
 		if(course.getLessonList()!=null){
-			curTotalNum += course.getLessonList().get(course.getLessonProgressIndex()).getTextPagerProgressIndex() +1;
+            final CourseContent contentItem = content.get(course.getLessonProgressIndex());
+            if (contentItem instanceof Lesson) {
+                curTotalNum += ((Lesson) contentItem).getTextPagerProgressIndex() + 1;
+            } else if (contentItem instanceof Quiz) {
+                // TODO
+            }
 		}
 		
 		//calculate the progress

@@ -10,7 +10,7 @@ import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class Lesson extends Entity{
+public class Lesson extends CourseContent {
 	
 	/**
 	 * Lesson class

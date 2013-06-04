@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
@@ -46,7 +47,7 @@ public class Course extends Entity {
 	private String course_guid;
     private final HashMap<String, Resource> resourceMap = new HashMap<String, Resource>();
 	
-	private ArrayList<Lesson> lessonList;
+    private ArrayList<CourseContent> lessonList;
 	
     public Course(final long id) {
         this.id = id;
@@ -56,11 +57,11 @@ public class Course extends Entity {
 		this.lessonList.add(lesson);
 	}
 	
-	public ArrayList<Lesson> getLessonList(){
+    public ArrayList<CourseContent> getLessonList() {
 		return this.lessonList;
 	}
 	
-	public void setLessonList(ArrayList<Lesson> lessonList) {
+    public void setLessonList(ArrayList<CourseContent> lessonList) {
 		this.lessonList = lessonList;
 	}
 
@@ -211,6 +212,10 @@ public class Course extends Entity {
 		this.progress = progress;
 	}
 	
+    public List<CourseContent> getCourseContent() {
+        return Collections.unmodifiableList(this.lessonList);
+    }
+
     public Collection<Resource> getResources() {
         return Collections.unmodifiableCollection(this.resourceMap.values());
     }
@@ -397,7 +402,7 @@ public class Course extends Entity {
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT);
 
-        this.lessonList = new ArrayList<Lesson>();
+        this.lessonList = new ArrayList<CourseContent>();
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
