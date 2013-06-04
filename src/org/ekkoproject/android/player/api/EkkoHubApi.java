@@ -33,6 +33,8 @@ import android.util.Xml;
 public final class EkkoHubApi {
     private static final Logger LOG = LoggerFactory.getLogger(EkkoHubApi.class);
 
+    private static final Object LOCK_SESSION = new Object();
+
     private static final String PREFFILE_EKKOHUB = "ekkoHubApi";
     private static final String PREF_SESSIONID = "session_id";
 
@@ -58,35 +60,41 @@ public final class EkkoHubApi {
         return this.context.getSharedPreferences(PREFFILE_EKKOHUB, Context.MODE_PRIVATE);
     }
 
-    private synchronized String getSessionId() {
-        return this.getPrefs().getString(PREF_SESSIONID, null);
-    }
-
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    private synchronized void setSessionId(final String sessionId) {
-        final Editor prefs = this.getPrefs().edit();
-        prefs.putString(PREF_SESSIONID, sessionId);
-
-        // store updates
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            prefs.apply();
-        } else {
-            prefs.commit();
+    private String getSessionId() {
+        synchronized (LOCK_SESSION) {
+            return this.getPrefs().getString(PREF_SESSIONID, null);
         }
     }
 
-    private synchronized void establishSession() throws ApiSocketException {
-        try {
-            // get the service to retrieve a ticket for
-            final String service = this.getService();
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    private void setSessionId(final String sessionId) {
+        synchronized (LOCK_SESSION) {
+            final Editor prefs = this.getPrefs().edit();
+            prefs.putString(PREF_SESSIONID, sessionId);
 
-            // get a ticket for the specified service
-            final String ticket = this.thekey.getTicket(service);
+            // store updates
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                prefs.apply();
+            } else {
+                prefs.commit();
+            }
+        }
+    }
 
-            // login to the hub
-            this.setSessionId(this.login(ticket));
-        } catch (TheKeySocketException e) {
-            throw new ApiSocketException(e);
+    private void establishSession() throws ApiSocketException {
+        synchronized (LOCK_SESSION) {
+            try {
+                // get the service to retrieve a ticket for
+                final String service = this.getService();
+
+                // get a ticket for the specified service
+                final String ticket = this.thekey.getTicket(service);
+
+                // login to the hub
+                this.setSessionId(this.login(ticket));
+            } catch (TheKeySocketException e) {
+                throw new ApiSocketException(e);
+            }
         }
     }
 
@@ -108,12 +116,12 @@ public final class EkkoHubApi {
                 final Builder uri = this.hubUri.buildUpon();
                 if (useSession) {
                     // get the session, establish a session if one doesn't exist
-                    synchronized (this) {
+                    synchronized (LOCK_SESSION) {
                         sessionId = this.getSessionId();
                         if (sessionId == null) {
                             this.establishSession();
+                            sessionId = this.getSessionId();
                         }
-                        sessionId = this.getSessionId();
                     }
 
                     // use the current sessionId in the url
@@ -129,7 +137,7 @@ public final class EkkoHubApi {
                 // TODO: find a way to identify an expired session
                 if (useSession && conn.getResponseCode() == HTTP_UNAUTHORIZED) {
                     // reset the session
-                    synchronized (this) {
+                    synchronized (LOCK_SESSION) {
                         // only reset if this is still the same session
                         if (sessionId.equals(this.getSessionId())) {
                             this.setSessionId(null);
