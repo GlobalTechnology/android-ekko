@@ -107,8 +107,12 @@ public class ImageUtils{
 		FileInputStream fis = null;
 		Bitmap bitmap = null;
 		try {
-			//fis = context.openFileInput(fileName);
-			fis = new FileInputStream(fileName);
+			if(!StringUtils.isEmpty(fileName) && fileName.contains(File.separator)){
+				fis = new FileInputStream(fileName);
+			}else {
+				fis = context.openFileInput(fileName); 
+			}
+			
 			bitmap = BitmapFactory.decodeStream(fis);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
