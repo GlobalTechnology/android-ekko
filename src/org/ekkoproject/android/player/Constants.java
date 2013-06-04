@@ -29,6 +29,10 @@ public final class Constants {
         public static final String ELEMENT_CONTENT_QUIZ = "quiz";
         public static final String ELEMENT_CONTENT_MEDIA = "media";
         public static final String ELEMENT_CONTENT_TEXT = "text";
+        public static final String ELEMENT_CONTENT_QUESTION = "question";
+        public static final String ELEMENT_CONTENT_QUESTION_TEXT = "text";
+        public static final String ELEMENT_CONTENT_QUESTION_OPTIONS = "options";
+        public static final String ELEMENT_CONTENT_QUESTION_OPTION = "option";
 
         /** manifest attributes */
         public static final String ATTR_SCHEMAVERSION = "schemaVersion";
@@ -52,7 +56,15 @@ public final class Constants {
 
         /** lesson attributes */
         public static final String ATTR_LESSON_TITLE = "title";
+        
+        /** quiz attributes */
+        public static final String ATTR_QUIZ_ID = "id";
+        public static final String ATTR_QUIZ_TITLE = "title"; //INFO: not at the manifest yet.
 
+        /** question attributes */
+        public static final String ATTR_QUESTION_ID = "id";
+        public static final String ATTR_QUESTION_TYPE = "type";
+        
         /** content attributes */
         public static final String ATTR_MEDIA_ID = "id";
 

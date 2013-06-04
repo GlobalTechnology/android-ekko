@@ -349,6 +349,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         lvCourses.setAdapter(lvCoursesAdapter); 
         lvCourses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        		
         		//invalid to click the top and bottom bar
         		if(position == 0 || view == lvCourses_footer) return;
         		        		
@@ -373,7 +374,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         		
         		if(courseManifestFile.exists()){ //need to add the version checking later
         			//if network is connected, check if there is a new version of a course
-        			if(appContext.isNetworkConnected()){
+        			//can not call network task from main UI thread
+/*        			if(appContext.isNetworkConnected()){
         				String courseURI = course.getCourseURI();
         				
         				if(!StringUtils.isEmpty(courseURI)){
@@ -384,7 +386,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 								e.printStackTrace();
 							}
         				}
-        			}
+        			}*/
         					
         			//exist and just load the native manifest.xml file
         			//set the current course to the new one
@@ -406,10 +408,10 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 					
 					//notify user to update the course
 					//To do: add a course update dialog or better to automatically display a update button for that course.
-                    if (courseLatestVer > courseCurVer) {
+/*                    if (courseLatestVer > courseCurVer) {
 						UIController.ToastMessage(appContext, "A new version course existed online");
 					}
-					
+					*/
 					if(courseNew !=null ){
 	        			
 	        			if(AppContext.getPreCourse() == null){
@@ -659,7 +661,12 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     				progressStr.append("/");
     				progressStr.append(appContext.getCurLessonTextPagerCount());
     				//update the progressbar state in the course detail UI
-    				mFrameCourseProgressBar.setProgress(AppContext.getCourseProgress(appContext.getCurCourse()));
+    				int courseProgress = AppContext.getCourseProgress(appContext.getCurCourse());
+    				mFrameCourseProgressBar.setProgress(courseProgress);
+    				
+    				//save the progress to course object
+    				AppContext.getInstance().getCurCourse().setProgress(courseProgress);
+    				
     				mLessonProgress.setText(progressStr);
     				mLessonProgress.setTextSize(18);
     				mLessonProgress.setTypeface(null, Typeface.ITALIC);
@@ -740,9 +747,12 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	vpLessonTextPager.setCurrentItem(0);
     	
     	//update the course progress bar
-    	mFrameCourseProgressBar.setProgress(AppContext.getCourseProgress(AppContext.getInstance().getCurCourse()));
-    	//reload the media slide viewpager
+    	int courseProgress = AppContext.getCourseProgress(appContext.getCurCourse());
+    	mFrameCourseProgressBar.setProgress(courseProgress);
+		//save the progress to course object
+		AppContext.getInstance().getCurCourse().setProgress(courseProgress);
     
+		//reload the media slide viewpager
     	List<Drawable> lessonMedia = null;
     	//get the last access lesson
     	//To do:    	

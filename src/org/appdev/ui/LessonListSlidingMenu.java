@@ -29,6 +29,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.appdev.adapter.MediaGridAdapter;
+import org.appdev.api.MainActivityListener;
+import org.appdev.api.SlideMenuListener;
+import org.appdev.app.AppContext;
+import org.appdev.entity.CourseContent;
+import org.appdev.entity.Lesson;
+
+import org.appdev.R;
+
 @SuppressLint("ValidFragment")
 public class LessonListSlidingMenu extends ListFragment implements MainActivityListener {
 
