@@ -1,33 +1,16 @@
 package org.appdev.api;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.net.URI;
 
-import org.appdev.app.AppContext;
-import org.appdev.app.AppException;
-import org.appdev.entity.CourseList;
-
-import org.appdev.entity.Course;
-import org.appdev.entity.CourseManifest;
-import org.appdev.entity.Update;
-import org.appdev.entity.User;
-import org.appdev.entity.SOAHUB;
-
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -35,7 +18,6 @@ import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -48,19 +30,28 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-
 import org.apache.http.util.EntityUtils;
+import org.appdev.app.AppContext;
+import org.appdev.app.AppException;
+import org.appdev.entity.Course;
+import org.appdev.entity.CourseList;
+import org.appdev.entity.CourseManifest;
+import org.appdev.entity.SOAHUB;
+import org.appdev.entity.Update;
+import org.appdev.entity.User;
+import org.ccci.gto.android.thekey.TheKey;
+import org.ccci.gto.android.thekey.TheKeySocketException;
 import org.jsoup.Jsoup;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -416,73 +407,17 @@ public class ApiClient {
 
 
 		// Step 2: get the ticket   
-
-
-		// HTTP parameters stores header etc.
-		HttpParams params = new BasicHttpParams();
-		// params.setParameter("http.protocol.handle-redirects",false);
-		params.setParameter("http.protocol.reject-relative-redirect", true);
-		params.setParameter("http.protocol.allow-circular-redirects", true);
-
-
-		try{
-			HttpGet getForm = new HttpGet(casURL+"?service=" + service );
-
-			HttpPost postForm = prepareLogin(getForm, username , pwd);
-			postForm.setParams(params);
-
-			HttpResponse response = client.execute(postForm);
-			HttpEntity entity = response.getEntity();
-			entity.consumeContent();
-			//Log.i("EkKOCAS", EntityUtils.toString(entity));
-
-			CookieStore cookies = client.getCookieStore();
-			for(org.apache.http.cookie.Cookie c: cookies.getCookies()) {
-				Log.i("Cookie", c.getName() ); 
-				if(c.getName().equalsIgnoreCase("CASTGC")){
-					ticket = c.getValue();
-					Log.i("CASTGC", c.getValue());
-				} else if(c.getName().equalsIgnoreCase("JSESSIONID")) {
-					jsessionid = c.getValue();
-				}
-
-			}
-
-			//Step 3: get the ST
-			HttpParams paramsGet = getForm.getParams();
-			paramsGet.setParameter("service", service);
-			paramsGet.setParameter("http.protocol.handle-redirects",false);
-			//paramsGet.setParameter("http.protocol.allow-circular-redirects", true);
-
-			getForm.setParams(paramsGet);
-
-
-			HttpResponse res = client.execute(getForm);
-			// HttpEntity entityGet = res.getEntity();
-
-			Header[] location = res.getHeaders("Location");
-			if(location.length<=0){
-				user.setSessionId(null);
-				return user;
-			}
-			String newUrl = location[0].getValue();
-			Log.i("Location:", newUrl);
-
-			if(newUrl.contains("?")) {
-				st_ticket = newUrl.split("\\?")[1];
-			}
-			entity = res.getEntity();
-			Document doc = Jsoup.parse(EntityUtils.toString(entity));
-
-			Log.i("EKKOCAS", doc.toString());
-
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+        try {
+            final TheKey thekey = new TheKey(appContext, THEKEY_CLIENTID);
+            st_ticket = thekey.getTicket(service);
+        } catch (final TheKeySocketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
 		//step 4: get the session id
 		// Post: https://servicesdev.gcx.org/ekko/auth/login?ticket=st-ticket
-		HttpPost post = new HttpPost(authURL + st_ticket);
+        HttpPost post = new HttpPost(authURL + "ticket=" + st_ticket);
 		try {
 			HttpResponse res=client.execute(post);
 			HttpEntity entity = res.getEntity();
