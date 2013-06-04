@@ -1,14 +1,19 @@
 package org.appdev.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import android.animation.Animator;
-import android.content.Context;
+import org.appdev.R;
+import org.appdev.adapter.MediaGridAdapter;
+import org.appdev.api.MainActivityListener;
+import org.appdev.api.SlideMenuListener;
+import org.appdev.app.AppContext;
+import org.appdev.entity.CourseContent;
+import org.appdev.entity.Lesson;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,14 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.appdev.adapter.MediaGridAdapter;
-import org.appdev.api.MainActivityListener;
-import org.appdev.api.SlideMenuListener;
-import org.appdev.app.AppContext;
-import org.appdev.entity.Lesson;
-
-import org.appdev.R;
-
+@SuppressLint("ValidFragment")
 public class LessonListSlidingMenu extends ListFragment implements MainActivityListener {
 
 	private SlideMenuListener listener;
@@ -75,15 +73,17 @@ public class LessonListSlidingMenu extends ListFragment implements MainActivityL
 	
 	public void updateLessonListAdapter(){
 		lessonListAdapter.clear();
-		ArrayList<Lesson> lessonList = AppContext.getInstance().getCurCourse().getLessonList();
-		if(lessonList == null)  {
+        final List<CourseContent> content = AppContext.getInstance().getCurCourse().getCourseContent();
+        if (content == null) {
 			Log.w("LessonListSlidingMenu", "lessonlist is null");
 			return;
 		}
 		
-		for(int i=0; i<lessonList.size(); i++){
-	
-			lessonListAdapter.add(new LessonListMenuItem(lessonList.get(i).getLesson_title(), android.R.drawable.ic_menu_view));
+        for (final CourseContent contentItem : content) {
+            if (contentItem instanceof Lesson) {
+                lessonListAdapter.add(new LessonListMenuItem(((Lesson) contentItem).getLesson_title(),
+                        android.R.drawable.ic_menu_view));
+            }
 	
 		}
 		lessonListAdapter.notifyDataSetChanged();
@@ -170,13 +170,12 @@ public class LessonListSlidingMenu extends ListFragment implements MainActivityL
 
 	@Override
 	public void updateProgressBar() {
-		// TODO Auto-generated method stub
 		ProgressBar courseProgress =(ProgressBar) getActivity().findViewById(R.id.lesson_progressbar);
-		ArrayList<Lesson> lessonList = AppContext.getInstance().getCurCourse().getLessonList();
+        final List<CourseContent> content = AppContext.getInstance().getCurCourse().getCourseContent();
 		
 		//todo: need to find a better way to decide how a user finish a lesson.
 		
-		if(lessonList.size()>0 && courseProgress != null){
+        if (content.size() > 0 && courseProgress != null) {
 			//Log.i("LessonListSlidingMenu_progressBar",Integer.toString(((AppContext.getInstance().getCurrentLessonIndex()+1)/lessonList.size())*100 ));
 			
 			//courseProgress.setProgress(((AppContext.getInstance().getCurrentLessonIndex()+1)*100/lessonList.size()));

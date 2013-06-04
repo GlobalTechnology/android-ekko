@@ -120,9 +120,7 @@ public class LessonMediaPager extends Fragment implements OnTouchListener, andro
 		        //get the current lesson
 		        Course curCourse = AppContext.getInstance().getCurCourse();
 		        if(curCourse != null) {
-			        int curLesson = AppContext.getInstance().getCurrentLessonIndex();
-			        
-			        Lesson lesson = curCourse.getLessonList().get(curLesson); 
+                    Lesson lesson = AppContext.getInstance().getCurLesson();
 			        if(mPageNumber> lesson.getLessonMedia().getElements().size()-1) {
 			        	mPageNumber = lesson.getLessonMedia().getElements().size()-1;		        	
 			        }

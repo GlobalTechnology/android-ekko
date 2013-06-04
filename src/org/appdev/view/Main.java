@@ -20,8 +20,11 @@ import org.appdev.app.AppContext;
 import org.appdev.app.AppException;
 import org.appdev.app.AppManager;
 import org.appdev.entity.Course;
+import org.appdev.entity.CourseContent;
 import org.appdev.entity.CourseList;
+import org.appdev.entity.Lesson;
 import org.appdev.entity.Notice;
+import org.appdev.entity.Quiz;
 import org.appdev.ui.AppSlidingMenu;
 import org.appdev.ui.CourseListSlidingMenu;
 import org.appdev.ui.LessonListSlidingMenu;
@@ -56,7 +59,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -556,7 +558,13 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	
     	int lessonIndex = AppContext.getInstance().getCurrentLessonIndex();
    
-    	int pageNum = course.getLessonList().get(lessonIndex).getPagedTextList().getElements().size();
+        int pageNum = 1;
+        final CourseContent contentItem = course.getCourseContent().get(lessonIndex);
+        if (contentItem instanceof Lesson) {
+            pageNum = ((Lesson) contentItem).getPagedTextList().getElements().size();
+        } else if (contentItem instanceof Quiz) {
+            // TODO
+        }
     	
     	mTextPagerAdapter = new LessonTextPagerAdapter(getSupportFragmentManager(), pageNum);
     	

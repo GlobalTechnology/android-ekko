@@ -1023,11 +1023,14 @@ public class AppContext extends Application {
 	}
 	
 	public Lesson getCurLesson(){
-		if(curCourse.getLessonList() != null){
-			return curCourse.getLessonList().get(getCurrentLessonIndex());
-		}else{
-			return null;
-		}
+        final List<CourseContent> content = getCurCourse().getCourseContent();
+        if (content != null) {
+            final CourseContent contentItem = content.get(getCurrentLessonIndex());
+            if (contentItem instanceof Lesson) {
+                return (Lesson) contentItem;
+            }
+        }
+        return null;
 	}
 	public static void updateCourseProgress(Course course){
 		
