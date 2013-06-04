@@ -195,6 +195,11 @@ public final class EkkoHubApi {
     }
 
     public String login(final String ticket) throws ApiSocketException {
+        // don't attempt to login if we don't have a ticket
+        if (ticket == null) {
+            return null;
+        }
+
         HttpURLConnection conn = null;
         try {
             // issue login request
