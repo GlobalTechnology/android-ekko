@@ -38,7 +38,6 @@ import org.appdev.widget.PullToRefreshListView;
 import org.appdev.widget.ScrollLayout;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -260,12 +259,6 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 		super.onDestroy();
 		//Activity finished, move it from the stack
 		AppManager.getAppManager().finishActivity(this);
-	}
-
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);		
-
 	}
     
     /**
