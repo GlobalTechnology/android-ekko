@@ -1,5 +1,6 @@
 package org.appdev.view;
 
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 import greendroid.widget.CustomizedQuickAction;
 import greendroid.widget.QuickActionGrid;
 import greendroid.widget.QuickActionWidget;
@@ -36,6 +37,9 @@ import org.appdev.utils.UpdateManager;
 import org.appdev.widget.NewDataToast;
 import org.appdev.widget.PullToRefreshListView;
 import org.appdev.widget.ScrollLayout;
+import org.ccci.gto.android.thekey.TheKey;
+import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
+import org.ekkoproject.android.player.api.InvalidSessionApiException;
 
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
@@ -44,6 +48,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.PagerAdapter;
@@ -254,6 +260,17 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     	
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // display the login dialog if we don't have a valid GUID
+        final TheKey thekey = new TheKey(this, THEKEY_CLIENTID);
+        if (thekey.getGuid() == null) {
+            this.showLoginDialog();
+        }
+    }
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -282,7 +299,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         public void onQuickActionClicked(QuickActionWidget widget, int position) {
     		switch (position) {
     		case QUICKACTION_LOGIN_OR_LOGOUT://User Login or logout
-    			UIController.loginOrLogout(Main.this);
+                Main.this.showLoginDialog();
     			break;
 
     		case QUICKACTION_SETTING://Setting
@@ -1403,6 +1420,20 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 			Toast.makeText(Main.this, message, Toast.LENGTH_SHORT).show();
 		}
 	}
+
+    private void showLoginDialog() {
+        final FragmentManager fm = this.getSupportFragmentManager();
+        final FragmentTransaction ft = fm.beginTransaction();
+        final Fragment prev = fm.findFragmentByTag("loginDialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        final LoginDialogFragment newFragment = LoginDialogFragment.newInstance(THEKEY_CLIENTID);
+        newFragment.show(ft, "loginDialog");
+    }
 
     /** Sliding Menu integration overrides */
 
