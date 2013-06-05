@@ -73,21 +73,21 @@ public class Quiz  extends CourseContent{
 	}
 
     public List<Question> getQuestionList() {
-		return questionList;
-	}
-
-	public static Quiz parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
-        return new Quiz().parseInternal(parser, schemaVersion);
+        return Collections.unmodifiableList(this.questionList);
     }
 
-    private Quiz parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+    public static Quiz fromXml(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        return new Quiz().parse(parser, schemaVersion);
+    }
+
+    private Quiz parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_QUIZ);
 
         this.quiz_id = parser.getAttributeValue(null, XML.ATTR_QUIZ_ID);
         this.quiz_title = parser.getAttributeValue(null, XML.ATTR_QUIZ_TITLE);
-       // this.quiz_title = "Quiz"; //for testing 
+        // this.quiz_title = "Quiz"; //for testing
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -98,8 +98,8 @@ public class Quiz  extends CourseContent{
             final String ns = parser.getNamespace();
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
-               if (XML.ELEMENT_CONTENT_QUESTION.equals(name)) {
-                    final Question question ;
+                if (XML.ELEMENT_QUIZ_QUESTION.equals(name)) {
+                    this.questionList.add(Question.fromXml(parser, schemaVersion));
                     continue;
                 }
             }

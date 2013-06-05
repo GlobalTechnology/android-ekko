@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -417,7 +416,8 @@ public class Course extends Entity {
                     this.lessonList.add(Lesson.parse(parser, schemaVersion));
                     continue;
                 } else if (XML.ELEMENT_CONTENT_QUIZ.equals(name)) {
-                    // TODO
+                    this.lessonList.add(Quiz.fromXml(parser, schemaVersion));
+                    continue;
                 }
             }
 
