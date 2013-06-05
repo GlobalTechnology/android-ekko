@@ -38,8 +38,6 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import org.appdev.widget.RoundedDrawable;
-
 /** 
  * API used for dealing with IMAGE
  * 

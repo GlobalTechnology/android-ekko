@@ -178,17 +178,17 @@ public class Lesson extends CourseContent {
             final String ns = parser.getNamespace();
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
-                if (XML.ELEMENT_CONTENT_MEDIA.equals(name)) {
+                if (XML.ELEMENT_LESSON_MEDIA.equals(name)) {
                     final Media media = Media.parse(parser, schemaVersion);
                     this.media.add(media);
                     this.lessonMedia.addElement(media);
                     continue;
-                } else if (XML.ELEMENT_CONTENT_TEXT.equals(name)) {
+                } else if (XML.ELEMENT_LESSON_TEXT.equals(name)) {
                     // TODO: we don't capture the text id currently
                     final String text = parser.nextText();
                     this.text.add(text);
                     this.pagedTextList.addElement(text);
-                    parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_TEXT);
+                    parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_LESSON_TEXT);
                     continue;
                 }
             }

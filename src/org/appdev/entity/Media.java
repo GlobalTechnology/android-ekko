@@ -41,7 +41,7 @@ public class Media implements Serializable{
 
     private Media parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
-        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_MEDIA);
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_LESSON_MEDIA);
 
         this.id = parser.getAttributeValue(null, XML.ATTR_MEDIA_ID);
         this.media_resource = parser.getAttributeValue(null, XML.ATTR_RESOURCE);

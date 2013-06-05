@@ -27,8 +27,8 @@ public final class Constants {
         public static final String ELEMENT_CONTENT = "content";
         public static final String ELEMENT_CONTENT_LESSON = "lesson";
         public static final String ELEMENT_CONTENT_QUIZ = "quiz";
-        public static final String ELEMENT_CONTENT_MEDIA = "media";
-        public static final String ELEMENT_CONTENT_TEXT = "text";
+        public static final String ELEMENT_LESSON_MEDIA = "media";
+        public static final String ELEMENT_LESSON_TEXT = "text";
         public static final String ELEMENT_CONTENT_QUESTION = "question";
         public static final String ELEMENT_CONTENT_QUESTION_TEXT = "text";
         public static final String ELEMENT_CONTENT_QUESTION_OPTIONS = "options";
