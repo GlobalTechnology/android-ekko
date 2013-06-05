@@ -4,6 +4,16 @@ package org.appdev.ui;
 import java.io.File;
 import java.io.IOException;
 
+import org.appdev.R;
+import org.appdev.api.SlideMenuListener;
+import org.appdev.app.AppContext;
+import org.appdev.app.AppException;
+import org.appdev.entity.Course;
+import org.appdev.entity.CourseList;
+import org.appdev.utils.FileUtils;
+import org.ekkoproject.android.player.api.InvalidSessionApiException;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -14,18 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.appdev.api.SlideMenuListener;
-import org.appdev.app.AppContext;
-import org.appdev.app.AppException;
-import org.appdev.entity.Course;
-import org.appdev.entity.CourseList;
-import org.appdev.utils.FileUtils;
-
-import org.appdev.R;
-
-
+@SuppressLint("ValidFragment")
 public class CourseListSlidingMenu extends ListFragment {
 	private MenuAdapter courseListAdapter = null;
 
@@ -33,7 +33,7 @@ public class CourseListSlidingMenu extends ListFragment {
 	
 	private SlideMenuListener listener; //used to update main-course details UI
 	
-	public CourseListSlidingMenu(SlideMenuListener listener) {
+    public CourseListSlidingMenu(SlideMenuListener listener) {
 		this.setListener(listener);
 	}
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,7 +51,9 @@ public class CourseListSlidingMenu extends ListFragment {
 		} catch (AppException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+        } catch (final InvalidSessionApiException e) {
+            // TODO should we attempt a login?
+        }
 		
 		if(courseList == null)  return;
 		

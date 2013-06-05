@@ -92,8 +92,7 @@ public class AppSlidingMenu extends ListFragment  {
             ft.addToBackStack(null);
 
             // Create and show the dialog.
-            final LoginDialogFragment newFragment = LoginDialogFragment.newInstance(THEKEY_CLIENTID,
-                    "https://casdev.gcx.org/cas/");
+            final LoginDialogFragment newFragment = LoginDialogFragment.newInstance(THEKEY_CLIENTID);
             newFragment.show(ft, "loginDialog");
 			break;
 		case 1:

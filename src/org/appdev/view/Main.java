@@ -1093,7 +1093,10 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 	            	Log.e("Main-loadlvCourseData",e.toString());
 	            	msg.what = -1;
 	            	msg.obj = e;
-	            }
+                } catch (final InvalidSessionApiException e) {
+                    Log.e("Main", "invalid session", e);
+                    Main.this.showLoginDialog();
+                }
 				msg.arg1 = action;
 				msg.arg2 = UIController.LISTVIEW_DATATYPE_COURSE;
               

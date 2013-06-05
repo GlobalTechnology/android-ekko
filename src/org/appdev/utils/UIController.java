@@ -1,13 +1,14 @@
 package org.appdev.utils;
 
-import java.io.File;
-import java.io.IOException;
-
+import static org.ccci.gto.android.thekey.LoginActivity.EXTRA_CLIENTID;
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 import greendroid.widget.CustomizedQuickAction;
 import greendroid.widget.QuickAction;
 
-import org.appdev.view.ImageZoomDialog;
+import java.io.File;
+import java.io.IOException;
 
+import org.appdev.R;
 import org.appdev.CustomVideoPlayer.VideoPlayer;
 import org.appdev.api.ApiClient;
 import org.appdev.app.AppContext;
@@ -16,12 +17,10 @@ import org.appdev.app.AppManager;
 import org.appdev.entity.Course;
 import org.appdev.entity.SOAHUB;
 import org.appdev.view.About;
-import org.appdev.view.LoginDialog;
+import org.appdev.view.ImageZoomDialog;
 import org.appdev.view.Main;
 import org.appdev.view.Setting;
-
-import org.appdev.R;
-
+import org.ccci.gto.android.thekey.LoginActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,18 +30,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
-import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
@@ -88,16 +83,12 @@ public class UIController {
 	 * show login dialog
 	 * @param activity
 	 */
+    @Deprecated
 	public static void showLoginDialog(Context context)
 	{
-		Intent intent = new Intent(context,LoginDialog.class);
-		if(context instanceof Main)
-			intent.putExtra("LOGINTYPE", LoginDialog.LOGIN_MAIN);
-		else if(context instanceof Setting)
-			intent.putExtra("LOGINTYPE", LoginDialog.LOGIN_SETTING);
-		else
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		context.startActivity(intent);
+        final Intent intent = new Intent(context, LoginActivity.class);
+        intent.putExtra(EXTRA_CLIENTID, THEKEY_CLIENTID);
+        context.startActivity(intent);
 	}
 	
 

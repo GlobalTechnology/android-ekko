@@ -1,18 +1,27 @@
 package org.appdev.view;
 
+import static org.ccci.gto.android.thekey.LoginActivity.EXTRA_CLIENTID;
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
+
 import java.io.File;
 
+import org.appdev.R;
 import org.appdev.app.AppContext;
 import org.appdev.app.AppManager;
-import org.appdev.R;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.MethodsCompat;
 import org.appdev.utils.UIController;
 import org.appdev.utils.UpdateManager;
+import org.ccci.gto.android.thekey.LoginActivity;
+import org.ccci.gto.android.thekey.dialog.LoginDialogFragment;
 
-
+import android.annotation.TargetApi;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -22,7 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-public class Setting extends PreferenceActivity{
+public class Setting extends PreferenceActivity {
 	
 	SharedPreferences mPreferences;
 	Preference account;
@@ -67,13 +76,33 @@ public class Setting extends PreferenceActivity{
 		}else{
 			account.setTitle(R.string.main_menu_login);
 		}
-		account.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {
-				UIController.loginOrLogout(Setting.this);
-				account.setTitle(R.string.main_menu_login);
-				return true;
-			}
-		});
+        account.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+            public boolean onPreferenceClick(final Preference preference) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                    final FragmentManager fm = Setting.this.getFragmentManager();
+                    final FragmentTransaction ft = fm.beginTransaction();
+                    final Fragment prev = fm.findFragmentByTag("loginDialog");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    final LoginDialogFragment newFragment = LoginDialogFragment.newInstance(THEKEY_CLIENTID);
+                    newFragment.show(ft, "loginDialog");
+                } else {
+                    // fragments aren't supported, so use a separate activity
+                    final Intent intent = new Intent(Setting.this, LoginActivity.class);
+                    intent.putExtra(EXTRA_CLIENTID, THEKEY_CLIENTID);
+                    Setting.this.startActivity(intent);
+                }
+
+                // UIController.loginOrLogout(Setting.this);
+                account.setTitle(R.string.main_menu_login);
+                return true;
+            }
+        });
 		
 		//My info
 		myinfo = (Preference)findPreference("myinfo");
@@ -248,5 +277,5 @@ public class Setting extends PreferenceActivity{
 		super.onDestroy();
 		
 		AppManager.getAppManager().finishActivity(this);
-	}	
+    }
 }

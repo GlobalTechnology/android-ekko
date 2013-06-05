@@ -5,7 +5,6 @@ import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,17 +40,11 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.appdev.app.AppContext;
 import org.appdev.app.AppException;
-import org.appdev.entity.Course;
-import org.appdev.entity.CourseList;
-import org.appdev.entity.CourseManifest;
 import org.appdev.entity.SOAHUB;
 import org.appdev.entity.Update;
 import org.appdev.entity.User;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.TheKeySocketException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -297,64 +290,17 @@ public class ApiClient {
 			throw AppException.network(e);
 		}
 	}
-	
-	/**
-	 * Get the url of SOA Hub auth service
-	 * @param appContext
-	 * @param url_authService
-	 * @return
-	 */
-	public static void getAuthService(AppContext appContext, String url_authService){
 
-	}	
-
-	
-	 
-	private static HttpPost prepareLogin(HttpGet getForm, String sLogName,String sPassword){
-		try{
-			HttpResponse response = client.execute(getForm);
-			HttpEntity entity = response.getEntity();
-			
-			
-			Document doc = Jsoup.parse(EntityUtils.toString(entity));
-			 Element ltElement = doc.select("input[name=lt]").first();
-             String loginTicket = ltElement.attr("value");
-			Element form = doc.getElementById("login_form");
-
-			String action = form.attr("action");
-			action = "/cas/login";
-
-			
-			ArrayList<NameValuePair> formParams = new ArrayList<NameValuePair>();
-			formParams.add(new BasicNameValuePair("username", sLogName));
-			formParams.add(new BasicNameValuePair("password", sPassword));
-			formParams.add(new BasicNameValuePair("lt", loginTicket));
-			formParams.add(new BasicNameValuePair("execution", "e1s1"));
-			formParams.add(new BasicNameValuePair("_eventId", "submit"));
-			UrlEncodedFormEntity urlencodeentity = new UrlEncodedFormEntity(formParams, HTTP.UTF_8);
-			
-			URI getURI = getForm.getURI();
-			URI postURI = new URI(getURI.getScheme(), null,getURI.getHost(), 443, action,null,null);
-
-			HttpPost preparedRequest = new HttpPost(postURI);
-			preparedRequest.setEntity(urlencodeentity);
-			return preparedRequest;
-		}catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	/**
-	 * Log in， Auto-process cookie
-	 * @param url
-	 * @param username
-	 * @param pwd
-	 * @return
-	 * @throws AppException
-	 * 
-	 */
-	
+    /**
+     * Log in， Auto-process cookie
+     * 
+     * @param url
+     * @param username
+     * @param pwd
+     * @return
+     * @throws AppException
+     * 
+     */
 	public static User login(AppContext appContext, String username, String pwd) throws AppException {
 		//todo: add conditions checking for the response status code 
 		User user = null;
@@ -498,132 +444,4 @@ public class ApiClient {
 		return null;
 
 	}
-	
-	   /**
-	    * Get the Course List
-	    * @param appContext
-	    * @param catalog
-	    * @param pageIndex
-	    * @param pageSize
-	    * @return
-	    * @throws AppException
-	    */
-	public static CourseList getCourseList(AppContext appContext, final int catalog, final int pageIndex, final int pageSize) throws AppException {
-		//for testing only
-		//if not log in yet, redirect to the log in dialog
-		if(AppContext.getSessionID() == null){
-			//redirect to login dialog
-			//UIController.ToastMessage(appContext, "Please log in first!");
-			appContext.Logout();
-			appContext.getUnLoginHandler().sendEmptyMessage(1);
-			
-			return null;
-		}
-		else{
-			String newUrl = null;
-			if(AppContext.getInstance().isProductionEnv()){
-				newUrl = SOAHUB.URL_EKKO_ROOT_SERVICE_PRODUCTION  +  AppContext.getSessionID() + SOAHUB.URL_REL_COURSELIST;
-			}else{
-				newUrl = SOAHUB.URL_EKKO_ROOT_SERVICE  +  AppContext.getSessionID() + SOAHUB.URL_REL_COURSELIST;
-			}
-			try{
-				InputStream inputStream = retrieveStream( newUrl);
-				return CourseList.parse(inputStream);		
-			}catch(Exception e){
-				if(e instanceof AppException)
-					throw (AppException)e;
-				throw AppException.network(e);
-			}
-		}
-	}
-	
-	/**
-	 * Get course zipped package
-	 * @param appContext
-	 * @param url
-	 * @return
-	 * @throws AppException
-	 */
-	
-	public static InputStream getCourseZipFile(AppContext appContext, String url )throws AppException {
-		InputStream inputStream = null;
-		
-		if(AppContext.getSessionID() == null){
-			//redirect to login dialog
-			//UIController.ToastMessage(appContext, "Please log in first!");
-			appContext.Logout();
-			appContext.getUnLoginHandler().sendEmptyMessage(1);
-			
-			return null;
-		}
-		try{
-			inputStream = retrieveStream( url);
-					
-		}catch(Exception e){
-			if(e instanceof AppException)
-				throw (AppException)e;
-			throw AppException.network(e);
-		}
-		return inputStream;
-	}
-	
-	
-	/**
-	 * Get a course
-	 * @param context
-	 * @param resUrl
-	 * @return
-	 * @throws AppException
-	 */
-	public static Course getCourse(AppContext context, String resUrl) throws AppException{
-		Course course = null;
-		if(AppContext.getSessionID() == null){
-			//redirect to login dialog
-			//UIController.ToastMessage(appContext, "Please log in first!");
-			context.Logout();
-			context.getUnLoginHandler().sendEmptyMessage(1);
-			
-			return null;
-		}
-		
-		try{
-			InputStream inputStream = retrieveStream( resUrl);
-			course = CourseManifest.parse(inputStream);		
-		}catch(Exception e){
-			if(e instanceof AppException)
-				throw (AppException)e;
-			throw AppException.network(e);
-		}
-		return course;
-	}
-
-
-    public static int getCourseVer(AppContext appContext, String courseUrl) throws AppException {
-		// TODO Auto-generated method stub
-		if(AppContext.getSessionID() == null){
-			//redirect to login dialog
-			//UIController.ToastMessage(appContext, "Please log in first!");
-			appContext.Logout();
-			appContext.getUnLoginHandler().sendEmptyMessage(1);
-			
-            return 0;
-		}
-		Course course = null;
-		try{
-			InputStream inputStream = retrieveStream( courseUrl);
-			course = CourseManifest.parse(inputStream);	
-			if(course != null){
-                return course.getVersion();
-			}
-		}catch(Exception e){
-			if(e instanceof AppException)
-				throw (AppException)e;
-			throw AppException.network(e);
-		}
-		
-        return 0;
-	}
-	
-	
-
 }

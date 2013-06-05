@@ -34,6 +34,9 @@ import org.appdev.utils.ImageUtils;
 import org.appdev.utils.MethodsCompat;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
+import org.ekkoproject.android.player.api.ApiSocketException;
+import org.ekkoproject.android.player.api.EkkoHubApi;
+import org.ekkoproject.android.player.api.InvalidSessionApiException;
 
 import android.app.Application;
 import android.content.Context;
@@ -77,6 +80,8 @@ public class AppContext extends Application {
 	private boolean login = false;	//login status
 	private int loginUid = 0;	//login user ID
 	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
+
+    private final EkkoHubApi hubApi;
 	
 	private Handler unLoginHandler = new Handler(){
 		public void handleMessage(Message msg) {
@@ -86,6 +91,10 @@ public class AppContext extends Application {
 			}
 		}		
 	};
+
+    public AppContext() {
+        this.hubApi = new EkkoHubApi(this);
+    }
 	
 	@Override
 	public void onCreate() {
@@ -710,30 +719,35 @@ public class AppContext extends Application {
 		return list;
 	}
 	
-	/**
-	 * Get Course list by calling web service in the SOA hub
-	 * @param catalog (placeholder for future use)
-	 * @param pageIndex
-	 * @param isRefresh
-	 * @return
-	 * @throws AppException
-	 */
-	public CourseList getCourseList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
+	    /**
+     * Get Course list by calling web service in the SOA hub
+     * 
+     * @param catalog
+     *            (placeholder for future use)
+     * @param pageIndex
+     * @param isRefresh
+     * @return
+     * @throws AppException
+     * @throws InvalidSessionApiException
+     */
+    public CourseList getCourseList(int catalog, int pageIndex, boolean isRefresh) throws AppException,
+            InvalidSessionApiException {
 		CourseList list = null;
 		String key = "courselist_"+catalog+"_"+pageIndex+"_"+PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
-				list = ApiClient.getCourseList(AppContext.this, catalog, pageIndex, PAGE_SIZE);
+                list = this.hubApi.getCourseList(pageIndex, PAGE_SIZE);
 				if(list != null && pageIndex == 0){		
 					list.setCacheKey(key);
 					saveObject(list, key);					
 				}
-			}catch(AppException e){
-				Log.w("AppContext-getCourseList", e.toString());
-				list = (CourseList)readObject(key);
-				if(list == null)
-					throw e;
-			}		
+            } catch (final ApiSocketException e) {
+                // TODO we are probably offline, what should we do
+                list = (CourseList) readObject(key);
+                if (list == null) {
+                    throw AppException.socket(e);
+                }
+            }
 		} else {
 			list = (CourseList)readObject(key);
 			if(list == null){
@@ -745,49 +759,32 @@ public class AppContext extends Application {
 		return list;
 	}
 	
-    public int getCourseVer(String courseUrl) throws AppException {
-		if(isNetworkConnected()){
-			try{
-                return ApiClient.getCourseVer(AppContext.this, courseUrl);
-			}catch(AppException e){
-				Log.w("AppContext-getCourseVer", e.toString());
-				
-			}
-		}
+    public int getCourseVer(final long courseId) throws InvalidSessionApiException {
+        final Course course = this.getCourse(courseId);
+        if (course != null) {
+            return course.getVersion();
+        }
         return 0;
-	}
-	
+    }
+
 	public static String getCourseID( String resUrl )
 	{
 		if( StringUtils.isEmpty(resUrl) )	return "";
 		return resUrl.substring( resUrl.lastIndexOf( File.separator )+1 );
 	}
-	
-	/**
-	 * Get a course
-	 * @param catalog
-	 * @param pageIndex
-	 * @param isRefresh
-	 * @return
-	 * @throws AppException
-	 */
-	public Course getCourse(String resUrl) throws AppException {
-		if(StringUtils.isEmpty(resUrl)) return null;
-		
-		Course course = null;
-		String key = "course_"+getCourseID(resUrl);
-		if(isNetworkConnected() && (!isReadDataCache(key))) {
-			course = ApiClient.getCourse(AppContext.this, resUrl);
-			if(course != null){				
-				course.setCacheKey(key);
-				saveObject(course, key);					
-			}		
-		} else {
-			course = (Course)readObject(key);		
-		}
-		return course;
-	}
 
+    public Course getCourse(final Long courseId) throws InvalidSessionApiException {
+        try {
+            final Course course = this.hubApi.getCourse(courseId);
+            if (course != null) {
+                return course;
+            }
+        } catch (final ApiSocketException e) {
+            // connection error
+        }
+
+        return null;
+    }
 
 	public static String getSessionID() {
 		return sessionID;
