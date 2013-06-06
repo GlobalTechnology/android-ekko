@@ -71,6 +71,7 @@ public final class Constants {
 
         /** content attributes */
         public static final String ATTR_MEDIA_ID = "id";
+        public static final String ATTR_MEDIA_TYPE = "type";
 
         /** resource attributes */
         public static final String ATTR_RESOURCE_ID = "id";

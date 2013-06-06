@@ -10,6 +10,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 public class Media implements Serializable{
     private String id;
+    private String type;
 
 	private String media_resource;
 	private String media_thumbnail;	
@@ -17,8 +18,24 @@ public class Media implements Serializable{
     public String getId() {
         return this.id;
     }
-	
-	public String getMediaResourceID() {
+
+    public String getType() {
+        return this.type;
+    }
+
+    public boolean isAudio() {
+        return "audio".equals(this.type);
+    }
+
+    public boolean isImage() {
+        return "image".equals(this.type);
+    }
+
+    public boolean isVideo() {
+        return "video".equals(this.type);
+    }
+
+    public String getMediaResourceID() {
 		return media_resource;
 	}
 	
@@ -44,6 +61,7 @@ public class Media implements Serializable{
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_LESSON_MEDIA);
 
         this.id = parser.getAttributeValue(null, XML.ATTR_MEDIA_ID);
+        this.type = parser.getAttributeValue(null, XML.ATTR_MEDIA_TYPE);
         this.media_resource = parser.getAttributeValue(null, XML.ATTR_RESOURCE);
         this.media_thumbnail = parser.getAttributeValue(null, XML.ATTR_THUMBNAIL);
 
