@@ -75,6 +75,10 @@
  	
 	
 		<activity android:name="com.actionbarsherlock.app.SherlockActivity" />
+
+        <service
+            android:name="org.ekkoproject.android.player.sync.EkkoSyncService"
+            android:exported="false" />
     </application>
 
 </manifest>
