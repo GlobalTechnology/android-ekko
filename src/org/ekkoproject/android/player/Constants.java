@@ -1,6 +1,8 @@
 package org.ekkoproject.android.player;
 
 public final class Constants {
+    public final static long INVALID_COURSE = -1;
+
     /** XML constants */
     public final static class XML {
         public static final String NS_EKKO = "https://ekkoproject.org/manifest";
