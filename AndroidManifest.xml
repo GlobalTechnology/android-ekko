@@ -44,13 +44,6 @@
             android:screenOrientation="sensorPortrait"
             android:configChanges="keyboardHidden|orientation" 
             android:launchMode="singleTask"/>
-        <activity
-            android:name=".view.LoginDialog"
-            android:configChanges="keyboardHidden|orientation"
-            android:launchMode="singleTask"
-            android:screenOrientation="sensorPortrait"
-            android:theme="@style/Theme.HalfTranslucent"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 	
         <activity android:name=".view.ImageZoomDialog" 
             android:theme="@style/Theme.ZoomLight.Fullscreen" 
