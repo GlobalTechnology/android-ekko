@@ -14,10 +14,6 @@
 
   <name>Ekko</name>
 
-  <properties>
-    <jsoup.version>1.7.2</jsoup.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>android.support</groupId>
@@ -55,13 +51,6 @@
       <groupId>com.viewpagerindicator</groupId>
       <artifactId>library</artifactId>
       <type>apklib</type>
-    </dependency>
-
-    <!-- JSoup HTML parser -->
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>${jsoup.version}</version>
     </dependency>
   </dependencies>
 
