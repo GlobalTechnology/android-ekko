@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -296,11 +297,9 @@ public class Course extends Entity {
     }
 
     // XXX: maybe this should be handled with a separate object
-    public static Course parseManifest(final XmlPullParser parser) throws XmlPullParserException, IOException {
-        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
-        final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
-        final long courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
-        return new Course(courseId).parseManifestInternal(parser, schemaVersion);
+    @Deprecated
+    public static Manifest parseManifest(final XmlPullParser parser) throws XmlPullParserException, IOException {
+        return Manifest.fromXml(parser);
     }
 
     private Course parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
@@ -336,41 +335,7 @@ public class Course extends Entity {
         return this;
     }
 
-    private Course parseManifestInternal(final XmlPullParser parser, final int schemaVersion)
-            throws XmlPullParserException, IOException {
-        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
-
-        this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
-
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-
-            // process recognized nodes
-            final String ns = parser.getNamespace();
-            final String name = parser.getName();
-            if (XML.NS_EKKO.equals(ns)) {
-                if (XML.ELEMENT_META.equals(name)) {
-                    this.parseMeta(parser, schemaVersion);
-                    continue;
-                } else if (XML.ELEMENT_CONTENT.equals(name)) {
-                    this.parseContent(parser, schemaVersion);
-                    continue;
-                } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.setResources(Resource.parseResources(parser, schemaVersion));
-                    continue;
-                }
-            }
-
-            // skip unrecognized nodes
-            ParserUtils.skip(parser);
-        }
-
-        return this;
-    }
-
-    private Course parseMeta(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+    protected Course parseMeta(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_META);
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -444,37 +409,4 @@ public class Course extends Entity {
 
         return this;
     }
-
-    private Course parseContent(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
-        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT);
-
-        this.lessonList = new ArrayList<CourseContent>();
-
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-
-            // process recognized nodes
-            final String ns = parser.getNamespace();
-            final String name = parser.getName();
-            if (XML.NS_EKKO.equals(ns)) {
-                if (XML.ELEMENT_CONTENT_LESSON.equals(name)) {
-                    this.lessonList.add(Lesson.parse(parser, schemaVersion));
-                    continue;
-                } else if (XML.ELEMENT_CONTENT_QUIZ.equals(name)) {
-                    this.lessonList.add(Quiz.fromXml(parser, schemaVersion));
-                    continue;
-                }
-            }
-
-            // skip unrecognized nodes
-            ParserUtils.skip(parser);
-        }
-
-        return this;
-    }
-
-
 }
