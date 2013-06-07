@@ -40,6 +40,7 @@ import org.appdev.widget.ScrollLayout;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
+import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
@@ -88,7 +89,7 @@ import com.viewpagerindicator.CirclePageIndicator;
  * @version 1.0
  * @created 2013-4-5
  */
-public class Main extends SherlockFragmentActivity implements SlidingActivityBase {
+public class Main extends SherlockFragmentActivity implements SlidingActivityBase, LoginDialogFragment.Listener {
 	
 	// Used to communicate state changes in the CoursePackage DownloaderThread
 	public static final int MESSAGE_DOWNLOAD_STARTED = 1000;
@@ -268,6 +269,9 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         final TheKey thekey = new TheKey(this, THEKEY_CLIENTID);
         if (thekey.getGuid() == null) {
             this.showLoginDialog();
+        } else {
+            // trigger a sync
+            EkkoSyncService.syncCourses(this);
         }
     }
 
@@ -1527,5 +1531,16 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     @Override
     public void setSlidingActionBarEnabled(final boolean b) {
         this.menuHelper.setSlidingActionBarEnabled(b);
+    }
+
+    @Override
+    public void onLoginFailure(final LoginDialogFragment dialog) {
+        // TODO should we do something on login failure?
+    }
+
+    @Override
+    public void onLoginSuccess(final LoginDialogFragment dialog, final String guid) {
+        // trigger a sync
+        EkkoSyncService.syncCourses(this);
     }
 }
