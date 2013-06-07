@@ -47,25 +47,28 @@ public class Course extends Entity {
 	private String course_guid;
     private final HashMap<String, Resource> resourceMap = new HashMap<String, Resource>();
 	
-    private ArrayList<CourseContent> lessonList;
-	
+    private List<CourseContent> lessonList = new ArrayList<CourseContent>();
+
     private Date lastSynced = new Date(0);
 
     public Course(final long id) {
         this.id = id;
     }
 
+    @Deprecated
     public void addLesson(Lesson lesson) {
-		this.lessonList.add(lesson);
-	}
-	
-    public ArrayList<CourseContent> getLessonList() {
-		return this.lessonList;
-	}
-	
+        this.addContent(lesson);
+    }
+
+    @Deprecated
+    public List<CourseContent> getLessonList() {
+        return this.getContent();
+    }
+
+    @Deprecated
     public void setLessonList(ArrayList<CourseContent> lessonList) {
-		this.lessonList = lessonList;
-	}
+        this.setContent(lessonList);
+    }
 
     public long getId() {
         return this.id;
@@ -214,8 +217,32 @@ public class Course extends Entity {
 		this.progress = progress;
 	}
 	
+    @Deprecated
     public List<CourseContent> getCourseContent() {
+        return this.getContent();
+    }
+
+    public List<CourseContent> getContent() {
         return Collections.unmodifiableList(this.lessonList);
+    }
+
+    public void setContent(final List<CourseContent> content) {
+        this.lessonList.clear();
+        this.addContent(content);
+    }
+
+    public void addContent(final CourseContent content) {
+        if (content != null) {
+            this.lessonList.add(content);
+        }
+    }
+
+    public void addContent(final List<CourseContent> content) {
+        if (content != null) {
+            for (final CourseContent item : content) {
+                this.addContent(item);
+            }
+        }
     }
 
     public Collection<Resource> getResources() {
