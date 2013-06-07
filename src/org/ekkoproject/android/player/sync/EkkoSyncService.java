@@ -12,9 +12,15 @@ import org.slf4j.LoggerFactory;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 
 public class EkkoSyncService extends IntentService {
     private final static Logger LOG = LoggerFactory.getLogger(EkkoSyncService.class);
+
+    // actions this service can broadcast
+    public static final String ACTION_ERROR_CONNECTION = "org.ekkoproject.android.player.sync.ERROR_CONNECTION";
+    public static final String ACTION_ERROR_INVALIDSESSION = "org.ekkoproject.android.player.sync.ERROR_INVALIDSESSION";
+    public static final String ACTION_UPDATE_COURSES = "org.ekkoproject.android.player.sync.UPDATE_COURSES";
 
     // data passed to this service in Intents
     public static final String EXTRA_SYNCTYPE = "org.ekkoproject.android.player.sync.SYNCTYPE";
@@ -36,6 +42,8 @@ public class EkkoSyncService extends IntentService {
         context.startService(new Intent(context, EkkoSyncService.class).putExtra(EXTRA_SYNCTYPE, SYNCTYPE_COURSES));
     }
 
+    /** BEGIN lifecycle */
+
     @Override
     protected void onHandleIntent(final Intent intent) {
         LOG.debug("handling an intent");
@@ -47,9 +55,9 @@ public class EkkoSyncService extends IntentService {
                 break;
             }
         } catch (final ApiSocketException e) {
-            // TODO
+            broadcast(ACTION_ERROR_CONNECTION);
         } catch (final InvalidSessionApiException e) {
-            // TODO this should broadcast a request auth intent
+            broadcast(ACTION_ERROR_INVALIDSESSION);
         }
     }
 
@@ -57,6 +65,12 @@ public class EkkoSyncService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         this.dao.close();
+    }
+
+    /** END lifecycle */
+
+    private void broadcast(final String action) {
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent().setAction(action));
     }
 
     /**
@@ -82,5 +96,8 @@ public class EkkoSyncService extends IntentService {
                 this.dao.insert(course);
             }
         }
+
+        // broadcast that courses were just updated
+        broadcast(ACTION_UPDATE_COURSES);
     }
 }
