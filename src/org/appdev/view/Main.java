@@ -356,14 +356,14 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         		}
         		if(course == null) return;
         		
-        		String courseGUID = course.getCourseGUID();
+                final long courseId = course.getId();
         		String courseZipURI = course.getCourseZipUri();
                 int courseLatestVer = course.getVersion();
                 int courseCurVer = 0;
         		
         		
         		//Check if it has been downloaded
-        		File courseManifestFile = new File(FileUtils.getEkkoCourseManifestFile(courseGUID));
+                File courseManifestFile = new File(FileUtils.getEkkoCourseManifestFile(Long.toString(courseId)));
         		
         		if(courseManifestFile.exists()){ //need to add the version checking later
         			//if network is connected, check if there is a new version of a course
@@ -385,7 +385,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         			//set the current course to the new one
         			//to do: need to merge the course information from hub and manifest
         			
-        			Course courseNew = (Course) appContext.readObject(courseGUID);
+                    Course courseNew = (Course) appContext.readObject(Long.toString(courseId));
 					try {
 						if(courseNew == null){
 							
@@ -410,7 +410,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 	        			if(AppContext.getPreCourse() == null){
 	        				AppContext.setPreCourse(courseNew);
 	        			} else{
-	        				if(AppContext.getPreCourse().getCourseGUID() != AppContext.getInstance().getCurCourse().getCourseGUID()){
+                            if (AppContext.getPreCourse().getId() != AppContext.getInstance().getCurCourse().getId()) {
 	        					AppContext.setPreCourse(appContext.getCurCourse());
 	        				}
 	        				
@@ -420,7 +420,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 	        				courseNew.setCourseZipUri(course.getCourseZipUri());
 	        				
 	        				//save the courses state. may use the sha1 of the course package  
-	        				appContext.saveObject(appContext.getCurCourse(), appContext.getCurCourse().getCourseGUID());
+                            appContext.saveObject(appContext.getCurCourse(),
+                                    Long.toString(appContext.getCurCourse().getId()));
 	        			}
 	        			AppContext.setCurCourse(courseNew);
 	        		        			        			
@@ -433,7 +434,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         		}else {
         			//download course zip package
         			//ApiClient.getCourseZipFile(appContext, courseZipURI);
-        			downloaderThread = new CoursePackageDownloaderThread(Main.this, courseZipURI, FileUtils.EkkoCourseSetRootPath()+courseGUID +"/");
+                    downloaderThread = new CoursePackageDownloaderThread(Main.this, courseZipURI, FileUtils
+                            .EkkoCourseSetRootPath() + Long.toString(courseId) + "/");
         			
         			downloaderThread.start();
         		        			        			
@@ -1147,7 +1149,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 								for(Course course1 : clist.getCourselist()){
 									boolean b = false;
 									for(Course course2 : lvCoursesData){
-										if(course1.getCourseGUID() == course2.getCourseGUID()){
+                                if (course1.getId() == course2.getId()) {
 											b = true;
 											break;
 										}
@@ -1182,7 +1184,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 							for(Course course1 : list.getCourselist()){
 								boolean b = false;
 								for(Course course2 : lvCoursesData){
-									if(course1.getCourseGUID() == course2.getCourseGUID()){
+                            if (course1.getId() == course2.getId()) {
 										b = true;
 										break;
 									}

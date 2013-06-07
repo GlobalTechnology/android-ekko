@@ -95,7 +95,7 @@ public class ListViewCoursesAdapter extends BaseAdapter {
         final Resource banner = course.getResource(bannerKey);
         if (banner != null) {
             String res = banner.getResourceFile();
-			File resFile = new File(FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() +"/" + res);
+            final File resFile = new File(FileUtils.EkkoCourseSetRootPath() + Long.toString(course.getId()) + "/" + res);
 			if(resFile.exists()){
 				Bitmap bitmap = BitmapFactory.decodeFile(resFile.getAbsolutePath());
 				//get rounded corner bitmap

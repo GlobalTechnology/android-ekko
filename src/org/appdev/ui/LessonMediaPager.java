@@ -132,7 +132,8 @@ public class LessonMediaPager extends Fragment implements OnTouchListener, andro
                     } else if (resource.isSupportedVideoType()) {
 							//play video
                         String videoURL = resource.getResourceFile();
-							String videoFile = FileUtils.EkkoCourseSetRootPath() + curCourse.getCourseGUID() + "/" + videoURL;
+                        final String videoFile = FileUtils.EkkoCourseSetRootPath() + Long.toString(curCourse.getId())
+                                + "/" + videoURL;
 							File file = new File(videoFile);
 							if(file.exists()){
 								UIController.playVideo(AppContext.getInstance(), videoFile);
@@ -145,7 +146,8 @@ public class LessonMediaPager extends Fragment implements OnTouchListener, andro
 							//flipPic();
 							//zoom pic
                         String picURL = resource.getResourceFile();
-							UIController.showImageZoomDialog(v.getContext(), FileUtils.EkkoCourseSetRootPath() + curCourse.getCourseGUID() + "/" + picURL);
+                        UIController.showImageZoomDialog(v.getContext(),
+                                FileUtils.EkkoCourseSetRootPath() + Long.toString(curCourse.getId()) + "/" + picURL);
 						}else{
 							UIController.ToastMessage(v.getContext(), "The media format is not supported", 200);
 						}

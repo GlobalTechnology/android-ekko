@@ -44,7 +44,6 @@ public class Course extends Entity {
 	private int lessonProgressIndex = 0;
 	private int progress = 0;
 	
-	private String course_guid;
     private final HashMap<String, Resource> resourceMap = new HashMap<String, Resource>();
 	
     private List<CourseContent> lessonList = new ArrayList<CourseContent>();
@@ -159,12 +158,9 @@ public class Course extends Entity {
 		this.author_url = author_url;
 	}
 
+    @Deprecated
 	public String getCourseGUID() {
-		return course_guid;
-	}
-
-	public void setCourseGUID(String course_guid) {
-		this.course_guid = course_guid;
+        return Long.toString(this.getId());
 	}
 
     @Deprecated
@@ -311,7 +307,6 @@ public class Course extends Entity {
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
 
-        this.course_guid = parser.getAttributeValue(null, XML.ATTR_COURSE_ID);
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
         this.course_uri = parser.getAttributeValue(null, XML.ATTR_COURSE_URI);
         this.course_zipuri = parser.getAttributeValue(null, XML.ATTR_COURSE_ZIPURI);
@@ -345,7 +340,6 @@ public class Course extends Entity {
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
 
-        this.course_guid = parser.getAttributeValue(null, XML.ATTR_COURSE_ID);
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
 
         while (parser.next() != XmlPullParser.END_TAG) {

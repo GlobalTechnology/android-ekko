@@ -926,7 +926,8 @@ public class AppContext extends Application {
                 resource = course.getResource(media.getMediaResourceID());
     		}    		
     		
-    		String imageFile = FileUtils.EkkoCourseSetRootPath() + course.getCourseGUID() + "/" +resource.getResourceFile();
+                final String imageFile = FileUtils.EkkoCourseSetRootPath() + Long.toString(course.getId()) + "/"
+                        + resource.getResourceFile();
     	
     		File img = new File(imageFile);
     		if (img.exists()){
