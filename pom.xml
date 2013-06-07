@@ -16,7 +16,6 @@
 
   <properties>
     <jsoup.version>1.7.2</jsoup.version>
-    <signpost.version>1.2.1.2</signpost.version>
   </properties>
 
   <dependencies>
@@ -56,18 +55,6 @@
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <version>${jsoup.version}</version>
-    </dependency>
-
-    <!-- Signpost OAuth -->
-    <dependency>
-      <groupId>oauth.signpost</groupId>
-      <artifactId>signpost-core</artifactId>
-      <version>${signpost.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>oauth.signpost</groupId>
-      <artifactId>signpost-commonshttp4</artifactId>
-      <version>${signpost.version}</version>
     </dependency>
   </dependencies>
 
