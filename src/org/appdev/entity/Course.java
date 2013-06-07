@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class Course extends Entity {
 	
     private ArrayList<CourseContent> lessonList;
 	
+    private Date lastSynced = new Date(0);
+
     public Course(final long id) {
         this.id = id;
     }
@@ -235,6 +238,30 @@ public class Course extends Entity {
             for (final Resource resource : resources) {
                 this.addResource(resource);
             }
+        }
+    }
+
+    public long getLastSynced() {
+        return this.lastSynced.getTime();
+    }
+
+    public Date getLastSyncedDate() {
+        return this.lastSynced;
+    }
+
+    public void setLastSynced() {
+        this.lastSynced = new Date();
+    }
+
+    public void setLastSynced(final long lastSynced) {
+        this.lastSynced = new Date(lastSynced);
+    }
+
+    public void setLastSynced(final Date lastSynced) {
+        if (lastSynced != null) {
+            this.lastSynced = lastSynced;
+        } else {
+            this.lastSynced = new Date(0);
         }
     }
 
