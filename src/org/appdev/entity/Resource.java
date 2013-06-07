@@ -3,6 +3,8 @@ package org.appdev.entity;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.appdev.utils.StringUtils;
@@ -27,7 +29,7 @@ public class Resource implements Serializable{
 	private String provider;
     private String uri;
 	private String mimeType;
-	private List<Resource> items;
+    private final List<Resource> resources = new ArrayList<Resource>();
 
 	private static boolean isContainsItemFromList(String input, String[] items)
 	{
@@ -105,14 +107,6 @@ public class Resource implements Serializable{
 		this.type = type;
 	}
 
-	public List<Resource> getItems() {
-		return items;
-	}
-
-	public void setItems(List<Resource> items) {
-		this.items = items;
-	}
-
 	public String getProvider() {
 		return provider;
 	}
@@ -144,6 +138,29 @@ public class Resource implements Serializable{
         this.uri = uri;
     }
 
+    public Collection<Resource> getResources() {
+        return Collections.unmodifiableCollection(this.resources);
+    }
+
+    public void addResource(final Resource resource) {
+        if (resource != null) {
+            this.resources.add(resource);
+        }
+    }
+
+    public void addResources(final Collection<Resource> resources) {
+        if (resources != null) {
+            for (final Resource resource : resources) {
+                this.addResource(resource);
+            }
+        }
+    }
+
+    public void setResources(final Collection<Resource> resources) {
+        this.resources.clear();
+        this.addResources(resources);
+    }
+
     public boolean isDynamic() {
         return "dynamic".equals(this.type);
     }
@@ -173,7 +190,7 @@ public class Resource implements Serializable{
 
         // handle any nested resources
         if (this.isDynamic()) {
-            this.items = parseResourceNodes(parser, schemaVersion);
+            this.setResources(parseResourceNodes(parser, schemaVersion));
         } else {
             ParserUtils.skip(parser);
         }
