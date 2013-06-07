@@ -27,7 +27,6 @@ import org.appdev.entity.Lesson;
 import org.appdev.entity.Notice;
 import org.appdev.entity.Quiz;
 import org.appdev.ui.AppSlidingMenu;
-import org.appdev.ui.CourseListSlidingMenu;
 import org.appdev.ui.LessonListSlidingMenu;
 import org.appdev.utils.CoursePackageDownloaderThread;
 import org.appdev.utils.FileUtils;
@@ -40,6 +39,7 @@ import org.appdev.widget.ScrollLayout;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
+import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 import android.app.ProgressDialog;
@@ -89,7 +89,8 @@ import com.viewpagerindicator.CirclePageIndicator;
  * @version 1.0
  * @created 2013-4-5
  */
-public class Main extends SherlockFragmentActivity implements SlidingActivityBase, LoginDialogFragment.Listener {
+public class Main extends SherlockFragmentActivity implements SlidingActivityBase, LoginDialogFragment.Listener,
+        CourseListFragment.Listener {
 	
 	// Used to communicate state changes in the CoursePackage DownloaderThread
 	public static final int MESSAGE_DOWNLOAD_STARTED = 1000;
@@ -157,7 +158,6 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 	private AppContext appContext;//Global Context
 		
 	protected ListFragment mLessonListMenuFrag;
-	protected ListFragment mCourseListMenuFrag;
 	protected ListFragment mAppSettingListMenuFrag;
 	
     private SlidingActivityHelper menuHelper;
@@ -960,35 +960,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 					}			
 					break;	
 				case 1://Course details and lessons
-					
-					mCourseListMenuFrag = new CourseListSlidingMenu(new SlideMenuListener(){
-						
-						@Override
-						public void reload(){
-
-							updateTextAndMediaView();
-							
-							//update Lesson list menu UI
-							
-							NavigateToNextLesson(0);
-						
-						}
-
-						
-
-						@Override
-						public void showcontent() {
-							// TODO Auto-generated method stub
-							showContent();
-						}
-					});
 					getSlidingMenu().setMode(SlidingMenu.LEFT_RIGHT);
 					getSlidingMenu().setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);					
-					
-					getSupportFragmentManager()
-					.beginTransaction()
-					.replace(R.id.menu_frame_setting, mCourseListMenuFrag)
-					.commit();
 					
 					mLessonListMenuFrag = new LessonListSlidingMenu(new SlideMenuListener(){
 						
@@ -1004,11 +977,12 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
 					});
 					getSlidingMenu().setSecondaryMenu(R.layout.menu_frame_lesson_list);
 					//getSlidingMenu().setSecondaryShadowDrawable(R.drawable.shadowright);
-					getSupportFragmentManager()
-					.beginTransaction()
-					.replace(R.id.menu_frame_lesson_list, mLessonListMenuFrag)
-					.commit();
- 
+
+                    // swap both sliding menus
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.menu_frame_setting, CourseListFragment.newInstance(R.layout.course_list_menu))
+                            .replace(R.id.menu_frame_lesson_list, mLessonListMenuFrag).commit();
 					break;			
 				
 				}
@@ -1542,5 +1516,44 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     public void onLoginSuccess(final LoginDialogFragment dialog, final String guid) {
         // trigger a sync
         EkkoSyncService.syncCourses(this);
+    }
+
+    @Override
+    public void onChangeCourse(final long courseId) {
+        final File courseManifestFile = new File(FileUtils.getEkkoCourseManifestFile(Long.toString(courseId)));
+        if (courseManifestFile.exists()) {
+            // exist and just load the native manifest.xml file
+            // set the current course to the new one
+            final AppContext appContext = AppContext.getInstance();
+            Course courseNew = (Course) appContext.readObject(Long.toString(courseId));
+            try {
+                if (courseNew == null) {
+                    courseNew = AppContext.getInstance().instanceCourse(courseManifestFile);
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            if (courseNew != null) {
+
+                if (AppContext.getPreCourse() == null) {
+                    AppContext.setPreCourse(courseNew);
+                } else {
+                    if (AppContext.getPreCourse().getId() != appContext.getCurCourse().getId()) {
+                        AppContext.setPreCourse(AppContext.getInstance().getCurCourse());
+                    }
+                    // save the courses state. may use the sha1 of the course
+                    // package
+                    appContext.saveObject(appContext.getCurCourse(), Long.toString(appContext.getCurCourse().getId()));
+                }
+                AppContext.setCurCourse(courseNew);
+            }
+        }
+
+        // update the main activity UI and update the LessonLists slide menu UI,
+        // such as media grid, progress bar state, lesson list
+        updateTextAndMediaView();
+        NavigateToNextLesson(0);
     }
 }
