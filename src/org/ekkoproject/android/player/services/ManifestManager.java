@@ -1,4 +1,4 @@
-package org.ekkoproject.android.player;
+package org.ekkoproject.android.player.services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

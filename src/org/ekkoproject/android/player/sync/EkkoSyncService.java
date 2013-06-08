@@ -3,13 +3,13 @@ package org.ekkoproject.android.player.sync;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
 import org.appdev.entity.CourseList;
-import org.ekkoproject.android.player.ManifestManager;
 import org.ekkoproject.android.player.api.ApiSocketException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.services.ManifestManager;
 
 import android.app.IntentService;
 import android.content.Context;
