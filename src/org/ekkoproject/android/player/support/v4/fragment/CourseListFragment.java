@@ -1,23 +1,17 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import static org.ekkoproject.android.player.sync.EkkoSyncService.ACTION_UPDATE_COURSES;
-
 import org.appdev.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +20,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class CourseListFragment extends ListFragment {
+public class CourseListFragment extends ListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
     public final static String ARG_LAYOUT = "org.ekkoproject.android.player.fragment.LAYOUT";
 
     private final static int DEFAULT_LAYOUT = 0;
@@ -37,7 +31,7 @@ public class CourseListFragment extends ListFragment {
     private int[] itemLayoutTo = null;
 
     private EkkoDao dao = null;
-    private LocalBroadcastReceiver broadcastReceiver = null;
+    private EkkoBroadcastReceiver broadcastReceiver = null;
 
     public static CourseListFragment newInstance() {
         return newInstance(DEFAULT_LAYOUT);
@@ -78,6 +72,11 @@ public class CourseListFragment extends ListFragment {
         super.onStart();
         this.setupListAdapter();
         this.setupBroadcastReceiver();
+    }
+
+    @Override
+    public void onCourseUpdate() {
+        this.updateCoursesList();
     }
 
     @Override
@@ -140,7 +139,7 @@ public class CourseListFragment extends ListFragment {
         }
 
         // trigger an initial update
-        this.updateNodeList();
+        this.updateCoursesList();
     }
 
     private void setupBroadcastReceiver() {
@@ -148,19 +147,17 @@ public class CourseListFragment extends ListFragment {
             this.cleanupBroadcastReceiver();
         }
 
-        this.broadcastReceiver = new LocalBroadcastReceiver();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(this.broadcastReceiver,
-                this.broadcastReceiver.getIntentFilter());
+        this.broadcastReceiver = new EkkoBroadcastReceiver(this).registerReceiver();
     }
 
     private void cleanupBroadcastReceiver() {
         if (this.broadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(this.broadcastReceiver);
+            this.broadcastReceiver.unregisterReceiver();
             this.broadcastReceiver = null;
         }
     }
 
-    private void updateNodeList() {
+    private void updateCoursesList() {
         new UpdateCursorAsyncTask().execute();
     }
 
@@ -180,22 +177,6 @@ public class CourseListFragment extends ListFragment {
             final ListAdapter adapter = CourseListFragment.this.getListAdapter();
             if (adapter instanceof CursorAdapter) {
                 ((CursorAdapter) adapter).changeCursor(c);
-            }
-        }
-    }
-
-    private class LocalBroadcastReceiver extends BroadcastReceiver {
-        private IntentFilter getIntentFilter() {
-            final IntentFilter filter = new IntentFilter();
-            filter.addAction(ACTION_UPDATE_COURSES);
-            return filter;
-        }
-
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            final String action = intent.getAction();
-            if (ACTION_UPDATE_COURSES.equals(action)) {
-                CourseListFragment.this.updateNodeList();
             }
         }
     }
