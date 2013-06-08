@@ -3,6 +3,7 @@ package org.ekkoproject.android.player.sync;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
 import org.appdev.entity.CourseList;
+import org.ekkoproject.android.player.ManifestManager;
 import org.ekkoproject.android.player.api.ApiSocketException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
@@ -106,5 +107,6 @@ public class EkkoSyncService extends IntentService {
     }
 
     private void syncManifest(final long courseId) {
+        ManifestManager.downloadManifest(this, courseId);
     }
 }
