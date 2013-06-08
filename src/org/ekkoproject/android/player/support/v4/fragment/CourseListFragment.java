@@ -37,7 +37,7 @@ public class CourseListFragment extends ListFragment {
     private int[] itemLayoutTo = null;
 
     private EkkoDao dao = null;
-    private BroadcastReceiver broadcastReceiver = null;
+    private LocalBroadcastReceiver broadcastReceiver = null;
 
     public static CourseListFragment newInstance() {
         return newInstance(DEFAULT_LAYOUT);
@@ -148,10 +148,9 @@ public class CourseListFragment extends ListFragment {
             this.cleanupBroadcastReceiver();
         }
 
-        final IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_UPDATE_COURSES);
-        this.broadcastReceiver = new SyncBroadcastReceiver();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(this.broadcastReceiver, filter);
+        this.broadcastReceiver = new LocalBroadcastReceiver();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(this.broadcastReceiver,
+                this.broadcastReceiver.getIntentFilter());
     }
 
     private void cleanupBroadcastReceiver() {
@@ -185,7 +184,13 @@ public class CourseListFragment extends ListFragment {
         }
     }
 
-    private class SyncBroadcastReceiver extends BroadcastReceiver {
+    private class LocalBroadcastReceiver extends BroadcastReceiver {
+        private IntentFilter getIntentFilter() {
+            final IntentFilter filter = new IntentFilter();
+            filter.addAction(ACTION_UPDATE_COURSES);
+            return filter;
+        }
+
         @Override
         public void onReceive(final Context context, final Intent intent) {
             final String action = intent.getAction();
