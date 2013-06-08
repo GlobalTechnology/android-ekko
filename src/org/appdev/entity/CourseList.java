@@ -8,6 +8,7 @@ import java.util.List;
 import org.appdev.app.AppException;
 import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -114,7 +115,7 @@ public class CourseList extends Entity{
             final String ns = parser.getNamespace();
             final String name = parser.getName();
             if (XML.NS_HUB.equals(ns) && XML.ELEMENT_COURSE.equals(name)) {
-                final Course course = Course.parse(parser);
+                final Course course = Course.fromXml(parser);
                 this.courseList.add(course);
                 continue;
             }

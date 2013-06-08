@@ -37,6 +37,7 @@ import org.appdev.utils.UIController;
 import org.ekkoproject.android.player.api.ApiSocketException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
+import org.ekkoproject.android.player.model.Manifest;
 
 import android.app.Application;
 import android.content.Context;
@@ -63,7 +64,7 @@ public class AppContext extends Application {
 	
 	private static String sessionID;
 	
-	private static Course curCourse = null;
+    private static Manifest curCourse = null;
 	private static Course preCourse = null;
 	
 	public static final String COURSE_MANIFEST_FILE = "manifest.xml";
@@ -798,7 +799,7 @@ public class AppContext extends Application {
 	 * Get the current course
 	 * @return
 	 */
-	public Course getCurCourse(){
+    public Manifest getCurCourse() {
 		if(curCourse == null) {
 			try {
 				curCourse = instanceCourse(null);
@@ -810,10 +811,10 @@ public class AppContext extends Application {
 		return curCourse;
 	}
 	
-	public Course instanceCourse(File manifestFile) throws IOException {
+    public Manifest instanceCourse(File manifestFile) throws IOException {
 						
 			InputStream input = null;
-			Course course = null;		
+        Manifest course = null;
 			
 			try {
 				if(manifestFile == null ){
@@ -829,7 +830,7 @@ public class AppContext extends Application {
 			
 			try {
 				CourseManifest mManifest = new CourseManifest();
-            course = new Course(-1);
+            course = new Manifest();
 				try {
 					course = CourseManifest.parse(input);
 					if(course != null) {
@@ -863,8 +864,9 @@ public class AppContext extends Application {
 	}
 	
 	public int  getCurrentLessonIndex(){
-		
-		int lessonSize = AppContext.curCourse.getLessonList().size();
+        final Course course = AppContext.getInstance().getCurCourse();
+        if (course != null) {
+            int lessonSize = course.getContent().size();
 		if(lessonSize<=0){
 			curCourse.addLesson(Lesson.getNumbLesson()); //add numb lesson
 			return 0;
@@ -874,11 +876,12 @@ public class AppContext extends Application {
 		} else{
 		
 			return curCourse.getLessonIndex();
-		}
-		//return curCourse.getLessonIndex();
+            }
+        }
+        return 0;
 	}
 	
-	public static void setCurCourse(Course curCourse) {
+    public static void setCurCourse(Manifest curCourse) {
 		AppContext.curCourse = curCourse;
 	}
 	

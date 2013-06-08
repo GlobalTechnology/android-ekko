@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.appdev.entity.Course;
 import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Course;
 
 import android.content.ContentValues;
 import android.content.Context;

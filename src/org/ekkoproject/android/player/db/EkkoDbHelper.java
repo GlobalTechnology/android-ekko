@@ -23,9 +23,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         switch (oldVersion) {
         case 1:
-            if (newVersion <= 1) {
-                break;
-            }
+            break;
         default:
             db.execSQL(Contract.Course.Resource.SQL_DELETE_TABLE);
             db.execSQL(Contract.Course.SQL_DELETE_TABLE);

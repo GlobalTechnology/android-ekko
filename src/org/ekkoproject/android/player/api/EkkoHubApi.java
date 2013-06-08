@@ -5,19 +5,19 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.ekkoproject.android.player.Constants.EKKOHUB_URI;
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Locale;
 
-import org.appdev.entity.Course;
 import org.appdev.entity.CourseList;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.TheKeySocketException;
+import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
@@ -25,15 +25,21 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.os.Build;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Xml;
 
 public final class EkkoHubApi {
     private static final Logger LOG = LoggerFactory.getLogger(EkkoHubApi.class);
+
+    /** Broadcast actions */
+    public static final String ACTION_ERROR_CONNECTION = "org.ekkoproject.android.player.api.EkkoHubApi.ERROR_CONNECTION";
+    public static final String ACTION_ERROR_INVALIDSESSION = "org.ekkoproject.android.player.api.EkkoHubApi.ERROR_INVALIDSESSION";
 
     private static final Object LOCK_SESSION = new Object();
 
@@ -56,6 +62,14 @@ public final class EkkoHubApi {
         this.context = context;
         this.thekey = new TheKey(this.context, THEKEY_CLIENTID);
         this.hubUri = hubUri;
+    }
+
+    public static void broadcastConnectionError(final Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent().setAction(ACTION_ERROR_CONNECTION));
+    }
+
+    public static void broadcastInvalidSession(final Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent().setAction(ACTION_ERROR_INVALIDSESSION));
     }
 
     private SharedPreferences getPrefs() {
@@ -136,18 +150,35 @@ public final class EkkoHubApi {
                 conn.setInstanceFollowRedirects(false);
 
                 // check for an expired session
-                // TODO: find a way to identify an expired session
                 if (useSession && conn.getResponseCode() == HTTP_UNAUTHORIZED) {
-                    // reset the session
-                    synchronized (LOCK_SESSION) {
-                        // only reset if this is still the same session
-                        if (sessionId.equals(this.getSessionId())) {
-                            this.setSessionId(null);
+                    // determine the type of auth requested
+                    String auth = conn.getHeaderField("WWW-Authenticate");
+                    if (auth != null) {
+                        auth = auth.trim();
+                        int i = auth.indexOf(" ");
+                        if (i != -1) {
+                            auth = auth.substring(0, i);
                         }
+                        auth = auth.toUpperCase(Locale.US);
+                    } else {
+                        // there isn't an auth header, so assume it is the CAS
+                        // scheme
+                        auth = "CAS";
                     }
 
-                    // throw an invalid session exception
-                    throw new InvalidSessionApiException();
+                    // the 401 is requesting CAS auth, assume session is invalid
+                    if ("CAS".equals(auth)) {
+                        // reset the session
+                        synchronized (LOCK_SESSION) {
+                            // only reset if this is still the same session
+                            if (sessionId.equals(this.getSessionId())) {
+                                this.setSessionId(null);
+                            }
+                        }
+
+                        // throw an invalid session exception
+                        throw new InvalidSessionApiException();
+                    }
                 }
 
                 // return the connection for method specific handling
@@ -182,7 +213,7 @@ public final class EkkoHubApi {
             conn = this.apiGetRequest(false, "auth/service");
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
-                return this.toString(conn.getInputStream());
+                return IOUtils.readString(conn.getInputStream());
             }
         } catch (final InvalidSessionApiException e) {
             throw new RuntimeException("unexpected exception", e);
@@ -216,7 +247,7 @@ public final class EkkoHubApi {
             // was this a valid login
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 // the sessionId is returned as the body of the response
-                return this.toString(conn.getInputStream());
+                return IOUtils.readString(conn.getInputStream());
             }
 
             return null;
@@ -271,7 +302,7 @@ public final class EkkoHubApi {
                     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
                     parser.setInput(conn.getInputStream(), "UTF-8");
                     parser.nextTag();
-                    return Course.parse(parser);
+                    return Course.fromXml(parser);
                 } catch (final XmlPullParserException e) {
                     LOG.error("course list parsing error", e);
                     return null;
@@ -286,14 +317,20 @@ public final class EkkoHubApi {
         return null;
     }
 
-    private String toString(final InputStream in) throws IOException {
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        final StringBuilder data = new StringBuilder();
-        String buffer;
-        while ((buffer = reader.readLine()) != null) {
-            data.append(buffer);
+    public void streamManifest(final long id, final OutputStream out) throws ApiSocketException,
+            InvalidSessionApiException {
+        HttpURLConnection conn = null;
+        try {
+            conn = this.apiGetRequest("courses/course/" + Long.toString(id) + "/manifest");
+
+            if (conn != null && conn.getResponseCode() == HTTP_OK) {
+                IOUtils.copy(conn.getInputStream(), out);
+            }
+        } catch (final IOException e) {
+            throw new ApiSocketException(e);
+        } finally {
+            this.closeQuietly(conn);
         }
-        return data.toString();
     }
 
     private void closeQuietly(final HttpURLConnection conn) {

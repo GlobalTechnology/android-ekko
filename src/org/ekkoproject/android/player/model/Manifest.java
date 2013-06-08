@@ -24,10 +24,6 @@ public class Manifest extends Course {
 
     private final List<CourseContent> content = new ArrayList<CourseContent>();
 
-    public Manifest() {
-        super(INVALID_COURSE);
-    }
-
     @Deprecated
     public long getId() {
         return this.courseId;
@@ -45,22 +41,22 @@ public class Manifest extends Course {
         return Collections.unmodifiableList(this.content);
     }
 
-    public void setContent(final List<CourseContent> content) {
+    protected void setContent(final List<CourseContent> content) {
         this.content.clear();
         this.addContent(content);
     }
 
-    public void addContent(final CourseContent content) {
-        if (content != null) {
-            this.content.add(content);
-        }
-    }
-
-    public void addContent(final List<CourseContent> content) {
+    protected void addContent(final List<CourseContent> content) {
         if (content != null) {
             for (final CourseContent item : content) {
                 this.addContent(item);
             }
+        }
+    }
+
+    protected void addContent(final CourseContent content) {
+        if (content != null) {
+            this.content.add(content);
         }
     }
 
@@ -105,7 +101,7 @@ public class Manifest extends Course {
         return this;
     }
 
-    private Course parseContent(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+    private Manifest parseContent(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT);
 

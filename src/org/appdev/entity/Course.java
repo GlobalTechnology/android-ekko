@@ -4,29 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
-import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class Course extends Entity {
-	
-	public static final String ID = "_id";
-	public static final String NAME = "course_name";
-	public static final String VISITED = "visited";
+public abstract class Course extends Entity {
 
-	public static final String DIR_NAME ="dir_name";
-	public static final String COURSE_BANNER = "course_banner";
-	public static final String TABLE_NAME = "courses";  //for now, we didn't use the sqlite to manage data, for simplicity we just serialize the entity
-	
-    private final long id;
-    private int version = 0;
 
 	private String course_title;
 	private String course_banner;
@@ -49,12 +36,6 @@ public class Course extends Entity {
 	
     private List<CourseContent> lessonList = new ArrayList<CourseContent>();
 
-    private Date lastSynced = new Date(0);
-
-    public Course(final long id) {
-        this.id = id;
-    }
-
     @Deprecated
     public void addLesson(Lesson lesson) {
         this.addContent(lesson);
@@ -70,17 +51,9 @@ public class Course extends Entity {
         this.setContent(lessonList);
     }
 
-    public long getId() {
-        return this.id;
-    }
+    public abstract long getId();
 
-    public int getVersion() {
-        return this.version;
-    }
-
-    public void setVersion(final int version) {
-        this.version = version;
-    }
+    public abstract int getVersion();
 
 	public Resource getResource(String resourceId) {
 		return resourceMap.get(resourceId);
@@ -223,18 +196,18 @@ public class Course extends Entity {
         return Collections.unmodifiableList(this.lessonList);
     }
 
-    public void setContent(final List<CourseContent> content) {
+    protected void setContent(final List<CourseContent> content) {
         this.lessonList.clear();
         this.addContent(content);
     }
 
-    public void addContent(final CourseContent content) {
+    protected void addContent(final CourseContent content) {
         if (content != null) {
             this.lessonList.add(content);
         }
     }
 
-    public void addContent(final List<CourseContent> content) {
+    protected void addContent(final List<CourseContent> content) {
         if (content != null) {
             for (final CourseContent item : content) {
                 this.addContent(item);
@@ -263,76 +236,6 @@ public class Course extends Entity {
                 this.addResource(resource);
             }
         }
-    }
-
-    public long getLastSynced() {
-        return this.lastSynced.getTime();
-    }
-
-    public Date getLastSyncedDate() {
-        return this.lastSynced;
-    }
-
-    public void setLastSynced() {
-        this.lastSynced = new Date();
-    }
-
-    public void setLastSynced(final long lastSynced) {
-        this.lastSynced = new Date(lastSynced);
-    }
-
-    public void setLastSynced(final Date lastSynced) {
-        if (lastSynced != null) {
-            this.lastSynced = lastSynced;
-        } else {
-            this.lastSynced = new Date(0);
-        }
-    }
-
-    public static Course parse(final XmlPullParser parser) throws XmlPullParserException, IOException {
-        parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
-        final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
-        final long courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), -1);
-        return new Course(courseId).parseInternal(parser, schemaVersion);
-    }
-
-    // XXX: maybe this should be handled with a separate object
-    @Deprecated
-    public static Manifest parseManifest(final XmlPullParser parser) throws XmlPullParserException, IOException {
-        return Manifest.fromXml(parser);
-    }
-
-    private Course parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
-        parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
-
-        this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
-        this.course_uri = parser.getAttributeValue(null, XML.ATTR_COURSE_URI);
-        this.course_zipuri = parser.getAttributeValue(null, XML.ATTR_COURSE_ZIPURI);
-
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-
-            // process recognized nodes
-            final String ns = parser.getNamespace();
-            final String name = parser.getName();
-            if (XML.NS_EKKO.equals(ns)) {
-                if (XML.ELEMENT_META.equals(name)) {
-                    this.parseMeta(parser, schemaVersion);
-                    continue;
-                } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.setResources(Resource.parseResources(parser, schemaVersion));
-                    continue;
-                }
-
-            }
-
-            // skip unrecognized nodes
-            ParserUtils.skip(parser);
-        }
-        return this;
     }
 
     protected Course parseMeta(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
@@ -376,8 +279,8 @@ public class Course extends Entity {
         return this;
     }
 
-    private Course parseMetaAuthor(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
+    protected Course parseMetaAuthor(final XmlPullParser parser, final int schemaVersion)
+            throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_META_AUTHOR);
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {

@@ -1,13 +1,14 @@
 package org.ekkoproject.android.player.sync;
 
-import org.appdev.entity.Course;
+import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+
 import org.appdev.entity.CourseList;
 import org.ekkoproject.android.player.api.ApiSocketException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
+import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ekkoproject.android.player.model.Course;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -15,15 +16,12 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
 public class EkkoSyncService extends IntentService {
-    private final static Logger LOG = LoggerFactory.getLogger(EkkoSyncService.class);
-
     // actions this service can broadcast
-    public static final String ACTION_ERROR_CONNECTION = "org.ekkoproject.android.player.sync.ERROR_CONNECTION";
-    public static final String ACTION_ERROR_INVALIDSESSION = "org.ekkoproject.android.player.sync.ERROR_INVALIDSESSION";
-    public static final String ACTION_UPDATE_COURSES = "org.ekkoproject.android.player.sync.UPDATE_COURSES";
+    public static final String ACTION_UPDATE_COURSES = "org.ekkoproject.android.player.sync.EkkoSyncService.UPDATE_COURSES";
 
     // data passed to this service in Intents
-    public static final String EXTRA_SYNCTYPE = "org.ekkoproject.android.player.sync.SYNCTYPE";
+    public static final String EXTRA_SYNCTYPE = "org.ekkoproject.android.player.sync.EkkoSyncService.SYNCTYPE";
+    public static final String EXTRA_COURSEID = "org.ekkoproject.android.player.sync.EkkoSyncService.COURSEID";
 
     public static final int SYNCTYPE_COURSES = 1;
     public static final int SYNCTYPE_MANIFEST = 2;
@@ -37,27 +35,37 @@ public class EkkoSyncService extends IntentService {
         this.ekkoApi = new EkkoHubApi(this);
     }
 
+    public static void broadcastCoursesUpdate(final Context context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent().setAction(ACTION_UPDATE_COURSES));
+    }
+
     public static void syncCourses(final Context context) {
-        LOG.debug("sending syncCourses intent");
         context.startService(new Intent(context, EkkoSyncService.class).putExtra(EXTRA_SYNCTYPE, SYNCTYPE_COURSES));
+    }
+
+    public static void syncManifest(final Context context, final long courseId) {
+        context.startService(new Intent(context, EkkoSyncService.class).putExtra(EXTRA_SYNCTYPE, SYNCTYPE_MANIFEST)
+                .putExtra(EXTRA_COURSEID, courseId));
     }
 
     /** BEGIN lifecycle */
 
     @Override
     protected void onHandleIntent(final Intent intent) {
-        LOG.debug("handling an intent");
         final int syncType = intent.getIntExtra(EXTRA_SYNCTYPE, 0);
         try {
             switch (syncType) {
             case SYNCTYPE_COURSES:
                 this.syncCourses();
                 break;
+            case SYNCTYPE_MANIFEST:
+                this.syncManifest(intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE));
+                break;
             }
         } catch (final ApiSocketException e) {
-            broadcast(ACTION_ERROR_CONNECTION);
+            EkkoHubApi.broadcastConnectionError(this);
         } catch (final InvalidSessionApiException e) {
-            broadcast(ACTION_ERROR_INVALIDSESSION);
+            EkkoHubApi.broadcastInvalidSession(this);
         }
     }
 
@@ -69,10 +77,6 @@ public class EkkoSyncService extends IntentService {
 
     /** END lifecycle */
 
-    private void broadcast(final String action) {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent().setAction(action));
-    }
-
     /**
      * synchronize all available courses from the hub
      * 
@@ -80,8 +84,6 @@ public class EkkoSyncService extends IntentService {
      * @throws InvalidSessionApiException
      */
     private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
-        LOG.debug("triggering a courses sync");
-
         final CourseList courses = this.ekkoApi.getCourseList(0, 50);
 
         for (final Course course : courses.getCourselist()) {
@@ -89,15 +91,20 @@ public class EkkoSyncService extends IntentService {
 
             final Course existing = this.dao.findCourse(course.getId(), false);
             if (existing != null) {
-                LOG.debug("updating course: {}", course.getId());
-                this.dao.update(course);
+                this.dao.update(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
+                if (course.getVersion() > course.getManifestVersion()) {
+                    EkkoSyncService.syncManifest(this, course.getId());
+                }
             } else {
-                LOG.debug("inserting course: {}", course.getId());
                 this.dao.insert(course);
+                EkkoSyncService.syncManifest(this, course.getId());
             }
         }
 
         // broadcast that courses were just updated
-        broadcast(ACTION_UPDATE_COURSES);
+        broadcastCoursesUpdate(this);
+    }
+
+    private void syncManifest(final long courseId) {
     }
 }

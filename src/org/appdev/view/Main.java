@@ -39,6 +39,7 @@ import org.appdev.widget.ScrollLayout;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
+import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
@@ -406,7 +407,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
         			//set the current course to the new one
         			//to do: need to merge the course information from hub and manifest
         			
-                    Course courseNew = (Course) appContext.readObject(Long.toString(courseId));
+                    final Course tmp = (Course) appContext.readObject(Long.toString(courseId));
+                    Manifest courseNew = tmp instanceof Manifest ? (Manifest) tmp : null;
 					try {
 						if(courseNew == null){
 							
@@ -1525,7 +1527,8 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
             // exist and just load the native manifest.xml file
             // set the current course to the new one
             final AppContext appContext = AppContext.getInstance();
-            Course courseNew = (Course) appContext.readObject(Long.toString(courseId));
+            final Course tmp = (Course) appContext.readObject(Long.toString(courseId));
+            Manifest courseNew = tmp instanceof Manifest ? (Manifest) tmp : null;
             try {
                 if (courseNew == null) {
                     courseNew = AppContext.getInstance().instanceCourse(courseManifestFile);

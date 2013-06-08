@@ -1,0 +1,32 @@
+package org.ekkoproject.android.player.db;
+
+import android.database.Cursor;
+
+public abstract class AbstractMapper<T> implements Mapper<T> {
+    protected final int getInt(final Cursor c, final String field) {
+        return this.getInt(c, field, 0);
+    }
+
+    protected final int getInt(final Cursor c, final String field, final int defValue) {
+        final int index = c.getColumnIndex(field);
+        return index != -1 ? c.getInt(index) : defValue;
+    }
+
+    protected final long getLong(final Cursor c, final String field) {
+        return this.getInt(c, field, 0);
+    }
+
+    protected final long getLong(final Cursor c, final String field, final long defValue) {
+        final int index = c.getColumnIndex(field);
+        return index != -1 ? c.getLong(index) : defValue;
+    }
+
+    protected final String getString(final Cursor c, final String field) {
+        return this.getString(c, field, null);
+    }
+
+    protected final String getString(final Cursor c, final String field, final String defValue) {
+        final int index = c.getColumnIndex(field);
+        return index != -1 ? c.getString(index) : defValue;
+    }
+}
