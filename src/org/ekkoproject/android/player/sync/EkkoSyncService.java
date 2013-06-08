@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.sync;
 
+import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
 import org.appdev.entity.CourseList;
@@ -22,18 +23,16 @@ public class EkkoSyncService extends IntentService {
 
     // data passed to this service in Intents
     public static final String EXTRA_SYNCTYPE = "org.ekkoproject.android.player.sync.EkkoSyncService.SYNCTYPE";
-    public static final String EXTRA_COURSEID = "org.ekkoproject.android.player.sync.EkkoSyncService.COURSEID";
 
     public static final int SYNCTYPE_COURSES = 1;
     public static final int SYNCTYPE_MANIFEST = 2;
 
-    private final EkkoDao dao;
-    private final EkkoHubApi ekkoApi;
+    private EkkoDao dao;
+    private EkkoHubApi ekkoApi;
+    private ManifestManager manifestManager;
 
     public EkkoSyncService() {
         super("ekko_sync_service");
-        this.dao = new EkkoDao(this);
-        this.ekkoApi = new EkkoHubApi(this);
     }
 
     public static void broadcastCoursesUpdate(final Context context) {
@@ -50,6 +49,14 @@ public class EkkoSyncService extends IntentService {
     }
 
     /** BEGIN lifecycle */
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        this.dao = new EkkoDao(this);
+        this.ekkoApi = new EkkoHubApi(this);
+        this.manifestManager = ManifestManager.getInstance(this);
+    }
 
     @Override
     protected void onHandleIntent(final Intent intent) {
@@ -73,7 +80,12 @@ public class EkkoSyncService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.dao.close();
+        if (this.dao != null) {
+            this.dao.close();
+        }
+        this.dao = null;
+        this.ekkoApi = null;
+        this.manifestManager = null;
     }
 
     /** END lifecycle */
@@ -107,6 +119,6 @@ public class EkkoSyncService extends IntentService {
     }
 
     private void syncManifest(final long courseId) {
-        ManifestManager.downloadManifest(this, courseId);
+        this.manifestManager.downloadManifest(courseId);
     }
 }

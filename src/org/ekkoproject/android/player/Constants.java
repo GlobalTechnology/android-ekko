@@ -8,6 +8,9 @@ public final class Constants {
 
     public final static long INVALID_COURSE = -1;
 
+    /** common intent extras */
+    public static final String EXTRA_COURSEID = "org.ekkoproject.android.player.COURSEID";
+
     /** XML constants */
     public final static class XML {
         public static final String NS_EKKO = "https://ekkoproject.org/manifest";

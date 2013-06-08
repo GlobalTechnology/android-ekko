@@ -1,5 +1,7 @@
 package org.ekkoproject.android.player.services;
 
+import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,104 +23,121 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Xml;
 
 public final class ManifestManager {
     private static final Logger LOG = LoggerFactory.getLogger(ManifestManager.class);
 
-    private static final Map<Long, Manifest> MANIFESTS = new HashMap<Long, Manifest>();
-    private static final Map<Long, Object> LOADINGLOCKS = new HashMap<Long, Object>();
+    /** broadcast actions */
+    public static final String ACTION_UPDATE_MANIFEST = "org.ekkoproject.android.player.services.ManifestManager.UPDATE_MANIFEST";
 
     private static final String[] PROJECTION_MANIFEST = new String[] { Contract.Course.COLUMN_NAME_MANIFEST_FILE,
             Contract.Course.COLUMN_NAME_MANIFEST_VERSION };
 
-    public static final Manifest getManifest(final Context context, final long courseId) {
+    private static ManifestManager instance = null;
+
+    private final Context context;
+    private final EkkoHubApi api;
+    private final EkkoDao dao;
+
+    private final Map<Long, Manifest> manifests = new HashMap<Long, Manifest>();
+    private final Map<Long, Object> locks = new HashMap<Long, Object>();
+
+    private ManifestManager(final Context ctx) {
+        this.context = ctx.getApplicationContext();
+        this.api = new EkkoHubApi(this.context);
+        this.dao = new EkkoDao(this.context);
+    }
+
+    public static final ManifestManager getInstance(final Context context) {
+        if (instance == null) {
+            instance = new ManifestManager(context);
+        }
+        return instance;
+    }
+
+    private static void broadcastManifestUpdate(final Context context, final long courseId) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(
+                new Intent().setAction(ACTION_UPDATE_MANIFEST).putExtra(EXTRA_COURSEID, courseId));
+    }
+
+    public Manifest getManifest(final long courseId) {
         // check to see if the manifest has been loaded already
-        synchronized (MANIFESTS) {
-            if (MANIFESTS.containsKey(courseId)) {
-                return MANIFESTS.get(courseId);
+        synchronized (this.manifests) {
+            if (this.manifests.containsKey(courseId)) {
+                return this.manifests.get(courseId);
             }
         }
 
         // load the manifest
-        return loadManifest(context, courseId);
+        return loadManifest(courseId);
     }
 
-    private static final Manifest loadManifest(final Context context, final long courseId) {
-        return loadManifest(context, courseId, true);
+    private Manifest loadManifest(final long courseId) {
+        return loadManifest(courseId, false);
     }
 
-    private static final Manifest loadManifest(final Context context, final long courseId, final boolean force) {
+    private Manifest loadManifest(final long courseId, final boolean force) {
         // lock this manifest for loading
-        synchronized (getLock(LOADINGLOCKS, courseId)) {
+        synchronized (getLoadingLock(courseId)) {
             // short-circuit if the manifest has been loaded and we aren't force
             // reloading it
             if (!force) {
-                synchronized (MANIFESTS) {
-                    if (MANIFESTS.containsKey(courseId)) {
-                        return MANIFESTS.get(courseId);
+                synchronized (this.manifests) {
+                    if (this.manifests.containsKey(courseId)) {
+                        return this.manifests.get(courseId);
                     }
                 }
             }
 
-            final EkkoDao dao = new EkkoDao(context);
-            try {
-                // fetch the course object, we don't care about resources
-                final Course course = dao.findCourse(courseId, false);
+            // fetch the course object, we don't care about resources
+            final Course course = this.dao.findCourse(courseId, false);
 
-                // short-circuit if we don't have a valid course
-                if (course == null) {
-                    synchronized (MANIFESTS) {
-                        MANIFESTS.put(courseId, null);
-                    }
+            // short-circuit if we don't have a valid course
+            if (course == null) {
+                storeManifest(courseId, null);
+                return null;
+            }
+
+            // load the manifest from disk if it exists
+            final String manifestName = course.getManifestFile();
+            if (manifestName != null) {
+                try {
+                    // return a parsed manifest
+                    final Manifest manifest = parseManifestFile(manifestName);
+                    storeManifest(courseId, manifest);
+                    return manifest;
+                } catch (final FileNotFoundException e) {
+                    // file is missing
+                } catch (final XmlPullParserException e) {
+                    // xml is invalid, delete the manifest and continue
+                    context.deleteFile(manifestName);
+                } catch (final IOException e) {
+                    // error reading file, not sure what happened so do
+                    // nothing
+                    LOG.error("error reading manifest", e);
                     return null;
                 }
 
-                // load the manifest from disk if it exists
-                final String manifestName = course.getManifestFile();
-                if (manifestName != null) {
-                    try {
-                        // parse the manifest
-                        final Manifest manifest = parseManifestFile(context, manifestName);
-
-                        // store and return the manifest
-                        synchronized (MANIFESTS) {
-                            MANIFESTS.put(courseId, manifest);
-                        }
-                        return manifest;
-                    } catch (final FileNotFoundException e) {
-                        // file is missing
-                    } catch (final XmlPullParserException e) {
-                        // xml is invalid, delete the manifest and continue
-                        context.deleteFile(manifestName);
-                    } catch (final IOException e) {
-                        // error reading file, not sure what happened so do
-                        // nothing
-                        LOG.error("error reading manifest", e);
-                        return null;
-                    }
-
-                    // we had an error loading the existing manifest, so reset
-                    // it on the course object
-                    course.setManifestFile(null);
-                    course.setManifestVersion(0);
-                    dao.update(course, PROJECTION_MANIFEST);
-                }
-
-                // manifest doesn't exist, try downloading it
-                return downloadManifest(context, dao, courseId);
-            } finally {
-                dao.close();
+                // we had an error loading the existing manifest, so reset
+                // it on the course object
+                course.setManifestFile(null);
+                course.setManifestVersion(0);
+                dao.update(course, PROJECTION_MANIFEST);
             }
+
+            // manifest doesn't exist, try downloading it
+            return downloadManifest(courseId);
         }
     }
 
-    private static final Manifest parseManifestFile(final Context context, final String manifestFile)
-            throws XmlPullParserException, IOException {
+    private Manifest parseManifestFile(final String manifestFile) throws XmlPullParserException, IOException {
         InputStream in = null;
         try {
             // parse the manifest
-            in = context.openFileInput(manifestFile);
+            in = this.context.openFileInput(manifestFile);
             final XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
             parser.setInput(in, "UTF-8");
@@ -129,29 +148,17 @@ public final class ManifestManager {
         }
     }
 
-    public static final Manifest downloadManifest(final Context context, final long courseId) {
-        final EkkoDao dao = new EkkoDao(context);
-        try {
-            // trigger the actual download
-            return downloadManifest(context, dao, courseId);
-        } finally {
-            dao.close();
-        }
-    }
-
-    private static final Manifest downloadManifest(final Context context, final EkkoDao dao, final long courseId) {
+    public Manifest downloadManifest(final long courseId) {
         // lock this manifest for downloading
-        synchronized (getLock(LOADINGLOCKS, courseId)) {
+        synchronized (getLoadingLock(courseId)) {
             // fetch the course object, we don't care about resources.
             // we fetch the Course instead of passing it as a parameter to
             // ensure it's fresh
-            final Course course = dao.findCourse(courseId, false);
+            final Course course = this.dao.findCourse(courseId, false);
 
             // short-circuit if we don't have a valid course
             if (course == null) {
-                synchronized (MANIFESTS) {
-                    MANIFESTS.put(courseId, null);
-                }
+                storeManifest(courseId, null);
                 return null;
             }
 
@@ -167,8 +174,8 @@ public final class ManifestManager {
             // download the manifest
             OutputStream out = null;
             try {
-                out = context.openFileOutput(newName, 0);
-                new EkkoHubApi(context).streamManifest(course.getId(), out);
+                out = this.context.openFileOutput(newName, 0);
+                this.api.streamManifest(course.getId(), out);
             } catch (final FileNotFoundException e) {
                 // not sure why this would happen
                 return null;
@@ -186,7 +193,7 @@ public final class ManifestManager {
             // parse the downloaded manifest
             Manifest manifest = null;
             try {
-                manifest = parseManifestFile(context, newName);
+                manifest = parseManifestFile(newName);
             } catch (final FileNotFoundException e) {
                 // file is missing (this is odd)
                 return null;
@@ -204,18 +211,14 @@ public final class ManifestManager {
                 // update the course object
                 course.setManifestFile(newName);
                 course.setManifestVersion(manifest.getVersion());
-                dao.update(course, PROJECTION_MANIFEST);
+                this.dao.update(course, PROJECTION_MANIFEST);
 
                 // store the manifest
-                synchronized (MANIFESTS) {
-                    MANIFESTS.put(courseId, manifest);
-                }
-
-                // TODO broadcast updated manifest
+                storeManifest(courseId, manifest);
 
                 // delete the old manifest
                 if (oldName != null) {
-                    context.deleteFile(oldName);
+                    this.context.deleteFile(oldName);
                 }
             }
 
@@ -224,12 +227,19 @@ public final class ManifestManager {
         }
     }
 
-    private static final <T> Object getLock(final Map<? super T, Object> locks, final T key) {
-        synchronized (locks) {
-            if (!locks.containsKey(key)) {
-                locks.put(key, new Object());
+    private void storeManifest(final long courseId, final Manifest manifest) {
+        synchronized (this.manifests) {
+            this.manifests.put(courseId, manifest);
+        }
+        broadcastManifestUpdate(this.context, courseId);
+    }
+
+    private Object getLoadingLock(final long key) {
+        synchronized (this.locks) {
+            if (!this.locks.containsKey(key)) {
+                this.locks.put(key, new Object());
             }
-            return locks.get(key);
+            return this.locks.get(key);
         }
     }
 }
