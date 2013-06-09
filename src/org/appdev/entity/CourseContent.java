@@ -5,6 +5,8 @@ public abstract class CourseContent extends Entity {
 		TYPE_LESSON, TYPE_QUIZ
 	};
 	
+    public abstract String getId();
+
 	public boolean isLesson(CourseContent content){
 	
 		return (content instanceof Lesson);

@@ -57,6 +57,7 @@ public final class Constants {
         public static final String ATTR_COURSE_ZIPURI = "zipUri";
 
         /** lesson attributes */
+        public static final String ATTR_LESSON_ID = "id";
         public static final String ATTR_LESSON_TITLE = "title";
 
         /** quiz attributes */

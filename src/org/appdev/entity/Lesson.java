@@ -23,7 +23,8 @@ public class Lesson extends CourseContent {
 	public static final String COURSE_ID = "course_id";
 	public static final String TABLE_NAME = "lessons";	
 	
-	private String guid;
+    private String id;
+
 	private String lesson_title;
 	private int visited;
 	private String last_visited;
@@ -66,7 +67,12 @@ public class Lesson extends CourseContent {
 		this.setLessonMedia(lessonMedia);		
 		
 	}
-	
+
+    @Override
+    public String getId() {
+        return this.id;
+    }
+
 	public void addText(String text){
 		
 		this.pagedTextList.addElement(text);
@@ -134,14 +140,6 @@ public class Lesson extends CourseContent {
 		this.lessonMedia = lessonMedia;
 	}
 
-	public String getGuid() {
-		return guid;
-	}
-
-	public void setGuid(String guid) {
-		this.guid = guid;
-	}
-
 	public int getTextPagerIndex() {
 		return textPagerIndex;
 	}
@@ -167,6 +165,7 @@ public class Lesson extends CourseContent {
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_LESSON);
 
+        this.id = parser.getAttributeValue(null, XML.ATTR_LESSON_ID);
         this.lesson_title = parser.getAttributeValue(null, XML.ATTR_LESSON_TITLE);
 
         while (parser.next() != XmlPullParser.END_TAG) {

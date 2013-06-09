@@ -29,25 +29,23 @@ public class Quiz  extends CourseContent{
 
     private final List<Question> questionList = new ArrayList<Question>();
 
-	public Quiz(){
-		
-	}
-	
 	public static Quiz getNumbQuiz(){
 		Quiz quiz = null;
 		quiz = new Quiz();
 		quiz.setQuizTitle("no content");
 		return quiz;
 	}
-	
-	public String getQuizId(){
-		return this.quiz_id;
-	}
-	
-	public void setQuizId(String quiz_id){
-		this.quiz_id = quiz_id;
-	}
-	
+
+    @Override
+    public String getId() {
+        return this.quiz_id;
+    }
+
+    @Deprecated
+    public String getQuizId() {
+        return this.getId();
+    }
+
 	public int getVisited(){
 		return visited;
 	}
