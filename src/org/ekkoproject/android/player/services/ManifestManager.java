@@ -30,6 +30,9 @@ import android.util.Xml;
 public final class ManifestManager {
     private static final Logger LOG = LoggerFactory.getLogger(ManifestManager.class);
 
+    public static final int FLAG_FORCE_RELOAD = 1 << 0;
+    public static final int FLAG_DONT_DOWNLOAD = 1 << 1;
+
     /** broadcast actions */
     public static final String ACTION_UPDATE_MANIFEST = "org.ekkoproject.android.player.services.ManifestManager.UPDATE_MANIFEST";
 
@@ -64,27 +67,30 @@ public final class ManifestManager {
     }
 
     public Manifest getManifest(final long courseId) {
-        // check to see if the manifest has been loaded already
-        synchronized (this.manifests) {
-            if (this.manifests.containsKey(courseId)) {
-                return this.manifests.get(courseId);
+        return this.getManifest(courseId, 0);
+    }
+
+    public Manifest getManifest(final long courseId, final int flags) {
+        // check to see if the manifest has been loaded already unless we are
+        // forcing a reload
+        if (!(FLAG_FORCE_RELOAD == (flags & FLAG_FORCE_RELOAD))) {
+            synchronized (this.manifests) {
+                if (this.manifests.containsKey(courseId)) {
+                    return this.manifests.get(courseId);
+                }
             }
         }
 
         // load the manifest
-        return loadManifest(courseId);
+        return loadManifest(courseId, flags);
     }
 
-    private Manifest loadManifest(final long courseId) {
-        return loadManifest(courseId, false);
-    }
-
-    private Manifest loadManifest(final long courseId, final boolean force) {
+    private Manifest loadManifest(final long courseId, final int flags) {
         // lock this manifest for loading
         synchronized (getLoadingLock(courseId)) {
-            // short-circuit if the manifest has been loaded and we aren't force
-            // reloading it
-            if (!force) {
+            // short-circuit if the manifest has been loaded and we aren't
+            // forcing a reload
+            if (!(FLAG_FORCE_RELOAD == (flags & FLAG_FORCE_RELOAD))) {
                 synchronized (this.manifests) {
                     if (this.manifests.containsKey(courseId)) {
                         return this.manifests.get(courseId);
@@ -129,7 +135,11 @@ public final class ManifestManager {
             }
 
             // manifest doesn't exist, try downloading it
-            return downloadManifest(courseId);
+            if (!(FLAG_DONT_DOWNLOAD == (flags & FLAG_DONT_DOWNLOAD))) {
+                return downloadManifest(courseId, flags);
+            }
+
+            return null;
         }
     }
 
@@ -149,6 +159,10 @@ public final class ManifestManager {
     }
 
     public Manifest downloadManifest(final long courseId) {
+        return this.downloadManifest(courseId, FLAG_FORCE_RELOAD);
+    }
+
+    public Manifest downloadManifest(final long courseId, final int flags) {
         // lock this manifest for downloading
         synchronized (getLoadingLock(courseId)) {
             // fetch the course object, we don't care about resources.
