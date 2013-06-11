@@ -62,4 +62,25 @@ public final class Contract {
             protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
         }
     }
+
+    public static final class CachedResource extends Base {
+        public static final String TABLE_NAME = "cachedResources";
+        public static final String COLUMN_NAME_COURSE_ID = "courseId";
+        public static final String COLUMN_NAME_SHA1 = "sha1";
+        public static final String COLUMN_NAME_SIZE = "size";
+        public static final String COLUMN_NAME_PATH = "path";
+        public static final String COLUMN_NAME_LAST_ACCESSED = "lastAccessed";
+
+        protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_SHA1, COLUMN_NAME_SIZE,
+                COLUMN_NAME_PATH, COLUMN_NAME_LAST_ACCESSED };
+        protected static final String[] PROJECTION_ACCESS = { COLUMN_NAME_LAST_ACCESSED };
+
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
+                + " INTEGER," + COLUMN_NAME_SHA1 + " TEXT," + COLUMN_NAME_SIZE + " INTEGER," + COLUMN_NAME_PATH
+                + " TEXT," + COLUMN_NAME_LAST_ACCESSED + " INTEGER, PRIMARY KEY(" + COLUMN_NAME_COURSE_ID + ", "
+                + COLUMN_NAME_SHA1 + "))";
+        protected static final String SQL_INDEX_COURSE_ID = "CREATE INDEX " + TABLE_NAME + "_" + COLUMN_NAME_COURSE_ID
+                + " ON " + TABLE_NAME + "(" + COLUMN_NAME_COURSE_ID + ")";
+        protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    }
 }

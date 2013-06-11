@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.Course;
 
 import android.content.ContentValues;
@@ -19,6 +20,7 @@ public class EkkoDao {
     // model mapping objects
     private static final Mapper<Course> COURSE_MAPPER = new CourseMapper();
     private static final Mapper<Resource> RESOURCE_MAPPER = new ResourceMapper();
+    private static final Mapper<CachedResource> CACHED_RESOURCE_MAPPER = new CachedResourceMapper();
 
     public EkkoDao(final Context context) {
         this.dbHelper = new EkkoDbHelper(context);
@@ -41,6 +43,23 @@ public class EkkoDao {
 
                 // return the loaded node
                 return (T) course;
+            }
+        } else if (entityClass.equals(CachedResource.class)) {
+            if (key.length != 2) {
+                throw new IllegalArgumentException("invalid CachedResource key");
+            }
+            final Cursor c = this.getCachedResourceCursor(Contract.CachedResource.COLUMN_NAME_COURSE_ID + " = ? AND "
+                    + Contract.CachedResource.COLUMN_NAME_SHA1 + " = ?",
+                    new String[] { key[0].toString(), key[1].toString() }, null);
+
+            if (c.getCount() > 0) {
+                // get the first node & close the cursor
+                c.moveToFirst();
+                final CachedResource resource = CACHED_RESOURCE_MAPPER.toObject(c);
+                c.close();
+
+                // return the loaded node
+                return (T) resource;
             }
         }
 
@@ -80,6 +99,17 @@ public class EkkoDao {
     public Cursor getResourcesCursor(final String whereClause, final String[] whereBindValues, final String orderBy) {
         final Cursor c = this.dbHelper.getReadableDatabase().query(Contract.Course.Resource.TABLE_NAME,
                 Contract.Course.Resource.PROJECTION_ALL, whereClause, whereBindValues, null, null, orderBy);
+
+        if (c != null) {
+            c.moveToPosition(-1);
+        }
+
+        return c;
+    }
+
+    public Cursor getCachedResourceCursor(final String whereClause, final String[] whereBindValues, final String orderBy) {
+        final Cursor c = this.dbHelper.getReadableDatabase().query(Contract.CachedResource.TABLE_NAME,
+                Contract.CachedResource.PROJECTION_ALL, whereClause, whereBindValues, null, null, orderBy);
 
         if (c != null) {
             c.moveToPosition(-1);
@@ -225,6 +255,42 @@ public class EkkoDao {
         try {
             db.delete(Contract.Course.Resource.TABLE_NAME, Contract.Course.Resource.COLUMN_NAME_COURSE_ID + " = ?",
                     new String[] { Long.toString(course.getId()) });
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void insert(final CachedResource resource) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.insert(Contract.Course.TABLE_NAME, null, CACHED_RESOURCE_MAPPER.toContentValues(resource));
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void replace(final CachedResource resource) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            this.delete(resource);
+            this.insert(resource);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void delete(final CachedResource resource) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.delete(Contract.CachedResource.TABLE_NAME, Contract.CachedResource.COLUMN_NAME_COURSE_ID + " = ? AND "
+                    + Contract.CachedResource.COLUMN_NAME_SHA1 + " = ?",
+                    new String[] { Long.toString(resource.getCourseId()), resource.getSha1() });
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
