@@ -222,6 +222,7 @@ public class Resource implements Serializable{
 
         this.type = parser.getAttributeValue(null, XML.ATTR_RESOURCE_TYPE);
         this.sha1 = parser.getAttributeValue(null, XML.ATTR_RESOURCE_SHA1);
+        this.size = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_RESOURCE_SIZE), -1);
         this.file = parser.getAttributeValue(null, XML.ATTR_RESOURCE_FILE);
         this.mimeType = parser.getAttributeValue(null, XML.ATTR_RESOURCE_MIMETYPE);
         this.provider = parser.getAttributeValue(null, XML.ATTR_RESOURCE_PROVIDER);
