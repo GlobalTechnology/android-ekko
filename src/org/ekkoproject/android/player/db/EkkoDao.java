@@ -216,7 +216,7 @@ public class EkkoDao {
         db.beginTransaction();
         try {
             for (final Resource resource : course.getResources()) {
-                this.insertResource(course, null, resource);
+                this.insertResource(resource, null);
             }
             db.setTransactionSuccessful();
         } finally {
@@ -224,13 +224,12 @@ public class EkkoDao {
         }
     }
 
-    private void insertResource(final Course course, final Resource parent, final Resource resource) {
+    private void insertResource(final Resource resource, final Resource parent) {
         final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
             // insert this resource
             final ContentValues values = RESOURCE_MAPPER.toContentValues(resource);
-            values.put(Contract.Course.Resource.COLUMN_NAME_COURSE_ID, course.getId());
             if (parent != null) {
                 values.put(Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE, parent.getId());
             }
@@ -239,7 +238,7 @@ public class EkkoDao {
             // if this resource was dynamic, insert all children resources
             if (resource.isDynamic()) {
                 for (final Resource childResource : resource.getResources()) {
-                    this.insertResource(course, resource, childResource);
+                    this.insertResource(childResource, resource);
                 }
             }
 

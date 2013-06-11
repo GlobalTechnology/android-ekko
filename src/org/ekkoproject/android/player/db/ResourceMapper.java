@@ -1,11 +1,13 @@
 package org.ekkoproject.android.player.db;
 
+import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+
 import org.appdev.entity.Resource;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public final class ResourceMapper implements Mapper<Resource> {
+public final class ResourceMapper extends AbstractMapper<Resource> {
     @Override
     public ContentValues toContentValues(final Resource resource) {
         return this.toContentValues(resource, Contract.Course.Resource.PROJECTION_ALL);
@@ -18,7 +20,9 @@ public final class ResourceMapper implements Mapper<Resource> {
 
         // only add values in the projection
         for (final String field : projection) {
-            if (Contract.Course.Resource.COLUMN_NAME_RESOURCE_ID.equals(field)) {
+            if (Contract.Course.Resource.COLUMN_NAME_COURSE_ID.equals(field)) {
+                values.put(Contract.Course.Resource.COLUMN_NAME_COURSE_ID, resource.getCourseId());
+            } else if (Contract.Course.Resource.COLUMN_NAME_RESOURCE_ID.equals(field)) {
                 values.put(Contract.Course.Resource.COLUMN_NAME_RESOURCE_ID, resource.getId());
             } else if (Contract.Course.Resource.COLUMN_NAME_TYPE.equals(field)) {
                 values.put(Contract.Course.Resource.COLUMN_NAME_TYPE, resource.getResourceType());
@@ -41,8 +45,8 @@ public final class ResourceMapper implements Mapper<Resource> {
 
     @Override
     public Resource toObject(final Cursor c) {
-        final Resource resource = new Resource();
-        resource.setId(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_RESOURCE_ID)));
+        final Resource resource = new Resource(this.getLong(c, Contract.Course.Resource.COLUMN_NAME_COURSE_ID,
+                INVALID_COURSE), this.getString(c, Contract.Course.Resource.COLUMN_NAME_RESOURCE_ID, null));
         resource.setResourceType(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_TYPE)));
         resource.setResourceMimeType(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_MIMETYPE)));
         resource.setResourceSha1(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_SHA1)));

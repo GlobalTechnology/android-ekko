@@ -89,7 +89,7 @@ public class Manifest extends Course {
                     this.parseContent(parser, schemaVersion);
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.setResources(Resource.parseResources(parser, schemaVersion));
+                    this.setResources(Resource.parseResources(parser, this.getCourseId(), schemaVersion));
                     continue;
                 }
             }

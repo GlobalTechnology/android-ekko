@@ -106,7 +106,7 @@ public class Course extends org.appdev.entity.Course {
                     this.parseMeta(parser, schemaVersion);
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.setResources(Resource.parseResources(parser, schemaVersion));
+                    this.setResources(Resource.parseResources(parser, this.getId(), schemaVersion));
                     continue;
                 }
 

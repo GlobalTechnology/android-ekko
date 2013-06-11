@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -19,9 +21,10 @@ public class Resource implements Serializable{
 	//define the mimeType the player supported
 	public static final String[] imageTypeSupported = {"image/png", "image/jpg", "image/jpeg"};
 	public static final String[] videoTypeSupported = {"video/mp4"};
-	
 
-	private String id;
+    private final long courseId;
+    private final String id;
+
 	private String sha1;
 	private long size;
 	private String file;
@@ -31,7 +34,20 @@ public class Resource implements Serializable{
 	private String mimeType;
     private final List<Resource> resources = new ArrayList<Resource>();
 
-	private static boolean isContainsItemFromList(String input, String[] items)
+    public Resource(final long courseId, final String id) {
+        this.courseId = courseId;
+        this.id = id;
+    }
+
+    public long getCourseId() {
+        return this.courseId;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    private static boolean isContainsItemFromList(String input, String[] items)
 	{
 	    for(int i =0; i < items.length; i++)
 	    {
@@ -66,13 +82,6 @@ public class Resource implements Serializable{
 		String url = null;
 		url = courseBaseHub + "/resources/resource/" + this.sha1;
 		return url;
-	}
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getResourceSha1() {
@@ -173,22 +182,44 @@ public class Resource implements Serializable{
         return "uri".equals(this.type);
     }
 
-    public static List<Resource> parseResources(final XmlPullParser parser, final int schemaVersion)
+    public static List<Resource> parseResources(final XmlPullParser parser, final long courseId, final int schemaVersion)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCES);
-        return parseResourceNodes(parser, schemaVersion);
+        return parseResourceNodes(parser, courseId, schemaVersion);
     }
 
-    public static Resource parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
-        return new Resource().parseInternal(parser, schemaVersion);
+    public static Resource fromXml(final XmlPullParser parser, final long courseId, final int schemaVersion)
+            throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCE);
+        final String id = parser.getAttributeValue(null, XML.ATTR_RESOURCE_ID);
+        return new Resource(courseId, id).parse(parser, schemaVersion);
     }
 
-    private Resource parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+    public static Resource fromXml(final XmlPullParser parser, final Course course, final int schemaVersion)
+            throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCE);
+        final String id = parser.getAttributeValue(null, XML.ATTR_RESOURCE_ID);
+        return new Resource(course.getId(), id).parse(parser, schemaVersion);
+    }
+
+    public static Resource fromXml(final XmlPullParser parser, final Manifest manifest, final int schemaVersion)
+            throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCE);
+        final String id = parser.getAttributeValue(null, XML.ATTR_RESOURCE_ID);
+        return new Resource(manifest.getCourseId(), id).parse(parser, schemaVersion);
+    }
+
+    public static Resource fromXml(final XmlPullParser parser, final Resource resource, final int schemaVersion)
+            throws XmlPullParserException, IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCE);
+        final String id = parser.getAttributeValue(null, XML.ATTR_RESOURCE_ID);
+        return new Resource(resource.getCourseId(), id).parse(parser, schemaVersion);
+    }
+
+    private Resource parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCE);
 
-        this.id = parser.getAttributeValue(null, XML.ATTR_RESOURCE_ID);
         this.type = parser.getAttributeValue(null, XML.ATTR_RESOURCE_TYPE);
         this.sha1 = parser.getAttributeValue(null, XML.ATTR_RESOURCE_SHA1);
         this.file = parser.getAttributeValue(null, XML.ATTR_RESOURCE_FILE);
@@ -198,7 +229,7 @@ public class Resource implements Serializable{
 
         // handle any nested resources
         if (this.isDynamic()) {
-            this.setResources(parseResourceNodes(parser, schemaVersion));
+            this.setResources(parseResourceNodes(parser, this.getCourseId(), schemaVersion));
         } else {
             ParserUtils.skip(parser);
         }
@@ -206,8 +237,8 @@ public class Resource implements Serializable{
         return this;
     }
 
-    private static List<Resource> parseResourceNodes(final XmlPullParser parser, final int schemaVersion)
-            throws XmlPullParserException, IOException {
+    private static List<Resource> parseResourceNodes(final XmlPullParser parser, final long courseId,
+            final int schemaVersion) throws XmlPullParserException, IOException {
         final List<Resource> resources = new ArrayList<Resource>();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -218,7 +249,7 @@ public class Resource implements Serializable{
             final String ns = parser.getNamespace();
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns) && XML.ELEMENT_RESOURCE.equals(name)) {
-                resources.add(Resource.parse(parser, schemaVersion));
+                resources.add(Resource.fromXml(parser, courseId, schemaVersion));
                 continue;
             }
 
