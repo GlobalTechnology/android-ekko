@@ -317,20 +317,40 @@ public final class EkkoHubApi {
         return null;
     }
 
-    public void streamManifest(final long id, final OutputStream out) throws ApiSocketException,
+    public long streamManifest(final long id, final OutputStream out) throws ApiSocketException,
             InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
             conn = this.apiGetRequest("courses/course/" + Long.toString(id) + "/manifest");
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
-                IOUtils.copy(conn.getInputStream(), out);
+                return IOUtils.copy(conn.getInputStream(), out);
             }
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
             this.closeQuietly(conn);
         }
+
+        return -1;
+    }
+
+    public long streamResource(final long courseId, final String sha1, final OutputStream out)
+            throws ApiSocketException, InvalidSessionApiException {
+        HttpURLConnection conn = null;
+        try {
+            conn = this.apiGetRequest("courses/course/" + Long.toString(courseId) + "/resources/resource/" + sha1);
+
+            if (conn != null && conn.getResponseCode() == HTTP_OK) {
+                return IOUtils.copy(conn.getInputStream(), out);
+            }
+        } catch (final IOException e) {
+            throw new ApiSocketException(e);
+        } finally {
+            this.closeQuietly(conn);
+        }
+
+        return -1;
     }
 
     private void closeQuietly(final HttpURLConnection conn) {
