@@ -165,6 +165,14 @@ public class Resource implements Serializable{
         return "dynamic".equals(this.type);
     }
 
+    public boolean isFile() {
+        return "file".equals(this.type);
+    }
+
+    public boolean isUri() {
+        return "uri".equals(this.type);
+    }
+
     public static List<Resource> parseResources(final XmlPullParser parser, final int schemaVersion)
             throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCES);
