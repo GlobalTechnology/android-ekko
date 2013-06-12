@@ -29,4 +29,5 @@
     <item type='id' name="ID_ACTION_REFRESH" />
     <item type="id" name="ID_ACTION_SEARCH" />
 
+    <item type="id" name="image_loader_task" />
 </resources>
