@@ -1521,7 +1521,7 @@ public class Main extends SherlockFragmentActivity implements SlidingActivityBas
     }
 
     @Override
-    public void onChangeCourse(final long courseId) {
+    public void onSelectCourse(final CourseListFragment fragment, final long courseId) {
         final File courseManifestFile = new File(FileUtils.getEkkoCourseManifestFile(Long.toString(courseId)));
         if (courseManifestFile.exists()) {
             // exist and just load the native manifest.xml file

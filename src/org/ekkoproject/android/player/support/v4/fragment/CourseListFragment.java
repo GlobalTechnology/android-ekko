@@ -88,7 +88,7 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     public void onListItemClick(final ListView l, final View v, final int position, final long id) {
         final Activity activity = getActivity();
         if (activity instanceof Listener) {
-            ((Listener) activity).onChangeCourse(id);
+            ((Listener) activity).onSelectCourse(this, id);
         }
     }
 
@@ -218,6 +218,6 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     }
 
     public interface Listener {
-        void onChangeCourse(long courseId);
+        void onSelectCourse(CourseListFragment fragment, long courseId);
     }
 }
