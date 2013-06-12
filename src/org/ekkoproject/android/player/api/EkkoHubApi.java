@@ -14,6 +14,7 @@ import java.net.URLEncoder;
 import java.util.Locale;
 
 import org.appdev.entity.CourseList;
+import org.appdev.entity.Resource;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.TheKeySocketException;
 import org.ekkoproject.android.player.model.Course;
@@ -333,6 +334,11 @@ public final class EkkoHubApi {
         }
 
         return -1;
+    }
+
+    public long streamResource(final Resource resource, final OutputStream out) throws ApiSocketException,
+            InvalidSessionApiException {
+        return this.streamResource(resource.getCourseId(), resource.getResourceSha1(), out);
     }
 
     public long streamResource(final long courseId, final String sha1, final OutputStream out)

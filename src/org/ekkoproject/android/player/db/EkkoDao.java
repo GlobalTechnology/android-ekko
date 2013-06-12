@@ -264,7 +264,7 @@ public class EkkoDao {
         final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
-            db.insert(Contract.Course.TABLE_NAME, null, CACHED_RESOURCE_MAPPER.toContentValues(resource));
+            db.insert(Contract.CachedResource.TABLE_NAME, null, CACHED_RESOURCE_MAPPER.toContentValues(resource));
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
