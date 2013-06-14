@@ -113,6 +113,7 @@ public final class ResourceManager {
 
     private final Map<Key, Object> locks = new HashMap<Key, Object>();
     private final MultiKeyLruCache<BitmapKey, Bitmap> bitmaps;
+    private final Map<Key, BitmapFactory.Options> bitmapMeta = new HashMap<Key, BitmapFactory.Options>();
     private final Map<BitmapKey, Object> bitmapLocks = new HashMap<BitmapKey, Object>();
 
     private static ResourceManager instance;
@@ -229,14 +230,20 @@ public final class ResourceManager {
                 return bitmap;
             }
 
-            // read image meta
-            final BitmapFactory.Options meta = new BitmapFactory.Options();
-            meta.inJustDecodeBounds = true;
-            try {
-                BitmapFactory.decodeFile(f.getPath(), meta);
-            } catch (final Exception e) {
-                LOG.error("error decoding image", e);
+            // get image meta
+            final Key key2 = new Key(resource);
+            BitmapFactory.Options meta = bitmapMeta.get(key2);
+            if (meta == null) {
+                meta = new BitmapFactory.Options();
+                meta.inJustDecodeBounds = true;
+                try {
+                    BitmapFactory.decodeFile(f.getPath(), meta);
+                    bitmapMeta.put(key2, meta);
+                } catch (final Exception e) {
+                    LOG.error("error decoding image", e);
+                }
             }
+
             if (meta.outMimeType == null) {
                 // invalid image
                 LOG.debug("unrecognized image: course={} sha1={}", resource.getCourseId(), resource.getResourceSha1());
