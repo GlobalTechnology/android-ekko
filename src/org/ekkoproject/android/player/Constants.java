@@ -7,6 +7,7 @@ public final class Constants {
     public final static Uri EKKOHUB_URI = Uri.parse("https://servicesdev.gcx.org/ekko/");
 
     public final static long INVALID_COURSE = -1;
+    public final static int DEFAULT_LAYOUT = 0;
 
     /** common intent extras */
     public static final String EXTRA_COURSEID = "org.ekkoproject.android.player.COURSEID";
