@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.services;
 
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
+import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -71,6 +72,8 @@ public final class ManifestManager {
     }
 
     public Manifest getManifest(final long courseId, final int flags) {
+        assertNotOnUiThread();
+
         // check to see if the manifest has been loaded already unless we are
         // forcing a reload
         if (!(FLAG_FORCE_RELOAD == (flags & FLAG_FORCE_RELOAD))) {
@@ -163,6 +166,8 @@ public final class ManifestManager {
     }
 
     public Manifest downloadManifest(final long courseId, final int flags) {
+        assertNotOnUiThread();
+
         // lock this manifest for downloading
         synchronized (getLoadingLock(courseId)) {
             // fetch the course object, we don't care about resources.

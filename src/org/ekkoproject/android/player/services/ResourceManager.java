@@ -1,5 +1,7 @@
 package org.ekkoproject.android.player.services;
 
+import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -154,6 +156,8 @@ public final class ResourceManager {
     }
 
     public Bitmap getBitmap(final Resource resource, final int width, final int height) {
+        assertNotOnUiThread();
+
         // short-circuit if this isn't a valid resource
         if (!this.isValidResource(resource)) {
             return null;
@@ -182,6 +186,8 @@ public final class ResourceManager {
     }
 
     public File getFile(final Resource resource) {
+        assertNotOnUiThread();
+
         // short-circuit if this isn't a valid resource
         if (!this.isValidResource(resource)) {
             return null;
@@ -371,6 +377,8 @@ public final class ResourceManager {
     }
 
     private Resource resolveResource(final long courseId, final String resourceId) {
+        assertNotOnUiThread();
+
         // check manifest for resource, we disable downloading of the manifest
         // for now
         Manifest manifest = this.manifestManager.getManifest(courseId, ManifestManager.FLAG_DONT_DOWNLOAD);
