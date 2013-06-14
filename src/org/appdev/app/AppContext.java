@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.appdev.R;
 import org.appdev.api.ApiClient;
 import org.appdev.entity.Course;
 import org.appdev.entity.CourseContent;
@@ -34,6 +33,7 @@ import org.appdev.utils.ImageUtils;
 import org.appdev.utils.MethodsCompat;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
+import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.api.ApiSocketException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;

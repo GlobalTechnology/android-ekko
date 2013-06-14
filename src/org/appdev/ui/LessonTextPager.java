@@ -1,9 +1,9 @@
 package org.appdev.ui;
 
-import org.appdev.R;
 import org.appdev.api.TextViewZoomListener;
 import org.appdev.app.AppContext;
 import org.appdev.entity.Lesson;
+import org.ekkoproject.android.player.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

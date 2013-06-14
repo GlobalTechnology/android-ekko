@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.appdev.R;
 import org.appdev.adapter.LessonMediaPagerAdapter;
 import org.appdev.adapter.LessonTextPagerAdapter;
 import org.appdev.adapter.ListViewCoursesAdapter;
@@ -38,6 +37,7 @@ import org.appdev.widget.PullToRefreshListView;
 import org.appdev.widget.ScrollLayout;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
+import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;

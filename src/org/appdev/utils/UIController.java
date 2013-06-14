@@ -8,7 +8,6 @@ import greendroid.widget.QuickAction;
 import java.io.File;
 import java.io.IOException;
 
-import org.appdev.R;
 import org.appdev.CustomVideoPlayer.VideoPlayer;
 import org.appdev.api.ApiClient;
 import org.appdev.app.AppContext;
@@ -21,6 +20,7 @@ import org.appdev.view.ImageZoomDialog;
 import org.appdev.view.Main;
 import org.appdev.view.Setting;
 import org.ccci.gto.android.thekey.LoginActivity;
+import org.ekkoproject.android.player.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;

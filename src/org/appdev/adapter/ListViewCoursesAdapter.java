@@ -3,12 +3,12 @@ package org.appdev.adapter;
 import java.io.File;
 import java.util.List;
 
-import org.appdev.R;
 import org.appdev.entity.Course;
 import org.appdev.entity.Resource;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.ImageUtils;
 import org.appdev.utils.UIController;
+import org.ekkoproject.android.player.R;
 
 import android.content.Context;
 import android.graphics.Bitmap;

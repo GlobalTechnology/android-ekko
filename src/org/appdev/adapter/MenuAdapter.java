@@ -1,7 +1,6 @@
 package org.appdev.adapter;
 
-import org.appdev.R;
-
+import org.ekkoproject.android.player.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;

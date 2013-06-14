@@ -5,7 +5,6 @@ import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import java.io.File;
 
-import org.appdev.R;
 import org.appdev.app.AppContext;
 import org.appdev.app.AppManager;
 import org.appdev.utils.FileUtils;
@@ -14,6 +13,7 @@ import org.appdev.utils.UIController;
 import org.appdev.utils.UpdateManager;
 import org.ccci.gto.android.thekey.LoginActivity;
 import org.ccci.gto.android.thekey.dialog.LoginDialogFragment;
+import org.ekkoproject.android.player.R;
 
 import android.annotation.TargetApi;
 import android.app.Fragment;

@@ -1,12 +1,8 @@
 package org.appdev.app;
 
 import org.appdev.utils.StringUtils;
-
-import org.appdev.view.About;
 import org.appdev.view.Main;
-
-
-import org.appdev.R;
+import org.ekkoproject.android.player.R;
 
 import android.app.Activity;
 import android.content.Intent;

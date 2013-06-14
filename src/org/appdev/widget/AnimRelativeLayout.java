@@ -1,5 +1,7 @@
 package org.appdev.widget;
 
+import org.ekkoproject.android.player.R;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -7,8 +9,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
-
-import org.appdev.R;
 
 public class AnimRelativeLayout extends RelativeLayout
 {

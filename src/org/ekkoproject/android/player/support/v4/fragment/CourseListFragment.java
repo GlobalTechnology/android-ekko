@@ -1,6 +1,6 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import org.appdev.R;
+import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;

@@ -1,7 +1,8 @@
 package org.appdev.widget;
 
 
-import org.appdev.R;
+import org.ekkoproject.android.player.R;
+
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.DisplayMetrics;

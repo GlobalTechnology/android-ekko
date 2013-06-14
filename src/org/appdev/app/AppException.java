@@ -10,11 +10,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Date;
 
-import org.appdev.R;
-
 import org.apache.http.HttpException;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.UIController;
+import org.ekkoproject.android.player.R;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

@@ -2,10 +2,10 @@ package org.appdev.ui;
 
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
-import org.appdev.R;
 import org.appdev.api.SlideMenuListener;
 import org.appdev.utils.UIController;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
+import org.ekkoproject.android.player.R;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

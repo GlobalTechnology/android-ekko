@@ -7,9 +7,9 @@ import static org.ekkoproject.android.player.fragment.Constants.ARG_COURSEID;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.appdev.R;
 import org.appdev.app.AppContext;
 import org.appdev.entity.CourseContent;
+import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestAdapter;
 import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaAdapter;

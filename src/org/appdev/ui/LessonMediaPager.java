@@ -3,7 +3,6 @@ package org.appdev.ui;
 import java.io.File;
 import java.util.List;
 
-import org.appdev.R;
 import org.appdev.app.AppContext;
 import org.appdev.entity.Course;
 import org.appdev.entity.Lesson;
@@ -12,6 +11,7 @@ import org.appdev.entity.Resource;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.StringUtils;
 import org.appdev.utils.UIController;
+import org.ekkoproject.android.player.R;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;

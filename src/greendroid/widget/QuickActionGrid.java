@@ -17,7 +17,7 @@ package greendroid.widget;
 
 import java.util.List;
 
-import org.appdev.R;
+import org.ekkoproject.android.player.R;
 
 import android.content.Context;
 import android.graphics.Rect;

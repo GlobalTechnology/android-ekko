@@ -1,10 +1,10 @@
 package org.appdev.view;
 
-import org.appdev.R;
 import org.appdev.app.AppManager;
+import org.appdev.utils.UpdateManager;
+import org.ekkoproject.android.player.R;
 
 import android.app.Activity;
-import org.appdev.utils.UpdateManager;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;

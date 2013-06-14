@@ -8,11 +8,11 @@ import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import android.os.Environment;
-import android.os.Message;
 
 import org.appdev.view.Main;
-import org.appdev.R;
+import org.ekkoproject.android.player.R;
+
+import android.os.Message;
 
 
 /**

@@ -3,15 +3,13 @@ package org.appdev.view;
 import java.io.File;
 import java.io.IOException;
 
-import org.appdev.utils.UIController;
-
-import org.appdev.app.AppException;
-import org.appdev.R;
-
 import org.appdev.api.ApiClient;
+import org.appdev.app.AppException;
 import org.appdev.utils.FileUtils;
 import org.appdev.utils.ImageUtils;
 import org.appdev.utils.StringUtils;
+import org.appdev.utils.UIController;
+import org.ekkoproject.android.player.R;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

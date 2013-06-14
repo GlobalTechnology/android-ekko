@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.app.Activity;
+import org.appdev.view.BaseActivity;
+import org.appdev.widget.AlertDialogStatic;
+import org.ekkoproject.android.player.R;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,8 +19,6 @@ import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,10 +30,6 @@ import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-
-import org.appdev.view.BaseActivity;
-import org.appdev.widget.AlertDialogStatic;
-import org.appdev.R;
 
 
 public class VideoPlayer extends BaseActivity implements OnPreparedListener, OnCompletionListener,
