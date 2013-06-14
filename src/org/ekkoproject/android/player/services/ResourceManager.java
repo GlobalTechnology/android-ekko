@@ -23,7 +23,8 @@ import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.util.IOUtils;
-import org.ekkoproject.android.player.util.WeakLruCache;
+import org.ekkoproject.android.player.util.MultiKeyLruCache;
+import org.ekkoproject.android.player.util.WeakMultiKeyLruCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.support.v4.util.LruCache;
 
 public final class ResourceManager {
     private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
@@ -56,8 +56,7 @@ public final class ResourceManager {
             }
             if (o instanceof Key) {
                 final Key key = (Key) o;
-                return super.equals(o)
-                        && this.courseId == key.courseId
+                return this.courseId == key.courseId
                         && ((this.sha1 == null && key.sha1 == null) || (this.sha1 != null && this.sha1.equals(key.sha1)));
             }
 
@@ -66,9 +65,9 @@ public final class ResourceManager {
 
         @Override
         public int hashCode() {
-            int hash = super.hashCode();
+            int hash = 0;
             hash = hash * 31 + Long.valueOf(this.courseId).hashCode();
-            hash = hash * 17 + (this.sha1 != null ? this.sha1.hashCode() : 0);
+            hash = hash * 31 + (this.sha1 != null ? this.sha1.hashCode() : 0);
             return hash;
         }
     }
@@ -111,7 +110,7 @@ public final class ResourceManager {
     private final ManifestManager manifestManager;
 
     private final Map<Key, Object> locks = new HashMap<Key, Object>();
-    private final LruCache<BitmapKey, Bitmap> bitmaps;
+    private final MultiKeyLruCache<BitmapKey, Bitmap> bitmaps;
     private final Map<BitmapKey, Object> bitmapLocks = new HashMap<BitmapKey, Object>();
 
     private static ResourceManager instance;
@@ -122,7 +121,7 @@ public final class ResourceManager {
         this.dao = new EkkoDao(this.context);
         this.manifestManager = ManifestManager.getInstance(this.context);
 
-        this.bitmaps = new WeakLruCache<BitmapKey, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 16)) {
+        this.bitmaps = new WeakMultiKeyLruCache<BitmapKey, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 16)) {
             @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
             @Override
             protected int sizeOf(final BitmapKey key, final Bitmap bitmap) {
@@ -255,14 +254,14 @@ public final class ResourceManager {
                     opts.inSampleSize = scale;
                     bitmap = BitmapFactory.decodeFile(f.getPath(), opts);
                     if (bitmap != null) {
-                        this.bitmaps.put(scaledKey, bitmap);
+                        this.bitmaps.putMulti(scaledKey, bitmap);
                     }
                 }
             }
 
             // store the bitmap in the cache
             if (bitmap != null) {
-                this.bitmaps.put(new BitmapKey(resource, width, height), bitmap);
+                this.bitmaps.putMulti(new BitmapKey(resource, width, height), bitmap);
             }
 
             // return the bitmap
