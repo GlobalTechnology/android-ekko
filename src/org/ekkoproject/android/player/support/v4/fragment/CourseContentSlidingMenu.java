@@ -168,19 +168,19 @@ public class CourseContentSlidingMenu extends Fragment {
     }
 
     private void updateManifestAdapters(final AbsListView... views) {
-        final List<ManifestAdapter<?>> adapters = new ArrayList<ManifestAdapter<?>>(2);
+        final List<ManifestAdapter> adapters = new ArrayList<ManifestAdapter>(2);
         for (final AbsListView view : views) {
             if (view != null) {
                 final ListAdapter adapter = view.getAdapter();
                 if (adapter instanceof ManifestAdapter) {
-                    adapters.add((ManifestAdapter<?>) adapter);
+                    adapters.add((ManifestAdapter) adapter);
                 }
             }
         }
 
         if (adapters.size() > 0) {
             new UpdateManifestAdaptersAsyncTask(ManifestManager.getInstance(getActivity()),
-                    adapters.toArray(new ManifestAdapter<?>[adapters.size()])).execute(courseId);
+                    adapters.toArray(new ManifestAdapter[adapters.size()])).execute(courseId);
         }
     }
 

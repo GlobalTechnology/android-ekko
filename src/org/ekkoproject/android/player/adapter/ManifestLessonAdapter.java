@@ -6,7 +6,7 @@ import org.ekkoproject.android.player.model.Manifest;
 
 import android.content.Context;
 
-public abstract class ManifestLessonAdapter<T> extends ManifestAdapter<T> {
+public abstract class ManifestLessonAdapter<T> extends AbstractManifestAdapter<T> {
     private final String lessonId;
 
     private Lesson lesson;

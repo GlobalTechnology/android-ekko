@@ -15,7 +15,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-public class ManifestContentAdapter extends ManifestAdapter<CourseContent> {
+public class ManifestContentAdapter extends AbstractManifestAdapter<CourseContent> {
     private static final List<CourseContent> NO_CONTENT = Collections.emptyList();
 
     private static final int VIEW_TYPE_LESSON = 0;

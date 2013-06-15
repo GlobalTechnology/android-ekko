@@ -5,9 +5,9 @@ import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.services.ManifestManager;
 
 public class UpdateManifestAdaptersAsyncTask extends UpdateManifestAsyncTask {
-    private final ManifestAdapter<?>[] adapters;
+    private final ManifestAdapter[] adapters;
 
-    public UpdateManifestAdaptersAsyncTask(final ManifestManager manager, final ManifestAdapter<?>... adapters) {
+    public UpdateManifestAdaptersAsyncTask(final ManifestManager manager, final ManifestAdapter... adapters) {
         super(manager);
         this.adapters = adapters;
     }
@@ -15,7 +15,7 @@ public class UpdateManifestAdaptersAsyncTask extends UpdateManifestAsyncTask {
     @Override
     protected void onPostExecute(final Manifest result) {
         super.onPostExecute(result);
-        for (final ManifestAdapter<?> adapter : this.adapters) {
+        for (final ManifestAdapter adapter : this.adapters) {
             adapter.swapManifest(result);
         }
     }
