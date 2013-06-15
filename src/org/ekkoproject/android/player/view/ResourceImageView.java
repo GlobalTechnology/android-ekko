@@ -7,9 +7,8 @@ import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
-public class ResourceImageView extends ImageView {
+public class ResourceImageView extends ScalableImageView {
     private final ResourceManager manager;
 
     private int width = 0;
