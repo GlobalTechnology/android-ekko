@@ -6,10 +6,12 @@ import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
+import org.ekkoproject.android.player.view.ResourceImageView;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -179,16 +181,27 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     }
 
     private class UpdateCursorAsyncTask extends AsyncTask<Void, Void, Cursor> {
+        boolean retry = false;
         @Override
         protected Cursor doInBackground(final Void... params) {
             synchronized (CourseListFragment.this.dao) {
-                return CourseListFragment.this.dao.getCoursesCursor();
+                try {
+                    return CourseListFragment.this.dao.getCoursesCursor();
+                } catch (final SQLiteDatabaseLockedException e) {
+                    this.retry = true;
+                }
+                return null;
             }
         }
 
         @Override
         protected void onPostExecute(final Cursor c) {
             super.onPostExecute(c);
+
+            if (this.retry) {
+                CourseListFragment.this.updateCoursesList();
+                return;
+            }
 
             // switch to the new db cursor
             final ListAdapter adapter = CourseListFragment.this.getListAdapter();
@@ -203,7 +216,12 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
         public boolean setViewValue(final View view, final Cursor c, final int columnIndex) {
             switch (view.getId()) {
             case R.id.banner:
-                if (view instanceof ImageView) {
+                if (view instanceof ResourceImageView) {
+                    ((ResourceImageView) view).setResource(
+                            c.getLong(c.getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)),
+                            c.getString(columnIndex));
+                } else if (view instanceof ImageView) {
+                    ((ImageView) view).setImageDrawable(null);
                     new LoadImageResourceAsyncTask(CourseListFragment.this.resourceManager, (ImageView) view,
                             c.getLong(c.getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)),
                             c.getString(columnIndex)).execute();
