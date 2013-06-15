@@ -16,7 +16,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
-public class ManifestLessonMediaAdapter extends ManifestLessonAdapter<Media> {
+public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Media> {
     private static final List<Media> NO_MEDIA = Collections.emptyList();
 
     private static final int VIEW_TYPE_AUDIO = 0;

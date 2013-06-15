@@ -6,17 +6,14 @@ import org.ekkoproject.android.player.model.Manifest;
 
 import android.content.Context;
 
-public abstract class ManifestLessonAdapter<T> extends AbstractManifestAdapter<T> {
+public abstract class AbstractManifestLessonAdapter<T> extends AbstractManifestAdapter<T> {
     private final String lessonId;
 
     private Lesson lesson;
 
-    public ManifestLessonAdapter(final Context context, final String lessonId) {
+    public AbstractManifestLessonAdapter(final Context context, final String lessonId) {
         super(context);
         this.lessonId = lessonId;
-        if (lessonId == null) {
-            throw new IllegalArgumentException("lessonId cannot be null");
-        }
     }
 
     protected Lesson getLesson() {
@@ -29,7 +26,7 @@ public abstract class ManifestLessonAdapter<T> extends AbstractManifestAdapter<T
 
         // find the lesson
         Lesson lesson = null;
-        if (manifest != null) {
+        if (manifest != null && this.lessonId != null) {
             for (final CourseContent content : manifest.getContent()) {
                 if (content instanceof Lesson && this.lessonId.equals(content.getId())) {
                     lesson = (Lesson) content;
