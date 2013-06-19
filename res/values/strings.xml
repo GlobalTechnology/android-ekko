@@ -67,4 +67,6 @@
     <string name="video_loading_timeout_message">It is taking a very long time to load this video. Would you like to continue, or cancel and exit?</string>
        
 
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
 </resources>
