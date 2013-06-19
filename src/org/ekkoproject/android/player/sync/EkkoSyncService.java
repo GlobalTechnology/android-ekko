@@ -99,23 +99,25 @@ public class EkkoSyncService extends IntentService {
     private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
         final CourseList courses = this.ekkoApi.getCourseList(0, 50);
 
-        for (final Course course : courses.getCourselist()) {
-            course.setLastSynced();
+        if (courses != null) {
+            for (final Course course : courses.getCourselist()) {
+                course.setLastSynced();
 
-            final Course existing = this.dao.findCourse(course.getId(), false);
-            if (existing != null) {
-                this.dao.update(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
-                if (course.getVersion() > course.getManifestVersion()) {
+                final Course existing = this.dao.findCourse(course.getId(), false);
+                if (existing != null) {
+                    this.dao.update(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
+                    if (course.getVersion() > course.getManifestVersion()) {
+                        EkkoSyncService.syncManifest(this, course.getId());
+                    }
+                } else {
+                    this.dao.insert(course);
                     EkkoSyncService.syncManifest(this, course.getId());
                 }
-            } else {
-                this.dao.insert(course);
-                EkkoSyncService.syncManifest(this, course.getId());
             }
-        }
 
-        // broadcast that courses were just updated
-        broadcastCoursesUpdate(this);
+            // broadcast that courses were just updated
+            broadcastCoursesUpdate(this);
+        }
     }
 
     private void syncManifest(final long courseId) {
