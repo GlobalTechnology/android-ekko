@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
+import static org.ekkoproject.android.player.util.ViewUtils.fragmentAnimationHack;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
@@ -29,6 +30,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class CourseListFragment extends ListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
+    private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private final static String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
 
     private int layout = DEFAULT_LAYOUT;
@@ -38,16 +40,23 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     private EkkoDao dao = null;
     private EkkoBroadcastReceiver broadcastReceiver = null;
 
+    private boolean animationHack = false;
+
     public static CourseListFragment newInstance() {
         return newInstance(DEFAULT_LAYOUT);
     }
 
     public static CourseListFragment newInstance(final int layout) {
+        return newInstance(layout, false);
+    }
+
+    public static CourseListFragment newInstance(final int layout, final boolean animationHack) {
         final CourseListFragment fragment = new CourseListFragment();
 
         // handle arguments
         final Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT, layout);
+        args.putBoolean(ARG_ANIMATIONHACK, animationHack);
         fragment.setArguments(args);
 
         return fragment;
@@ -66,6 +75,7 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.configLayout();
+        this.animationHack = getArguments().getBoolean(ARG_ANIMATIONHACK, this.animationHack);
     }
 
     @Override
@@ -101,6 +111,14 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
         if (parent instanceof Listener) {
             ((Listener) parent).onSelectCourse(this, id);
         }
+    }
+
+    @Override
+    public void onPause() {
+        if (this.animationHack) {
+            fragmentAnimationHack(this);
+        }
+        super.onPause();
     }
 
     @Override
