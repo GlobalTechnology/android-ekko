@@ -65,7 +65,8 @@ public final class EkkoBroadcastReceiver extends BroadcastReceiver {
             }
         } else if (ACTION_UPDATE_MANIFEST.equals(action) && forCourse(intent)) {
             if (owner instanceof ManifestUpdateListener) {
-                ((ManifestUpdateListener) this.owner).onManifestUpdate();
+                final long courseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
+                ((ManifestUpdateListener) this.owner).onManifestUpdate(courseId);
             }
         }
     }
@@ -75,6 +76,6 @@ public final class EkkoBroadcastReceiver extends BroadcastReceiver {
     }
 
     public interface ManifestUpdateListener {
-        void onManifestUpdate();
+        void onManifestUpdate(long courseId);
     }
 }

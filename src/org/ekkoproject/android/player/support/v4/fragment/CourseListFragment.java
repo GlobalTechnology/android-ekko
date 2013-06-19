@@ -1,5 +1,7 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
+import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
+
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
@@ -27,9 +29,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class CourseListFragment extends ListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
-    public final static String ARG_LAYOUT = "org.ekkoproject.android.player.fragment.LAYOUT";
-
-    private final static int DEFAULT_LAYOUT = 0;
+    private final static String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
 
     private int layout = DEFAULT_LAYOUT;
     private int itemLayout = R.layout.course_list_item_simple;
@@ -56,10 +56,15 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     /** BEGIN Lifecycle */
 
     @Override
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+        this.dao = new EkkoDao(activity);
+        this.resourceManager = ResourceManager.getInstance(activity);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.dao = new EkkoDao(getActivity());
-        this.resourceManager = ResourceManager.getInstance(getActivity());
         this.configLayout();
     }
 
@@ -68,7 +73,7 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
         switch (this.layout) {
         case R.layout.course_list_main:
         case R.layout.course_list_menu:
-            return inflater.inflate(this.layout, null);
+            return inflater.inflate(this.layout, container, false);
         default:
             return super.onCreateView(inflater, container, savedInstanceState);
         }
@@ -88,9 +93,13 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
 
     @Override
     public void onListItemClick(final ListView l, final View v, final int position, final long id) {
-        final Activity activity = getActivity();
-        if (activity instanceof Listener) {
-            ((Listener) activity).onSelectCourse(this, id);
+        // find the parent object (can be a fragment or activity)
+        Object parent = getParentFragment();
+        if (parent == null) {
+            parent = getActivity();
+        }
+        if (parent instanceof Listener) {
+            ((Listener) parent).onSelectCourse(this, id);
         }
     }
 
@@ -104,7 +113,9 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.dao.close();
+        // XXX: this is disabled because of a potential race between the close
+        // and the update task
+        // this.dao.close();
     }
 
     /** END Lifecycle */
@@ -182,6 +193,7 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
 
     private class UpdateCursorAsyncTask extends AsyncTask<Void, Void, Cursor> {
         boolean retry = false;
+
         @Override
         protected Cursor doInBackground(final Void... params) {
             synchronized (CourseListFragment.this.dao) {

@@ -1,40 +1,31 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
-import static org.ekkoproject.android.player.fragment.Constants.ARG_COURSEID;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.appdev.app.AppContext;
 import org.appdev.entity.CourseContent;
 import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.adapter.ManifestAdapter;
 import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaAdapter;
-import org.ekkoproject.android.player.services.ManifestManager;
-import org.ekkoproject.android.player.tasks.UpdateManifestAdaptersAsyncTask;
+import org.ekkoproject.android.player.model.Manifest;
 
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.GridView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-public class CourseContentSlidingMenu extends Fragment {
+public class CourseContentSlidingMenu extends AbstractManifestAwareFragment {
+    private String contentId;
+
     private GridView mediaView = null;
     private ListView contentListView = null;
-
-    private long courseId;
-    private String contentId;
 
     public static CourseContentSlidingMenu newInstance() {
         return new CourseContentSlidingMenu();
@@ -44,8 +35,7 @@ public class CourseContentSlidingMenu extends Fragment {
         final CourseContentSlidingMenu fragment = new CourseContentSlidingMenu();
 
         // handle arguments
-        final Bundle args = new Bundle();
-        args.putLong(ARG_COURSEID, courseId);
+        final Bundle args = buildArgs(courseId);
         args.putString(ARG_CONTENTID, contentId);
         fragment.setArguments(args);
 
@@ -61,7 +51,6 @@ public class CourseContentSlidingMenu extends Fragment {
 
         // process arguments
         final Bundle args = getArguments();
-        this.courseId = args.getLong(ARG_COURSEID, INVALID_COURSE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             this.contentId = args.getString(ARG_CONTENTID, null);
         } else {
@@ -70,7 +59,6 @@ public class CourseContentSlidingMenu extends Fragment {
 
         // restore saved state
         if (savedState != null) {
-            this.courseId = savedState.getLong(ARG_COURSEID, this.courseId);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                 this.contentId = savedState.getString(ARG_CONTENTID, this.contentId);
             } else {
@@ -84,22 +72,21 @@ public class CourseContentSlidingMenu extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_right_menu, null);
+        return inflater.inflate(R.layout.content_right_menu, container, false);
     }
 
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.findViews();
-        // this.attachContentList();
+        this.setupMediaAdapter();
+        this.setupContentListAdapter();
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        this.setupMediaAdapter();
-        this.setupContentListAdapter();
-        this.updateManifestAdapters(this.mediaView, this.contentListView);
+    protected void onManifestUpdate(Manifest manifest) {
+        super.onManifestUpdate(manifest);
+        this.updateManifestAdapters(manifest, this.mediaView, this.contentListView);
     }
 
     @Override
@@ -118,23 +105,14 @@ public class CourseContentSlidingMenu extends Fragment {
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putLong(ARG_COURSEID, this.courseId);
         outState.putString(ARG_CONTENTID, this.contentId);
     }
 
     /** END lifecycle */
 
     private void findViews() {
-        final View mediaView = getActivity().findViewById(R.id.mediaList);
-        if (mediaView instanceof GridView) {
-            this.mediaView = (GridView) mediaView;
-        }
-
-        final View contentListView = getActivity().findViewById(R.id.contentList);
-        if (contentListView instanceof ListView) {
-            this.contentListView = (ListView) contentListView;
-        }
+        this.mediaView = findView(GridView.class, R.id.mediaList);
+        this.contentListView = findView(ListView.class, R.id.contentList);
     }
 
     private void clearViews() {
@@ -167,23 +145,6 @@ public class CourseContentSlidingMenu extends Fragment {
         }
     }
 
-    private void updateManifestAdapters(final AbsListView... views) {
-        final List<ManifestAdapter> adapters = new ArrayList<ManifestAdapter>(2);
-        for (final AbsListView view : views) {
-            if (view != null) {
-                final ListAdapter adapter = view.getAdapter();
-                if (adapter instanceof ManifestAdapter) {
-                    adapters.add((ManifestAdapter) adapter);
-                }
-            }
-        }
-
-        if (adapters.size() > 0) {
-            new UpdateManifestAdaptersAsyncTask(ManifestManager.getInstance(getActivity()),
-                    adapters.toArray(new ManifestAdapter[adapters.size()])).execute(courseId);
-        }
-    }
-
     private void cleanupContentListAdapter() {
         if (this.contentListView != null) {
             this.contentListView.setAdapter(null);
@@ -198,7 +159,7 @@ public class CourseContentSlidingMenu extends Fragment {
 
     @Deprecated
     public void updateProgressBar() {
-        ProgressBar courseProgress = (ProgressBar) getActivity().findViewById(R.id.lesson_progressbar);
+        ProgressBar courseProgress = (ProgressBar) getView().findViewById(R.id.lesson_progressbar);
         final List<CourseContent> content = AppContext.getInstance().getCurCourse().getContent();
 
         // todo: need to find a better way to decide how a user finish a lesson.
