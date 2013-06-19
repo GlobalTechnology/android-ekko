@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <!-- Lesson media pager -->
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical" >
+
+        <org.ekkoproject.android.player.view.ChildViewPager
+            android:id="@+id/media"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <com.viewpagerindicator.CirclePageIndicator
+            android:id="@+id/frame_lesson_media_indicator"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/media"
+            android:layout_marginTop="-25px"
+            android:gravity="right" />
+    </RelativeLayout>
+
+    <!-- Course learing progress bar -->
+
+    <ProgressBar
+        android:id="@+id/course_progress"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="7dip"
+        android:max="100"
+        android:progressDrawable="@drawable/greenprogress"
+        android:visibility="visible" />
+
+    <!-- Lesson navigator bar -->
+
+    <LinearLayout
+        android:id="@+id/frame_course_navigator_container"
+        android:layout_width="fill_parent"
+        android:layout_height="35.0dip"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/frame_btn_previous_lesson"
+            style="@style/frame_button"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:text="@string/button_lt" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@drawable/frame_button_cutline" />
+
+        <Button
+            android:id="@+id/title"
+            style="@style/frame_button"
+            android:layout_width="0dip"
+            android:layout_weight="3"
+            android:text="lesson title" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@drawable/frame_button_cutline" />
+
+        <Button
+            android:id="@+id/frame_btn_next_lesson"
+            style="@style/frame_button"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:text="@string/button_gt" />
+    </LinearLayout>
+
+    <!-- View pager for the lesson text content -->
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="2"
+        android:orientation="vertical" >
+
+        <org.ekkoproject.android.player.view.ChildViewPager
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.viewpagerindicator.LinePageIndicator
+            android:id="@+id/frame_lesson_text_indicator"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text"
+            android:layout_marginTop="-25px"
+            android:gravity="right" />
+
+        <TextView
+            android:id="@+id/frame_lesson_progress_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/text"
+            android:layout_alignRight="@+id/text" />
+    </RelativeLayout>
+
+</LinearLayout>
