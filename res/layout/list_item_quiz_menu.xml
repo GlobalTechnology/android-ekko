@@ -9,11 +9,9 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_weight="1"
-        android:drawableLeft="@android:drawable/ic_menu_view"
         android:gravity="center_vertical"
         android:padding="10dp"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="@color/menu_item_text_selector" >
-    </TextView>
+        android:textColor="@color/menu_item_text_selector" />
 
 </LinearLayout>

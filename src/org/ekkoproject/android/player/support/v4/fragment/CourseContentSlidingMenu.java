@@ -124,8 +124,8 @@ public class CourseContentSlidingMenu extends AbstractManifestAwareFragment {
         if (this.contentListView != null) {
             // create Adapter
             final ManifestContentAdapter adapter = new ManifestContentAdapter(getActivity());
-            adapter.setLessonView(R.layout.content_list_item_lesson_simple);
-            adapter.setQuizView(R.layout.content_list_item_quiz_simple);
+            adapter.setLessonView(R.layout.list_item_lesson_menu);
+            adapter.setQuizView(R.layout.list_item_quiz_menu);
 
             // attach adapter
             this.contentListView.setAdapter(adapter);
