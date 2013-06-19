@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lessonMediaContent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <org.ekkoproject.android.player.view.ResourceImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+</FrameLayout>
