@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_COURSEID;
+import static org.ekkoproject.android.player.services.ManifestManager.FLAG_NON_BLOCKING;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +102,7 @@ public abstract class AbstractManifestAwareFragment extends Fragment implements
         return null;
     }
 
-    protected final void updateManifestAdapters(final Manifest manifest, final View... views) {
+    protected final void updateManifestAdapters(Manifest manifest, final View... views) {
         final List<ManifestAdapter> adapters = new ArrayList<ManifestAdapter>(views.length);
         for (final View view : views) {
             if (view instanceof ViewPager) {
@@ -118,6 +119,12 @@ public abstract class AbstractManifestAwareFragment extends Fragment implements
         }
 
         if (adapters.size() > 0) {
+            // try fetching the manifest with a non-blocking request if we don't
+            // have it
+            if (manifest == null) {
+                manifest = this.manifestManager.getManifest(this.courseId, FLAG_NON_BLOCKING);
+            }
+
             // lookup the manifest in the background if we don't have it already
             if (manifest == null) {
                 new UpdateManifestAdaptersAsyncTask(this.manifestManager, adapters.toArray(new ManifestAdapter[adapters
@@ -131,12 +138,19 @@ public abstract class AbstractManifestAwareFragment extends Fragment implements
     }
 
     private void updateManifest() {
-        new UpdateManifestAsyncTask(this.manifestManager) {
-            @Override
-            protected void onPostExecute(final Manifest result) {
-                super.onPostExecute(result);
-                onManifestUpdate(result);
-            }
-        }.execute(this.courseId);
+        // try retrieving the manifest using a non-blocking request
+        final Manifest manifest = this.manifestManager.getManifest(this.courseId, FLAG_NON_BLOCKING);
+
+        if (manifest != null) {
+            this.onManifestUpdate(manifest);
+        } else {
+            new UpdateManifestAsyncTask(this.manifestManager) {
+                @Override
+                protected void onPostExecute(final Manifest result) {
+                    super.onPostExecute(result);
+                    onManifestUpdate(result);
+                }
+            }.execute(this.courseId);
+        }
     }
 }
