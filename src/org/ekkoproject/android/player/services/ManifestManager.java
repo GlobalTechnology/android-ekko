@@ -34,9 +34,10 @@ public final class ManifestManager {
 
     public static final int FLAG_FORCE_RELOAD = 1 << 0;
     public static final int FLAG_DONT_DOWNLOAD = 1 << 1;
+    public static final int FLAG_NON_BLOCKING = 1 << 2;
 
     /** broadcast actions */
-    public static final String ACTION_UPDATE_MANIFEST = "org.ekkoproject.android.player.services.ManifestManager.UPDATE_MANIFEST";
+    public static final String ACTION_UPDATE_MANIFEST = ManifestManager.class.getName() + ".ACTION_UPDATE_MANIFEST";
 
     private static final String[] PROJECTION_MANIFEST = new String[] { Contract.Course.COLUMN_NAME_MANIFEST_FILE,
             Contract.Course.COLUMN_NAME_MANIFEST_VERSION };
@@ -73,7 +74,10 @@ public final class ManifestManager {
     }
 
     public Manifest getManifest(final long courseId, final int flags) {
-        assertNotOnUiThread();
+        // throw an error if we are not non-blocking on the ui thread
+        if (!(FLAG_NON_BLOCKING == (flags & FLAG_NON_BLOCKING))) {
+            assertNotOnUiThread();
+        }
 
         // check to see if the manifest has been loaded already unless we are
         // forcing a reload
@@ -85,8 +89,14 @@ public final class ManifestManager {
             }
         }
 
-        // load the manifest
-        return loadManifest(courseId, flags);
+        // load the manifest if we are not non-blocking (a.k.a. blocking, double
+        // negatives are fun)
+        if (!(FLAG_NON_BLOCKING == (flags & FLAG_NON_BLOCKING))) {
+            return loadManifest(courseId, flags);
+        }
+
+        // just return null;
+        return null;
     }
 
     private Manifest loadManifest(final long courseId, final int flags) {
