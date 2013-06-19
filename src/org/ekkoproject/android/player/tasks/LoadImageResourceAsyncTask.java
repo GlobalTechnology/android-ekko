@@ -12,6 +12,7 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.services.ResourceManager;
 
 import android.annotation.TargetApi;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,6 +34,8 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
     private final String resourceId;
     private final int width;
     private final int height;
+
+    boolean retry = false;
 
     public LoadImageResourceAsyncTask(final ResourceManager manager, final ImageView view, final long courseId,
             final String resourceId) {
@@ -62,8 +65,11 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
     @Override
     protected Bitmap doInBackground(final Void... params) {
         if (checkImageView()) {
-            final Bitmap bitmap = manager.getBitmap(this.courseId, this.resourceId, this.width, this.height);
-            return bitmap;
+            try {
+                return this.manager.getBitmap(this.courseId, this.resourceId, this.width, this.height);
+            } catch (final SQLiteDatabaseLockedException e) {
+                this.retry = true;
+            }
         }
 
         return null;
@@ -73,11 +79,16 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
     protected void onPostExecute(final Bitmap bitmap) {
         super.onPostExecute(bitmap);
 
-        if (bitmap != null && checkImageView()) {
+        if (checkImageView()) {
             final ImageView view = this.view.get();
-            if (view != null) {
-                view.setImageBitmap(bitmap);
-                view.setTag(R.id.image_loader_task, null);
+            if (bitmap != null) {
+                if (view != null) {
+                    view.setImageBitmap(bitmap);
+                    view.setTag(R.id.image_loader_task, null);
+                }
+            } else if (this.retry) {
+                new LoadImageResourceAsyncTask(this.manager, view, this.courseId, this.resourceId, this.width,
+                        this.height).execute();
             }
         }
     }
