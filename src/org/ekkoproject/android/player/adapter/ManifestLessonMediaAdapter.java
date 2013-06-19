@@ -8,6 +8,7 @@ import java.util.List;
 import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.services.CourseManager;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
@@ -98,7 +99,7 @@ public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Me
 
     @Override
     public long getItemId(final int position) {
-        return position;
+        return CourseManager.convertId(this.getCourseId(), this.media.get(position).getId());
     }
 
     @Override
@@ -113,22 +114,22 @@ public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Me
 
         // set the thumbnail image
         final View thumbnailView = view.findViewById(R.id.thumbnail);
-        if (thumbnailView instanceof ImageView) {
+        if (thumbnailView instanceof ResourceImageView) {
+            if (thumbnail != null) {
+                ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), thumbnail);
+            } else if (media.isImage() && resource != null) {
+                ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), resource);
+            } else {
+                ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), null);
+            }
+        } else if (thumbnailView instanceof ImageView) {
             ((ImageView) thumbnailView).setImageDrawable(null);
             if (thumbnail != null) {
-                new LoadImageResourceAsyncTask(this.resourceManager, (ImageView) thumbnailView, this.getManifest()
-                        .getCourseId(), thumbnail).execute();
+                new LoadImageResourceAsyncTask(this.resourceManager, (ImageView) thumbnailView, this.getCourseId(),
+                        thumbnail).execute();
             } else if (media.isImage() && resource != null) {
-                new LoadImageResourceAsyncTask(this.resourceManager, (ImageView) thumbnailView, this.getManifest()
-                        .getCourseId(), resource).execute();
-            }
-        } else if (thumbnailView instanceof ResourceImageView) {
-            if (thumbnail != null) {
-                ((ResourceImageView) thumbnailView).setResource(this.getManifest().getCourseId(), thumbnail);
-            } else if (media.isImage() && resource != null) {
-                ((ResourceImageView) thumbnailView).setResource(this.getManifest().getCourseId(), resource);
-            } else {
-                ((ResourceImageView) thumbnailView).setResource(this.getManifest().getCourseId(), null);
+                new LoadImageResourceAsyncTask(this.resourceManager, (ImageView) thumbnailView, this.getCourseId(),
+                        resource).execute();
             }
         }
 

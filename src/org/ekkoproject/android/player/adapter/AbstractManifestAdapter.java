@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.adapter;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
+import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.util.ViewUtils.assertValidLayout;
 
 import org.ekkoproject.android.player.model.Manifest;
@@ -40,6 +41,10 @@ public abstract class AbstractManifestAdapter<T> extends BaseAdapter implements 
 
     protected Manifest getManifest() {
         return this.manifest;
+    }
+
+    protected long getCourseId() {
+        return this.manifest != null ? this.manifest.getCourseId() : INVALID_COURSE;
     }
 
     @Override
