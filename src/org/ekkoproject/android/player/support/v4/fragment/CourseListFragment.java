@@ -18,6 +18,7 @@ import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,9 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class CourseListFragment extends ListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
     private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
-    private final static String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
+    private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
+    private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
+    private static final String ARG_LISTVIEWSTATE = CourseListFragment.class.getName() + ".ARG_LISTVIEWSTATE";
 
     private int layout = DEFAULT_LAYOUT;
     private int itemLayout = R.layout.course_list_item_simple;
@@ -39,6 +42,11 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     private ResourceManager resourceManager = null;
     private EkkoDao dao = null;
     private EkkoBroadcastReceiver broadcastReceiver = null;
+
+    private ListView listView = null;
+
+    private boolean needsRestore = false;
+    private Bundle viewState = new Bundle();
 
     private boolean animationHack = false;
 
@@ -72,10 +80,16 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate(final Bundle savedState) {
+        super.onCreate(savedState);
         this.configLayout();
         this.animationHack = getArguments().getBoolean(ARG_ANIMATIONHACK, this.animationHack);
+
+        if (savedState != null) {
+            if (savedState.containsKey(ARG_VIEWSTATE)) {
+                this.viewState = savedState.getBundle(ARG_VIEWSTATE);
+            }
+        }
     }
 
     @Override
@@ -87,6 +101,13 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
         default:
             return super.onCreateView(inflater, container, savedInstanceState);
         }
+    }
+
+    @Override
+    public void onActivityCreated(final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        this.findViews();
+        this.needsRestore = true;
     }
 
     @Override
@@ -124,8 +145,15 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     @Override
     public void onStop() {
         super.onStop();
+        this.saveViewState();
         this.cleanupBroadcastReceiver();
         this.cleanupListAdapter();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.clearViews();
     }
 
     @Override
@@ -134,6 +162,14 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
         // XXX: this is disabled because of a potential race between the close
         // and the update task
         // this.dao.close();
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        this.saveViewState();
+        outState.putBundle(ARG_VIEWSTATE, this.viewState);
     }
 
     /** END Lifecycle */
@@ -209,6 +245,29 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
         new UpdateCursorAsyncTask().execute();
     }
 
+    private void findViews() {
+        this.listView = this.getListView();
+    }
+
+    private void clearViews() {
+        this.listView = null;
+    }
+
+    private void saveViewState() {
+        if (this.listView != null) {
+            this.viewState.putParcelable(ARG_LISTVIEWSTATE, this.listView.onSaveInstanceState());
+        }
+    }
+
+    private void restoreViewState() {
+        if (this.listView != null) {
+            final Parcelable state = this.viewState.getParcelable(ARG_LISTVIEWSTATE);
+            if (state != null) {
+                this.listView.onRestoreInstanceState(state);
+            }
+        }
+    }
+
     private class UpdateCursorAsyncTask extends AsyncTask<Void, Void, Cursor> {
         boolean retry = false;
 
@@ -237,6 +296,10 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
             final ListAdapter adapter = CourseListFragment.this.getListAdapter();
             if (adapter instanceof CursorAdapter) {
                 ((CursorAdapter) adapter).changeCursor(c);
+                if (CourseListFragment.this.needsRestore) {
+                    CourseListFragment.this.restoreViewState();
+                    CourseListFragment.this.needsRestore = false;
+                }
             }
         }
     }
