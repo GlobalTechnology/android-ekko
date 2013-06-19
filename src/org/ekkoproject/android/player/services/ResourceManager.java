@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.services;
 
 import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
+import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -368,15 +369,6 @@ public final class ResourceManager {
         }
 
         return null;
-    }
-
-    private <T> Object getLock(final Map<T, Object> locks, final T key) {
-        synchronized (locks) {
-            if (!locks.containsKey(key)) {
-                locks.put(key, new Object());
-            }
-            return locks.get(key);
-        }
     }
 
     private boolean isValidResource(final Resource resource) {

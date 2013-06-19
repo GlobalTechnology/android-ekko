@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.services;
 
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
+import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public final class ManifestManager {
 
     private Manifest loadManifest(final long courseId, final int flags) {
         // lock this manifest for loading
-        synchronized (getLoadingLock(courseId)) {
+        synchronized (getLock(this.locks, courseId)) {
             // short-circuit if the manifest has been loaded and we aren't
             // forcing a reload
             if (!(FLAG_FORCE_RELOAD == (flags & FLAG_FORCE_RELOAD))) {
@@ -169,7 +170,7 @@ public final class ManifestManager {
         assertNotOnUiThread();
 
         // lock this manifest for downloading
-        synchronized (getLoadingLock(courseId)) {
+        synchronized (getLock(this.locks, courseId)) {
             // fetch the course object, we don't care about resources.
             // we fetch the Course instead of passing it as a parameter to
             // ensure it's fresh
@@ -251,14 +252,5 @@ public final class ManifestManager {
             this.manifests.put(courseId, manifest);
         }
         broadcastManifestUpdate(this.context, courseId);
-    }
-
-    private Object getLoadingLock(final long key) {
-        synchronized (this.locks) {
-            if (!this.locks.containsKey(key)) {
-                this.locks.put(key, new Object());
-            }
-            return this.locks.get(key);
-        }
     }
 }
