@@ -41,6 +41,33 @@ public class Manifest extends Course {
         return Collections.unmodifiableList(this.content);
     }
 
+    public CourseContent getContent(final String contentId) {
+        if (contentId != null) {
+            for (final CourseContent content : this.content) {
+                if (contentId.equals(content.getId())) {
+                    return content;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Lesson getLesson(final String lessonId) {
+        final CourseContent lesson = this.getContent(lessonId);
+        if (lesson instanceof Lesson) {
+            return (Lesson) lesson;
+        }
+        return null;
+    }
+
+    public Quiz getQuiz(final String quizId) {
+        final CourseContent quiz = this.getContent(quizId);
+        if (quiz instanceof Quiz) {
+            return (Quiz) quiz;
+        }
+        return null;
+    }
+
     protected void setContent(final List<CourseContent> content) {
         this.content.clear();
         this.addContent(content);
