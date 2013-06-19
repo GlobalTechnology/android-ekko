@@ -10,6 +10,9 @@ public final class Constants {
     public final static long INVALID_COURSE = -1;
     public final static int DEFAULT_LAYOUT = 0;
 
+    /** common arguments */
+    public static final String ARG_LAYOUT = Constants.class.getPackage().getName() + ".ARG_LAYOUT";
+
     /** common intent extras */
     public static final String EXTRA_COURSEID = Constants.class.getPackage().getName() + ".EXTRA_COURSEID";
 
