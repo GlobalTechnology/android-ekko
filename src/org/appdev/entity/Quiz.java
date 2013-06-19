@@ -27,14 +27,7 @@ public class Quiz  extends CourseContent{
 	private int visited;
 	private String last_visited;
 
-    private final List<Question> questionList = new ArrayList<Question>();
-
-	public static Quiz getNumbQuiz(){
-		Quiz quiz = null;
-		quiz = new Quiz();
-		quiz.setQuizTitle("no content");
-		return quiz;
-	}
+    private final List<Question> questions = new ArrayList<Question>();
 
     @Override
     public String getId() {
@@ -70,8 +63,19 @@ public class Quiz  extends CourseContent{
 		this.quiz_title = quiz_title;
 	}
 
-    public List<Question> getQuestionList() {
-        return Collections.unmodifiableList(this.questionList);
+    public List<Question> getQuestions() {
+        return Collections.unmodifiableList(this.questions);
+    }
+
+    public Question getQuestion(final String questionId) {
+        if (questionId != null) {
+            for (final Question question : this.questions) {
+                if (questionId.equals(question.getId())) {
+                    return question;
+                }
+            }
+        }
+        return null;
     }
 
     public static Quiz fromXml(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
@@ -97,7 +101,7 @@ public class Quiz  extends CourseContent{
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_QUIZ_QUESTION.equals(name)) {
-                    this.questionList.add(Question.fromXml(parser, schemaVersion));
+                    this.questions.add(Question.fromXml(parser, schemaVersion));
                     continue;
                 }
             }

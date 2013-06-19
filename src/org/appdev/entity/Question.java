@@ -11,13 +11,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 public class Question extends Entity{
-	public static final String ID = "_id";
-	public static final String VISITED = "visited";
-	public static final String LAST	= "last_visited";
-
-	
 	private String id;
-	private String question_title;
 	private int visited;
 	private String last_visited;
 	private String question_type;
@@ -25,12 +19,10 @@ public class Question extends Entity{
     private String question = "";
     private final List<Option> options = new ArrayList<Option>();
 
-	public Question(){
-		
-	}
-	
+    public String getId() {
+        return this.id;
+    }
 
-	
 	public int getVisited(){
 		return visited;
 	}
@@ -45,15 +37,6 @@ public class Question extends Entity{
 	
 	public void setLastVisited(String last_visited){
 		this.last_visited = last_visited;
-	}
-
-
-	public String getQuestionTitle() {
-		return question_title;
-	}
-
-	public void setQestionTitle(String question_title) {
-		this.question_title = question_title;
 	}
 
 	public String getGuid() {

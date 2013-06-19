@@ -39,10 +39,6 @@ public class Lesson extends CourseContent {
     private final List<Media> media = new ArrayList<Media>();
     private final List<String> text = new ArrayList<String>();
 
-	public Lesson(){
-		
-	}
-	
 	public static Lesson getNumbLesson(){
 		Lesson lesson = null;
 		lesson = new Lesson();
@@ -59,13 +55,6 @@ public class Lesson extends CourseContent {
 		media.setMediaThumbnailID(""); //to do: add a default media later
 		mediaElement.addElement(media);
 		return lesson;
-	}
-	
-	
-	public Lesson(TextElements pagedText, MediaElements lessonMedia){
-		this.pagedTextList = pagedText;
-		this.setLessonMedia(lessonMedia);		
-		
 	}
 
     @Override
@@ -126,6 +115,17 @@ public class Lesson extends CourseContent {
 
     public List<Media> getMedia() {
         return Collections.unmodifiableList(this.media);
+    }
+
+    public Media getMedia(final String mediaId) {
+        if (mediaId != null) {
+            for (final Media media : this.media) {
+                if (mediaId.equals(media.getId())) {
+                    return media;
+                }
+            }
+        }
+        return null;
     }
 
     public List<String> getText() {
