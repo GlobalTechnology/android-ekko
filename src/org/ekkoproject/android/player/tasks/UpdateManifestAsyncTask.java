@@ -15,7 +15,7 @@ public abstract class UpdateManifestAsyncTask extends AsyncTask<Long, Void, Mani
     }
 
     @Override
-    protected Manifest doInBackground(final Long... params) {
+    protected final Manifest doInBackground(final Long... params) {
         if (params.length > 0) {
             return manager.getManifest(params[0]);
         }
@@ -24,6 +24,8 @@ public abstract class UpdateManifestAsyncTask extends AsyncTask<Long, Void, Mani
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public AsyncTask<Long, Void, Manifest> execute(final long courseId) {
+        // TODO: background execution can be short-circuited if the manifest is
+        // already loaded
         final Long[] params = new Long[] { courseId };
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             return this.executeOnExecutor(THREAD_POOL_EXECUTOR, params);
