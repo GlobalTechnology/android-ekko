@@ -11,4 +11,4 @@
     sliding:touchModeAbove="margin"
     sliding:touchModeBehind="fullscreen"
     sliding:viewAbove="@layout/fragment_course"
-    sliding:viewBehind="@layout/menu_frame_right" />
+    sliding:viewBehind="@layout/frame_drawer_right" />

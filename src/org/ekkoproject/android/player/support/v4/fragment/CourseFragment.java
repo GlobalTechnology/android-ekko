@@ -16,6 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+
 public class CourseFragment extends AbstractManifestAwareFragment {
     private static final String ARG_ANIMATIONHACK = CourseFragment.class.getName() + ".ARG_ANIMATIONHACK";
 
@@ -23,6 +28,7 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     private int layout = R.layout.fragment_course;
 
     private ViewPager contentPager = null;
+    private SlidingMenu slidingMenu = null;
 
     public static CourseFragment newInstance(final long courseId) {
         return newInstance(courseId, false);
@@ -49,6 +55,7 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     @Override
     public void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
+        this.setHasOptionsMenu(true);
 
         // load arguments
         final Bundle args = getArguments();
@@ -66,6 +73,25 @@ public class CourseFragment extends AbstractManifestAwareFragment {
         super.onActivityCreated(savedInstanceState);
         this.findViews();
         this.setupContentPager();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_course, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.lessons:
+            if (this.slidingMenu != null) {
+                this.slidingMenu.toggle();
+            }
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -93,6 +119,7 @@ public class CourseFragment extends AbstractManifestAwareFragment {
 
     private void findViews() {
         this.contentPager = findView(ViewPager.class, R.id.content);
+        this.slidingMenu = findView(SlidingMenu.class, R.id.slidingmenu);
     }
 
     private void clearViews() {
@@ -112,9 +139,12 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     }
 
     private void updateNavigationDrawer(final String contentId) {
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.menu_frame_right, CourseContentSlidingMenu.newInstance(this.getCourseId(), contentId))
-                .commit();
+        if (this.slidingMenu != null) {
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame_drawer_right,
+                            CourseContentSlidingMenu.newInstance(this.getCourseId(), contentId)).commit();
+        }
     }
 
     private void setupContentPager() {
