@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.ARG_LAYOUT;
+import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import java.util.List;
@@ -63,6 +64,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     /** BEGIN lifecycle */
 
     @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
         this.setHasOptionsMenu(true);
@@ -71,6 +73,18 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         final Bundle args = getArguments();
         this.layout = args.getInt(ARG_LAYOUT, R.layout.fragment_course);
         this.animationHack = getArguments().getBoolean(ARG_ANIMATIONHACK, this.animationHack);
+
+        // restore saved state
+        if (savedState != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                this.contentId = savedState.getString(ARG_CONTENTID, this.contentId);
+            } else {
+                final String contentId = savedState.getString(ARG_CONTENTID);
+                if (contentId != null) {
+                    this.contentId = contentId;
+                }
+            }
+        }
     }
 
     @Override
@@ -201,6 +215,12 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
         this.clearViews();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_CONTENTID, this.contentId);
     }
 
     /** END lifecycle */
