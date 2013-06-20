@@ -30,6 +30,8 @@ public abstract class AbstractManifestAwareFragment extends SherlockFragment imp
 
     private long courseId = INVALID_COURSE;
 
+    private Manifest manifest = null;
+
     protected static final Bundle buildArgs(final long courseId) {
         final Bundle args = new Bundle();
         args.putLong(ARG_COURSEID, courseId);
@@ -59,6 +61,7 @@ public abstract class AbstractManifestAwareFragment extends SherlockFragment imp
     }
 
     protected void onManifestUpdate(final Manifest manifest) {
+        this.manifest = manifest;
     }
 
     @Override
@@ -69,12 +72,21 @@ public abstract class AbstractManifestAwareFragment extends SherlockFragment imp
 
     /** END lifecycle */
 
-    protected final ManifestManager getManifestManager() {
-        return this.manifestManager;
+    protected final Manifest getManifest() {
+        return this.manifest;
     }
 
     protected final long getCourseId() {
         return this.courseId;
+    }
+
+    protected final Object getPotentialListener() {
+        // find the parent object (can be a fragment or activity)
+        Object parent = getParentFragment();
+        if (parent == null) {
+            parent = getActivity();
+        }
+        return parent;
     }
 
     private void setupBroadcastReceiver() {
