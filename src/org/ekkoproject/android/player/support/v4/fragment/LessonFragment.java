@@ -15,7 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class LessonFragment extends AbstractManifestAwareFragment {
+public class LessonFragment extends AbstractManifestAwareFragment implements View.OnClickListener {
     private static final String ARG_PAGERSTATE = LessonFragment.class.getName() + ".ARG_PAGERSTATE";
     private static final String ARG_MEDIAPAGERSTATE = LessonFragment.class.getName() + ".ARG_MEDIAPAGERSTATE";
     private static final String ARG_TEXTPAGERSTATE = LessonFragment.class.getName() + ".ARG_TEXTPAGERSTATE";
@@ -23,6 +23,8 @@ public class LessonFragment extends AbstractManifestAwareFragment {
 
     private ViewPager mediaPager = null;
     private ViewPager textPager = null;
+    private View nextButton = null;
+    private View prevButton = null;
 
     private boolean needsRestore = false;
     private Bundle pagerState = new Bundle();
@@ -72,6 +74,22 @@ public class LessonFragment extends AbstractManifestAwareFragment {
         this.findViews();
         this.setupMediaPagerAdapter();
         this.setupTextPagerAdapter();
+        this.setupNavButtons();
+    }
+
+    @Override
+    public void onClick(final View v) {
+        final Object listener = this.getPotentialListener();
+        if (listener instanceof Listener) {
+            switch (v.getId()) {
+            case R.id.nextContent:
+                ((Listener) listener).onNextContent(this.lessonId);
+                return;
+            case R.id.prevContent:
+                ((Listener) listener).onPreviousContent(this.lessonId);
+                return;
+            }
+        }
     }
 
     @Override
@@ -115,11 +133,22 @@ public class LessonFragment extends AbstractManifestAwareFragment {
     private void findViews() {
         this.mediaPager = findView(ViewPager.class, R.id.media);
         this.textPager = findView(ViewPager.class, R.id.text);
+        this.nextButton = findView(View.class, R.id.nextContent);
+        this.prevButton = findView(View.class, R.id.prevContent);
     }
 
     private void clearViews() {
         this.mediaPager = null;
         this.textPager = null;
+    }
+
+    private void setupNavButtons() {
+        if (this.nextButton != null) {
+            this.nextButton.setOnClickListener(this);
+        }
+        if (this.prevButton != null) {
+            this.prevButton.setOnClickListener(this);
+        }
     }
 
     private void setupMediaPagerAdapter() {
@@ -150,5 +179,11 @@ public class LessonFragment extends AbstractManifestAwareFragment {
         if (this.mediaPager != null) {
             this.mediaPager.onRestoreInstanceState(this.pagerState.getParcelable(ARG_MEDIAPAGERSTATE));
         }
+    }
+
+    public interface Listener {
+        void onNextContent(String contentId);
+
+        void onPreviousContent(String contentId);
     }
 }
