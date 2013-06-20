@@ -65,9 +65,14 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
- 	
-	
-		<activity android:name="com.actionbarsherlock.app.SherlockActivity" />
+        <activity
+            android:name="org.ekkoproject.android.player.activity.MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="sensorPortrait" />
+        <activity
+            android:name="org.ekkoproject.android.player.activity.MediaVideoActivity"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
 
         <service
             android:name="org.ekkoproject.android.player.sync.EkkoSyncService"
