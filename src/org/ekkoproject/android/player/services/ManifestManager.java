@@ -54,7 +54,7 @@ public final class ManifestManager {
     private ManifestManager(final Context ctx) {
         this.context = ctx.getApplicationContext();
         this.api = new EkkoHubApi(this.context);
-        this.dao = new EkkoDao(this.context);
+        this.dao = EkkoDao.getInstance(ctx);
     }
 
     public static final ManifestManager getInstance(final Context context) {

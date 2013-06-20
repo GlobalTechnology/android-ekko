@@ -81,7 +81,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
     @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
-        this.dao = new EkkoDao(activity);
+        this.dao = EkkoDao.getInstance(activity);
         this.resourceManager = ResourceManager.getInstance(activity);
     }
 

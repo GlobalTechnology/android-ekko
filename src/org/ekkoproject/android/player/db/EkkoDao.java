@@ -22,8 +22,23 @@ public class EkkoDao {
     private static final Mapper<Resource> RESOURCE_MAPPER = new ResourceMapper();
     private static final Mapper<CachedResource> CACHED_RESOURCE_MAPPER = new CachedResourceMapper();
 
-    public EkkoDao(final Context context) {
+    private static Object instanceLock = new Object();
+    private static EkkoDao instance = null;
+
+    private EkkoDao(final Context context) {
         this.dbHelper = new EkkoDbHelper(context);
+    }
+
+    public static final EkkoDao getInstance(final Context context) {
+        if (instance == null) {
+            synchronized (instanceLock) {
+                if (instance == null) {
+                    instance = new EkkoDao(context.getApplicationContext());
+                }
+            }
+        }
+
+        return instance;
     }
 
     @SuppressWarnings("unchecked")
@@ -294,9 +309,5 @@ public class EkkoDao {
         } finally {
             db.endTransaction();
         }
-    }
-
-    public void close() {
-        this.dbHelper.close();
     }
 }

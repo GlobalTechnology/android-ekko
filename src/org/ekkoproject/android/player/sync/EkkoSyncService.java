@@ -53,7 +53,7 @@ public class EkkoSyncService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.dao = new EkkoDao(this);
+        this.dao = EkkoDao.getInstance(this);
         this.ekkoApi = new EkkoHubApi(this);
         this.manifestManager = ManifestManager.getInstance(this);
     }
@@ -80,9 +80,6 @@ public class EkkoSyncService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (this.dao != null) {
-            this.dao.close();
-        }
         this.dao = null;
         this.ekkoApi = null;
         this.manifestManager = null;

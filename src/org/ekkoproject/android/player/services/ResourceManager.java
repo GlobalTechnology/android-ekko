@@ -122,7 +122,7 @@ public final class ResourceManager {
     private ResourceManager(final Context ctx) {
         this.context = ctx.getApplicationContext();
         this.api = new EkkoHubApi(this.context);
-        this.dao = new EkkoDao(this.context);
+        this.dao = EkkoDao.getInstance(ctx);
         this.manifestManager = ManifestManager.getInstance(this.context);
 
         this.bitmaps = new WeakMultiKeyLruCache<BitmapKey, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 16)) {
