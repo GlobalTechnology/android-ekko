@@ -23,11 +23,13 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
-public class CourseFragment extends AbstractManifestAwareFragment {
+public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
+        ViewPager.OnPageChangeListener {
     private static final String ARG_ANIMATIONHACK = CourseFragment.class.getName() + ".ARG_ANIMATIONHACK";
 
-    private boolean animationHack = false;
     private int layout = R.layout.fragment_course;
+    private boolean animationHack = false;
+    private String contentId = null;
 
     private ViewPager contentPager = null;
     private DrawerLayout drawerLayout = null;
@@ -108,7 +110,60 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
         this.updateManifestAdapters(manifest, this.contentPager);
-        this.updateNavigationDrawer(manifest);
+
+        if (manifest != null) {
+            // set the contentId if it is not currently set
+            if (this.contentId == null) {
+                final List<CourseContent> content = manifest.getContent();
+                if (content.size() > 0) {
+                    this.onSelectContent(content.get(0).getId());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onNextContent(final String contentId) {
+        final Manifest manifest = this.getManifest();
+        if (manifest != null) {
+            final int index = manifest.findContent(contentId) + 1;
+            final List<CourseContent> content = manifest.getContent();
+            if (content.size() > index) {
+                this.onSelectContent(content.get(index).getId());
+            }
+        }
+    }
+
+    @Override
+    public void onPreviousContent(final String contentId) {
+        final Manifest manifest = this.getManifest();
+        if (manifest != null) {
+            final int index = manifest.findContent(contentId) - 1;
+            final List<CourseContent> content = manifest.getContent();
+            if (content.size() > 0) {
+                this.onSelectContent(content.get(index < 0 ? 0 : index).getId());
+            }
+        }
+    }
+
+    public void onSelectContent(final String contentId) {
+        // only update if contentId changed
+        if (!((contentId == null && this.contentId == null) || (contentId != null && contentId.equals(this.contentId)))) {
+            this.contentId = contentId;
+            this.updateContentPager();
+            this.updateNavigationDrawer();
+        }
+    }
+
+    @Override
+    public void onPageSelected(final int position) {
+        final Manifest manifest = this.getManifest();
+        if (manifest != null) {
+            final List<CourseContent> content = manifest.getContent();
+            if (content.size() > position) {
+                this.onSelectContent(content.get(position).getId());
+            }
+        }
     }
 
     @Override
@@ -135,21 +190,11 @@ public class CourseFragment extends AbstractManifestAwareFragment {
 
     private void clearViews() {
         this.contentPager = null;
+        this.drawerLayout = null;
+        this.slidingMenu = null;
     }
 
-    private void updateNavigationDrawer(final Manifest manifest) {
-        if (manifest != null && this.contentPager != null) {
-            final List<CourseContent> content = manifest.getContent();
-            final int i = this.contentPager.getCurrentItem();
-            String contentId = null;
-            if (i < content.size()) {
-                contentId = content.get(i).getId();
-            }
-            this.updateNavigationDrawer(contentId);
-        }
-    }
-
-    private void updateNavigationDrawer(final String contentId) {
+    private void updateNavigationDrawer() {
         if (this.slidingMenu != null || this.drawerLayout != null) {
             getChildFragmentManager()
                     .beginTransaction()
@@ -161,6 +206,28 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     private void setupContentPager() {
         if (this.contentPager != null) {
             this.contentPager.setAdapter(new ManifestContentPagerAdapter(getChildFragmentManager()));
+            this.contentPager.setOnPageChangeListener(this);
         }
+    }
+
+    private void updateContentPager() {
+        if (this.contentPager != null) {
+            final Manifest manifest = this.getManifest();
+            int index = 0;
+            if (manifest != null) {
+                index = manifest.findContent(this.contentId);
+            }
+            this.contentPager.setCurrentItem(index, false);
+        }
+    }
+
+    /** ignored callbacks */
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
 }
