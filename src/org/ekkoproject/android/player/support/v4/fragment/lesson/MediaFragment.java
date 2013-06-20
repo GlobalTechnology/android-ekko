@@ -5,6 +5,8 @@ import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.activity.MediaImageActivity;
+import org.ekkoproject.android.player.activity.MediaVideoActivity;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
@@ -20,14 +22,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public class MediaFragment extends AbstractManifestAwareFragment {
-    private static final String ARG_MEDIAID = "org.ekkoproject.android.player.support.v4.fragment.lesson.MediaFragment.ARG_MEDIAID";
+public class MediaFragment extends AbstractManifestAwareFragment implements View.OnClickListener {
+    private static final String ARG_MEDIAID = MediaFragment.class.getName() + ".ARG_MEDIAID";
 
     private String lessonId = null;
     private String mediaId = null;
 
     private ResourceManager resourceManager = null;
+    private Media media = null;
 
+    private View openButton = null;
     private ImageView thumbnail = null;
 
     public static MediaFragment newInstance(final long courseId, final String lessonId, final String mediaId) {
@@ -75,12 +79,39 @@ public class MediaFragment extends AbstractManifestAwareFragment {
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.findViews();
+        this.setupOpenButton();
     }
 
     @Override
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
-        this.updateMediaThumbnail(manifest);
+        Media media = null;
+        if (manifest != null) {
+            final Lesson lesson = manifest.getLesson(this.lessonId);
+            if (lesson != null) {
+                media = lesson.getMedia(this.mediaId);
+            }
+        }
+        this.media = media;
+
+        this.updateMediaThumbnail();
+    }
+
+    @Override
+    public void onClick(final View v) {
+        switch (v.getId()) {
+        case R.id.openButton:
+            if (this.media != null) {
+                if (this.media.isVideo()) {
+                    startActivity(MediaVideoActivity.newIntent(getActivity(), this.getCourseId(),
+                            this.media.getMediaResourceID()));
+                } else if (this.media.isImage()) {
+                    startActivity(MediaImageActivity.newIntent(getActivity(), this.getCourseId(),
+                            this.media.getMediaResourceID()));
+                }
+            }
+            break;
+        }
     }
 
     @Override
@@ -92,30 +123,32 @@ public class MediaFragment extends AbstractManifestAwareFragment {
     /** END lifecycle */
 
     private void findViews() {
+        this.openButton = findView(View.class, R.id.openButton);
         this.thumbnail = findView(ImageView.class, R.id.thumbnail);
     }
 
     private void clearViews() {
+        this.openButton = null;
         this.thumbnail = null;
     }
 
-    private void updateMediaThumbnail(final Manifest manifest) {
+    private void setupOpenButton() {
+        if (this.openButton != null) {
+            this.openButton.setOnClickListener(this);
+        }
+    }
+
+    private void updateMediaThumbnail() {
         if (this.thumbnail != null) {
             // find the resource id for the thumbnail
             String resourceId = null;
-            if (manifest != null) {
-                final Lesson lesson = manifest.getLesson(this.lessonId);
-                if (lesson != null) {
-                    final Media media = lesson.getMedia(this.mediaId);
-                    if (media != null) {
-                        resourceId = media.getMediaThumbnailID();
+            if (this.media != null) {
+                resourceId = media.getMediaThumbnailID();
 
-                        // use the actual image if this is an image resource and
-                        // there isn't a thumbnail
-                        if (resourceId == null && media.isImage()) {
-                            resourceId = media.getMediaResourceID();
-                        }
-                    }
+                // use the actual image if this is an image resource and
+                // there isn't a thumbnail
+                if (resourceId == null && media.isImage()) {
+                    resourceId = media.getMediaResourceID();
                 }
             }
 
