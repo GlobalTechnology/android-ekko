@@ -8,6 +8,7 @@ import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 import org.ekkoproject.android.player.services.ResourceManager;
+import org.ekkoproject.android.player.sync.EkkoSyncService;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
 
@@ -21,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +32,12 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class CourseListFragment extends ListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+
+public class CourseListFragment extends SherlockListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
     private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
@@ -83,6 +88,7 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     @Override
     public void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
+        this.setHasOptionsMenu(true);
         this.configLayout();
         this.animationHack = getArguments().getBoolean(ARG_ANIMATIONHACK, this.animationHack);
 
@@ -91,6 +97,12 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
                 this.viewState = savedState.getBundle(ARG_VIEWSTATE);
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_course_list, menu);
     }
 
     @Override
@@ -116,6 +128,17 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
         super.onStart();
         this.setupListAdapter();
         this.setupBroadcastReceiver();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch(item.getItemId()) {
+        case R.id.refresh:
+            EkkoSyncService.syncCourses(getActivity());
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
