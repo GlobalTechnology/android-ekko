@@ -1,7 +1,7 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
-import static org.ekkoproject.android.player.util.ViewUtils.fragmentAnimationHack;
+import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
@@ -15,6 +15,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabaseLockedException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,17 +40,16 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
 
     private int layout = DEFAULT_LAYOUT;
     private int itemLayout = R.layout.course_list_item_simple;
+    private boolean animationHack = false;
+    private Bitmap animationHackImage = null;
+    private boolean needsRestore = false;
+    private Bundle viewState = new Bundle();
 
     private ResourceManager resourceManager = null;
     private EkkoDao dao = null;
     private EkkoBroadcastReceiver broadcastReceiver = null;
 
     private ListView listView = null;
-
-    private boolean needsRestore = false;
-    private Bundle viewState = new Bundle();
-
-    private boolean animationHack = false;
 
     public static CourseListFragment newInstance() {
         return newInstance(DEFAULT_LAYOUT);
@@ -137,7 +138,10 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     @Override
     public void onPause() {
         if (this.animationHack) {
-            fragmentAnimationHack(this);
+            final View view = getView();
+            if (view != null) {
+                this.animationHackImage = getBitmapFromView(view);
+            }
         }
         super.onPause();
     }
@@ -151,7 +155,22 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
     }
 
     @Override
+    @SuppressWarnings("deprecation")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onDestroyView() {
+        if (this.animationHack && this.animationHackImage != null) {
+            final View view = getView();
+            if (view != null) {
+                final BitmapDrawable background = new BitmapDrawable(getResources(), this.animationHackImage);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    view.setBackground(background);
+                } else {
+                    view.setBackgroundDrawable(background);
+                }
+            }
+        }
+        this.animationHackImage = null;
+
         super.onDestroyView();
         this.clearViews();
     }

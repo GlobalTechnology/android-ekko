@@ -1,7 +1,7 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.ARG_LAYOUT;
-import static org.ekkoproject.android.player.util.ViewUtils.fragmentAnimationHack;
+import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import java.util.List;
 
@@ -10,6 +10,10 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentPagerAdapter;
 import org.ekkoproject.android.player.model.Manifest;
 
+import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -29,6 +33,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
     private int layout = R.layout.fragment_course;
     private boolean animationHack = false;
+    private Bitmap animationHackImage = null;
     private String contentId = null;
 
     private ViewPager contentPager = null;
@@ -169,13 +174,31 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     @Override
     public void onPause() {
         if (this.animationHack) {
-            fragmentAnimationHack(this);
+            final View view = getView();
+            if (view != null) {
+                this.animationHackImage = getBitmapFromView(view);
+            }
         }
         super.onPause();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onDestroyView() {
+        if (this.animationHack && this.animationHackImage != null) {
+            final View view = getView();
+            if (view != null) {
+                final BitmapDrawable background = new BitmapDrawable(getResources(), this.animationHackImage);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    view.setBackground(background);
+                } else {
+                    view.setBackgroundDrawable(background);
+                }
+            }
+        }
+        this.animationHackImage = null;
+
         this.clearViews();
         super.onDestroyView();
     }
