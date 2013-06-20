@@ -11,7 +11,9 @@ import org.ekkoproject.android.player.adapter.ManifestContentPagerAdapter;
 import org.ekkoproject.android.player.model.Manifest;
 
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     private int layout = R.layout.fragment_course;
 
     private ViewPager contentPager = null;
+    private DrawerLayout drawerLayout = null;
     private SlidingMenu slidingMenu = null;
 
     public static CourseFragment newInstance(final long courseId) {
@@ -85,6 +88,13 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.lessons:
+            if (this.drawerLayout != null) {
+                if (this.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                    this.drawerLayout.closeDrawer(GravityCompat.END);
+                } else {
+                    this.drawerLayout.openDrawer(GravityCompat.END);
+                }
+            }
             if (this.slidingMenu != null) {
                 this.slidingMenu.toggle();
             }
@@ -119,6 +129,7 @@ public class CourseFragment extends AbstractManifestAwareFragment {
 
     private void findViews() {
         this.contentPager = findView(ViewPager.class, R.id.content);
+        this.drawerLayout = findView(DrawerLayout.class, R.id.drawer_layout);
         this.slidingMenu = findView(SlidingMenu.class, R.id.slidingmenu);
     }
 
@@ -139,7 +150,7 @@ public class CourseFragment extends AbstractManifestAwareFragment {
     }
 
     private void updateNavigationDrawer(final String contentId) {
-        if (this.slidingMenu != null) {
+        if (this.slidingMenu != null || this.drawerLayout != null) {
             getChildFragmentManager()
                     .beginTransaction()
                     .replace(R.id.frame_drawer_right,

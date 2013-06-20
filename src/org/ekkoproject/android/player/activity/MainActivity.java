@@ -188,7 +188,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
                 .setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in,
                         R.anim.slide_right_out)
                 .replace(R.id.frame_content,
-                        CourseFragment.newInstance(R.layout.fragment_course_slidingmenu_wrapper, courseId, true))
+                        CourseFragment.newInstance(R.layout.fragment_course_drawer_wrapper, courseId, true))
                 .addToBackStack(null).commit();
 
         // update the DrawerLayout ActionBar toggle
