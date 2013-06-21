@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 
 public final class IOUtils {
     private static final int DEFAULT_BUFFER_SIZE = 4096;
@@ -18,6 +19,12 @@ public final class IOUtils {
             } catch (final IOException e) {
                 // suppress the error
             }
+        }
+    }
+
+    public static final void closeQuietly(final HttpURLConnection conn) {
+        if (conn != null) {
+            conn.disconnect();
         }
     }
 

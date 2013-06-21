@@ -251,7 +251,7 @@ public final class EkkoHubApi {
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
-            this.closeQuietly(conn);
+            IOUtils.closeQuietly(conn);
         }
 
         return null;
@@ -287,7 +287,7 @@ public final class EkkoHubApi {
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
-            this.closeQuietly(conn);
+            IOUtils.closeQuietly(conn);
         }
     }
 
@@ -319,7 +319,7 @@ public final class EkkoHubApi {
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
-            this.closeQuietly(conn);
+            IOUtils.closeQuietly(conn);
         }
 
         return null;
@@ -345,7 +345,7 @@ public final class EkkoHubApi {
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
-            this.closeQuietly(conn);
+            IOUtils.closeQuietly(conn);
         }
 
         return null;
@@ -363,7 +363,7 @@ public final class EkkoHubApi {
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
-            this.closeQuietly(conn);
+            IOUtils.closeQuietly(conn);
         }
 
         return -1;
@@ -386,15 +386,9 @@ public final class EkkoHubApi {
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
-            this.closeQuietly(conn);
+            IOUtils.closeQuietly(conn);
         }
 
         return -1;
-    }
-
-    private void closeQuietly(final HttpURLConnection conn) {
-        if (conn != null) {
-            conn.disconnect();
-        }
     }
 }
