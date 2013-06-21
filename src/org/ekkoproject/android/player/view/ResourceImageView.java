@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.view;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
+import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 
@@ -61,6 +62,8 @@ public class ResourceImageView extends ScalableImageView {
             new LoadImageResourceAsyncTask(this.manager, this, this.courseId, this.resourceId, this.width, this.height)
                     .execute();
         } else {
+            // clear the image and any pending image_loader_task
+            this.setTag(R.id.image_loader_task, null);
             this.setImageDrawable(null);
         }
     }
