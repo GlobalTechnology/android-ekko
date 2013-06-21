@@ -1,8 +1,8 @@
 package org.ekkoproject.android.player.util;
 
 public final class StringUtils {
-    private static final char[] HEXCHAR = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
-            'F' };
+    private static final char[] HEXCHAR = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+            'f' };
 
     public static String bytesToHex(final byte[] bytes) {
         final char[] hexOut = new char[bytes.length * 2];
