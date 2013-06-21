@@ -242,7 +242,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
             getChildFragmentManager()
                     .beginTransaction()
                     .replace(R.id.frame_drawer_right,
-                            CourseContentSlidingMenu.newInstance(this.getCourseId(), contentId)).commit();
+                            CourseContentDrawerFragment.newInstance(this.getCourseId(), this.contentId)).commit();
         }
     }
 

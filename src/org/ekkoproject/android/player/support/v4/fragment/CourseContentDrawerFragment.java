@@ -2,10 +2,6 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
-import java.util.List;
-
-import org.appdev.app.AppContext;
-import org.appdev.entity.CourseContent;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaAdapter;
@@ -19,20 +15,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
-public class CourseContentSlidingMenu extends AbstractManifestAwareFragment {
+public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
     private String contentId;
 
     private GridView mediaView = null;
     private ListView contentListView = null;
 
-    public static CourseContentSlidingMenu newInstance() {
-        return new CourseContentSlidingMenu();
+    public static CourseContentDrawerFragment newInstance() {
+        return new CourseContentDrawerFragment();
     }
 
-    public static CourseContentSlidingMenu newInstance(final long courseId, final String contentId) {
-        final CourseContentSlidingMenu fragment = new CourseContentSlidingMenu();
+    public static CourseContentDrawerFragment newInstance(final long courseId, final String contentId) {
+        final CourseContentDrawerFragment fragment = new CourseContentDrawerFragment();
 
         // handle arguments
         final Bundle args = buildArgs(courseId);
@@ -72,7 +67,7 @@ public class CourseContentSlidingMenu extends AbstractManifestAwareFragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.content_right_menu, container, false);
+        return inflater.inflate(R.layout.fragment_course_content_drawer, container, false);
     }
 
     @Override
@@ -122,13 +117,13 @@ public class CourseContentSlidingMenu extends AbstractManifestAwareFragment {
 
     private void setupContentListAdapter() {
         if (this.contentListView != null) {
-            // create Adapter
+            // attach adapter
             final ManifestContentAdapter adapter = new ManifestContentAdapter(getActivity());
             adapter.setLessonView(R.layout.list_item_lesson_menu);
             adapter.setQuizView(R.layout.list_item_quiz_menu);
-
-            // attach adapter
             this.contentListView.setAdapter(adapter);
+
+            // attach select item listener
         }
     }
 
@@ -157,18 +152,7 @@ public class CourseContentSlidingMenu extends AbstractManifestAwareFragment {
         }
     }
 
-    @Deprecated
-    public void updateProgressBar() {
-        ProgressBar courseProgress = (ProgressBar) getView().findViewById(R.id.lesson_progressbar);
-        final List<CourseContent> content = AppContext.getInstance().getCurCourse().getContent();
-
-        // todo: need to find a better way to decide how a user finish a lesson.
-
-        if (content.size() > 0 && courseProgress != null) {
-            int progress = AppContext.getCourseProgress(AppContext.getInstance().getCurCourse());
-
-            courseProgress.setProgress(progress <= courseProgress.getMax() ? progress : courseProgress.getMax());
-        }
+    public interface Listener {
+        public void onSelectContent(final String contentId);
     }
-
 }
