@@ -94,26 +94,39 @@ public class EkkoSyncService extends IntentService {
      * @throws InvalidSessionApiException
      */
     private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
-        final CourseList courses = this.ekkoApi.getCourseList(0, 50);
+        boolean hasMore = true;
+        int start = 0;
+        int limit = 50;
+        while (hasMore) {
+            final CourseList courses = this.ekkoApi.getCourseList(start, limit);
+            if (courses != null) {
+                for (final Course course : courses.getCourselist()) {
+                    course.setLastSynced();
 
-        if (courses != null) {
-            for (final Course course : courses.getCourselist()) {
-                course.setLastSynced();
-
-                final Course existing = this.dao.findCourse(course.getId(), false);
-                if (existing != null) {
-                    this.dao.update(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
-                    if (course.getVersion() > course.getManifestVersion()) {
+                    final Course existing = this.dao.findCourse(course.getId(), false);
+                    if (existing != null) {
+                        this.dao.update(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
+                        if (course.getVersion() > existing.getManifestVersion()) {
+                            EkkoSyncService.syncManifest(this, course.getId());
+                        }
+                    } else {
+                        this.dao.insert(course);
                         EkkoSyncService.syncManifest(this, course.getId());
                     }
-                } else {
-                    this.dao.insert(course);
-                    EkkoSyncService.syncManifest(this, course.getId());
                 }
-            }
 
-            // broadcast that courses were just updated
-            broadcastCoursesUpdate(this);
+                // broadcast that courses were just updated
+                if (courses.getCourselist().size() > 0) {
+                    broadcastCoursesUpdate(this);
+                }
+
+                // update values
+                limit = courses.getLimit();
+                start = courses.getStart() + limit;
+                hasMore = courses.isHasMore();
+            } else {
+                break;
+            }
         }
     }
 
