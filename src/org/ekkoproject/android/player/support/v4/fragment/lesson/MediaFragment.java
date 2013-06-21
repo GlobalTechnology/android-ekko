@@ -1,9 +1,14 @@
 package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
+import static org.appdev.entity.Resource.PROVIDER_NONE;
+import static org.appdev.entity.Resource.PROVIDER_VIMEO;
+import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
+import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
 import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
+import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
 import org.ekkoproject.android.player.activity.MediaVideoActivity;
@@ -15,6 +20,7 @@ import org.ekkoproject.android.player.view.ResourceImageView;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -103,6 +109,30 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
         case R.id.openButton:
             if (this.media != null) {
                 if (this.media.isVideo()) {
+                    // get the target resource
+                    Resource resource = null;
+                    final Manifest manifest = this.getManifest();
+                    if (manifest != null) {
+                        resource = manifest.getResource(this.media.getMediaResourceID());
+                    }
+
+                    // check to see if the resource is a provider resource
+                    if (resource != null && resource.isUri()) {
+                        switch (resource.getProvider()) {
+                        case PROVIDER_NONE:
+                            break;
+                        case PROVIDER_VIMEO:
+                        case PROVIDER_YOUTUBE:
+                            final Intent intent = providerIntent(resource);
+                            if (intent != null) {
+                                startActivity(intent);
+                                return;
+                            }
+                        default:
+                            return;
+                        }
+                    }
+
                     startActivity(MediaVideoActivity.newIntent(getActivity(), this.getCourseId(),
                             this.media.getMediaResourceID()));
                 } else if (this.media.isImage()) {

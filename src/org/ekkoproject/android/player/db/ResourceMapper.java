@@ -33,7 +33,7 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
             } else if (Contract.Course.Resource.COLUMN_NAME_SIZE.equals(field)) {
                 values.put(Contract.Course.Resource.COLUMN_NAME_SIZE, resource.getResourceSize());
             } else if (Contract.Course.Resource.COLUMN_NAME_PROVIDER.equals(field)) {
-                values.put(Contract.Course.Resource.COLUMN_NAME_PROVIDER, resource.getProvider());
+                values.put(Contract.Course.Resource.COLUMN_NAME_PROVIDER, resource.getProviderName());
             } else if (Contract.Course.Resource.COLUMN_NAME_URI.equals(field)) {
                 values.put(Contract.Course.Resource.COLUMN_NAME_URI, resource.getUri());
             }
