@@ -10,6 +10,7 @@ import org.appdev.entity.Lesson;
 import org.appdev.entity.Quiz;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.services.CourseManager;
 
 import android.content.Context;
 import android.view.View;
@@ -61,7 +62,7 @@ public class ManifestContentAdapter extends AbstractManifestAdapter<CourseConten
 
     @Override
     public long getItemId(final int position) {
-        return position;
+        return CourseManager.convertId(this.getCourseId(), this.content.get(position).getId());
     }
 
     @Override

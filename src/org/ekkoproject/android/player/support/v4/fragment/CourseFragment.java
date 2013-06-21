@@ -29,7 +29,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
-        ViewPager.OnPageChangeListener {
+        CourseContentDrawerFragment.Listener, ViewPager.OnPageChangeListener {
     private static final String ARG_ANIMATIONHACK = CourseFragment.class.getName() + ".ARG_ANIMATIONHACK";
 
     private int layout = R.layout.fragment_course;
@@ -165,6 +165,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         }
     }
 
+    @Override
     public void onSelectContent(final String contentId) {
         // only update if contentId changed
         if (!((contentId == null && this.contentId == null) || (contentId != null && contentId.equals(this.contentId)))) {
@@ -172,6 +173,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
             this.updateContentPager();
             this.updateNavigationDrawer();
         }
+        this.closeNavigationDrawer();
     }
 
     @Override
@@ -243,6 +245,12 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
                     .beginTransaction()
                     .replace(R.id.frame_drawer_right,
                             CourseContentDrawerFragment.newInstance(this.getCourseId(), this.contentId)).commit();
+        }
+    }
+
+    private void closeNavigationDrawer() {
+        if (this.drawerLayout != null) {
+            this.drawerLayout.closeDrawers();
         }
     }
 

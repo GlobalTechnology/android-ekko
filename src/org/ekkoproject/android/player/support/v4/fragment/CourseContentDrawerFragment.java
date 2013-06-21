@@ -6,6 +6,7 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaAdapter;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.services.CourseManager;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -13,10 +14,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 
-public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
+public class CourseContentDrawerFragment extends AbstractManifestAwareFragment implements
+        AdapterView.OnItemClickListener {
     private String contentId;
 
     private GridView mediaView = null;
@@ -73,6 +76,21 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
     }
 
     @Override
+    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+        final Object listener = this.getPotentialListener();
+        if (parent != null && listener instanceof Listener) {
+            switch (parent.getId()) {
+            case R.id.mediaList:
+                // TODO
+                break;
+            case R.id.contentList:
+                ((Listener) listener).onSelectContent(CourseManager.convertId(this.getCourseId(), id));
+                break;
+            }
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.clearViews();
@@ -99,6 +117,7 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
             this.contentListView.setAdapter(adapter);
 
             // attach select item listener
+            this.contentListView.setOnItemClickListener(this);
         }
     }
 
@@ -110,6 +129,9 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
             adapter.setAudioView(R.layout.media_list_item_image_thumbnail);
             adapter.setImageView(R.layout.media_list_item_image_thumbnail);
             this.mediaView.setAdapter(adapter);
+
+            // attach select item listener
+            this.contentListView.setOnItemClickListener(this);
         }
     }
 
