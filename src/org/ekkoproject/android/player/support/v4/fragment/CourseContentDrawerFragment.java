@@ -51,18 +51,6 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
         } else {
             this.contentId = args.getString(ARG_CONTENTID);
         }
-
-        // restore saved state
-        if (savedState != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                this.contentId = savedState.getString(ARG_CONTENTID, this.contentId);
-            } else {
-                final String contentId = savedState.getString(ARG_CONTENTID);
-                if (contentId != null) {
-                    this.contentId = contentId;
-                }
-            }
-        }
     }
 
     @Override
@@ -79,28 +67,15 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
     }
 
     @Override
-    protected void onManifestUpdate(Manifest manifest) {
+    protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
         this.updateManifestAdapters(manifest, this.mediaView, this.contentListView);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        this.cleanupMediaAdapter();
-        this.cleanupContentListAdapter();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.clearViews();
-    }
-
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(ARG_CONTENTID, this.contentId);
     }
 
     /** END lifecycle */
@@ -129,26 +104,12 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment {
 
     private void setupMediaAdapter() {
         if (this.mediaView != null) {
-            // create Adapter
+            // attach media adapter
             final ManifestLessonMediaAdapter adapter = new ManifestLessonMediaAdapter(getActivity(), contentId);
             adapter.setVideoView(R.layout.media_list_item_image_thumbnail);
             adapter.setAudioView(R.layout.media_list_item_image_thumbnail);
             adapter.setImageView(R.layout.media_list_item_image_thumbnail);
-
-            // attach media adapter
             this.mediaView.setAdapter(adapter);
-        }
-    }
-
-    private void cleanupContentListAdapter() {
-        if (this.contentListView != null) {
-            this.contentListView.setAdapter(null);
-        }
-    }
-
-    private void cleanupMediaAdapter() {
-        if (this.mediaView != null) {
-            this.mediaView.setAdapter(null);
         }
     }
 
