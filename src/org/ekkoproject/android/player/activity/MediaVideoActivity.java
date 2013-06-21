@@ -8,11 +8,13 @@ import java.io.File;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.services.ResourceManager;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.MediaController;
@@ -87,6 +89,15 @@ public class MediaVideoActivity extends Activity {
     }
 
     private class LoadVideoAsyncTask extends AsyncTask<Void, Void, Uri> {
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        public final AsyncTask<Void, Void, Uri> execute() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                return this.executeOnExecutor(THREAD_POOL_EXECUTOR);
+            } else {
+                return this.execute(new Void[] {});
+            }
+        }
+
         @Override
         protected Uri doInBackground(final Void... params) {
             // check to see if the file has been downloaded already
