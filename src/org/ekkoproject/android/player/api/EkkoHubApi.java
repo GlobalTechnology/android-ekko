@@ -11,6 +11,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.appdev.entity.CourseList;
@@ -19,6 +23,7 @@ import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.TheKeySocketException;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.util.IOUtils;
+import org.ekkoproject.android.player.util.UriUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
@@ -33,6 +38,7 @@ import android.net.Uri;
 import android.net.Uri.Builder;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Pair;
 import android.util.Xml;
 
 public final class EkkoHubApi {
@@ -116,15 +122,27 @@ public final class EkkoHubApi {
     }
 
     private HttpURLConnection apiGetRequest(final String path) throws ApiSocketException, InvalidSessionApiException {
-        return this.apiGetRequest(true, path);
+        return this.apiGetRequest(path, Collections.<Pair<String, String>> emptyList(), false);
     }
 
     private HttpURLConnection apiGetRequest(final boolean useSession, final String path) throws ApiSocketException,
             InvalidSessionApiException {
-        return this.apiGetRequest(useSession, path, 3);
+        return this.apiGetRequest(useSession, path, Collections.<Pair<String, String>> emptyList(), false);
     }
 
-    private HttpURLConnection apiGetRequest(final boolean useSession, final String path, final int attempts)
+    private HttpURLConnection apiGetRequest(final String path, final Collection<Pair<String, String>> params,
+            final boolean replaceParams) throws ApiSocketException, InvalidSessionApiException {
+        return this.apiGetRequest(true, path, params, replaceParams);
+    }
+
+    private HttpURLConnection apiGetRequest(final boolean useSession, final String path,
+            final Collection<Pair<String, String>> params, final boolean replaceParams) throws ApiSocketException,
+            InvalidSessionApiException {
+        return this.apiGetRequest(useSession, path, params, replaceParams, 3);
+    }
+
+    private HttpURLConnection apiGetRequest(final boolean useSession, final String path,
+            final Collection<Pair<String, String>> params, final boolean replaceParams, final int attempts)
             throws ApiSocketException, InvalidSessionApiException {
         try {
             try {
@@ -145,6 +163,18 @@ public final class EkkoHubApi {
                     uri.appendPath(sessionId);
                 }
                 uri.appendEncodedPath(path);
+                if (params.size() > 0) {
+                    if (replaceParams) {
+                        final List<String> keys = new ArrayList<String>();
+                        for (final Pair<String, String> param : params) {
+                            keys.add(param.first);
+                        }
+                        UriUtils.removeQueryParams(uri, keys.toArray(new String[keys.size()]));
+                    }
+                    for (final Pair<String, String> param : params) {
+                        uri.appendQueryParameter(param.first, param.second);
+                    }
+                }
 
                 // open the connection
                 final HttpURLConnection conn = (HttpURLConnection) new URL(uri.build().toString()).openConnection();
@@ -192,7 +222,7 @@ public final class EkkoHubApi {
         } catch (final InvalidSessionApiException e) {
             // retry request on invalid session exceptions
             if (attempts > 0) {
-                return this.apiGetRequest(useSession, path, attempts - 1);
+                return this.apiGetRequest(useSession, path, params, replaceParams, attempts - 1);
             }
 
             // propagate the exception
@@ -200,7 +230,7 @@ public final class EkkoHubApi {
         } catch (final ApiSocketException e) {
             // retry request on socket exceptions (maybe spotty internet)
             if (attempts > 0) {
-                return this.apiGetRequest(useSession, path, attempts - 1);
+                return this.apiGetRequest(useSession, path, params, replaceParams, attempts - 1);
             }
 
             // propagate the exception
@@ -269,7 +299,10 @@ public final class EkkoHubApi {
             InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
-            conn = this.apiGetRequest("courses");
+            final List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
+            params.add(new Pair<String, String>("start", Integer.toString(start)));
+            params.add(new Pair<String, String>("limit", Integer.toString(limit)));
+            conn = this.apiGetRequest("courses", params, true);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 try {
