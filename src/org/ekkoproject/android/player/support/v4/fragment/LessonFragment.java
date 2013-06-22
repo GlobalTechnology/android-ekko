@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
+import org.appdev.entity.Lesson;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaPagerAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonTextPagerAdapter;
@@ -14,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class LessonFragment extends AbstractManifestAwareFragment implements View.OnClickListener {
     private static final String ARG_PAGERSTATE = LessonFragment.class.getName() + ".ARG_PAGERSTATE";
@@ -23,6 +25,7 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
 
     private ViewPager mediaPager = null;
     private ViewPager textPager = null;
+    private TextView title = null;
     private View nextButton = null;
     private View prevButton = null;
 
@@ -95,6 +98,7 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
     @Override
     protected void onManifestUpdate(Manifest manifest) {
         super.onManifestUpdate(manifest);
+        this.updateMeta(manifest);
         this.updateManifestAdapters(manifest, this.mediaPager, this.textPager);
 
         // do we need to restore pager state?
@@ -131,6 +135,7 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
     }
 
     private void findViews() {
+        this.title = findView(TextView.class, R.id.title);
         this.mediaPager = findView(ViewPager.class, R.id.media);
         this.textPager = findView(ViewPager.class, R.id.text);
         this.nextButton = findView(View.class, R.id.nextContent);
@@ -138,8 +143,21 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
     }
 
     private void clearViews() {
+        this.title = null;
         this.mediaPager = null;
         this.textPager = null;
+        this.nextButton = null;
+        this.prevButton = null;
+    }
+
+    private void updateMeta(final Manifest manifest) {
+        if (this.title != null) {
+            this.title.setText(null);
+            final Lesson lesson = manifest.getLesson(this.lessonId);
+            if (lesson != null) {
+                this.title.setText(lesson.getLesson_title());
+            }
+        }
     }
 
     private void setupNavButtons() {
