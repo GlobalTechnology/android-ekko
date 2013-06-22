@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.appdev.entity.Question;
-import org.appdev.entity.Quiz;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.support.v4.fragment.QuestionFragment;
 
 import android.support.v4.app.Fragment;

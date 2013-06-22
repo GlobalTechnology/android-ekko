@@ -5,9 +5,9 @@ import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.services.CourseManager;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;

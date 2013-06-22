@@ -5,11 +5,11 @@ import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.CourseContent;
-import org.appdev.entity.Lesson;
-import org.appdev.entity.Quiz;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.CourseContent;
+import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.services.CourseManager;
 
 import android.content.Context;
@@ -106,7 +106,7 @@ public class ManifestContentAdapter extends AbstractManifestAdapter<CourseConten
     private void bindLessonView(final View view, final Lesson lesson) {
         View v = view.findViewById(R.id.title);
         if (v instanceof TextView) {
-            ((TextView) v).setText(lesson.getLesson_title());
+            ((TextView) v).setText(lesson.getTitle());
         }
     }
 

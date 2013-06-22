@@ -1,7 +1,7 @@
 package org.ekkoproject.android.player.adapter;
 
-import org.appdev.entity.Quiz;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Quiz;
 
 import android.support.v4.app.FragmentManager;
 

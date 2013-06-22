@@ -1,6 +1,6 @@
 package org.ekkoproject.android.player.adapter;
 
-import org.appdev.entity.CourseContent;
+import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Manifest;
 
 import android.content.Context;

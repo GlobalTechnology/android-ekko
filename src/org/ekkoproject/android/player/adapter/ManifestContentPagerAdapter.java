@@ -5,10 +5,10 @@ import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.CourseContent;
-import org.appdev.entity.Lesson;
-import org.appdev.entity.Quiz;
+import org.ekkoproject.android.player.model.CourseContent;
+import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.support.v4.fragment.LessonFragment;
 import org.ekkoproject.android.player.support.v4.fragment.QuizFragment;
 

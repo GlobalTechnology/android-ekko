@@ -6,12 +6,12 @@ import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
-import org.appdev.entity.Lesson;
 import org.appdev.entity.Media;
 import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
 import org.ekkoproject.android.player.activity.MediaVideoActivity;
+import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;

@@ -8,9 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.appdev.entity.Course;
-import org.appdev.entity.CourseContent;
-import org.appdev.entity.Lesson;
-import org.appdev.entity.Quiz;
 import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;

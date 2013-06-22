@@ -6,9 +6,9 @@ import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import java.util.List;
 
-import org.appdev.entity.CourseContent;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentPagerAdapter;
+import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Manifest;
 
 import android.annotation.TargetApi;

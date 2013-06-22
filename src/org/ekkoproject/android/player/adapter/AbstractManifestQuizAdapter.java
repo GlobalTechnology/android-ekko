@@ -1,7 +1,7 @@
 package org.ekkoproject.android.player.adapter;
 
-import org.appdev.entity.CourseContent;
-import org.appdev.entity.Quiz;
+import org.ekkoproject.android.player.model.CourseContent;
+import org.ekkoproject.android.player.model.Quiz;
 
 import android.content.Context;
 

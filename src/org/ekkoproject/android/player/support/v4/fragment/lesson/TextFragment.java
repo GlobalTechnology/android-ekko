@@ -4,8 +4,8 @@ import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
 import java.util.List;
 
-import org.appdev.entity.Lesson;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
 

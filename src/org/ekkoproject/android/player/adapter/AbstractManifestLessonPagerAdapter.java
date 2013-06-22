@@ -1,6 +1,6 @@
 package org.ekkoproject.android.player.adapter;
 
-import org.appdev.entity.Lesson;
+import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 
 import android.support.v4.app.FragmentManager;

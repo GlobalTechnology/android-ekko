@@ -3,11 +3,11 @@ package org.ekkoproject.android.player.support.v4.fragment;
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import org.appdev.entity.Lesson;
-import org.appdev.entity.Quiz;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestAdapter;
 import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
+import org.ekkoproject.android.player.model.Lesson;
+import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 import org.ekkoproject.android.player.services.ManifestManager;
 import org.ekkoproject.android.player.tasks.UpdateManifestAdaptersAsyncTask;

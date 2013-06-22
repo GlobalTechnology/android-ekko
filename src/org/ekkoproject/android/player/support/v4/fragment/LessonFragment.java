@@ -2,10 +2,10 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
-import org.appdev.entity.Lesson;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaPagerAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonTextPagerAdapter;
+import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 
 import android.annotation.TargetApi;
@@ -155,7 +155,7 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
             this.title.setText(null);
             final Lesson lesson = manifest.getLesson(this.lessonId);
             if (lesson != null) {
-                this.title.setText(lesson.getLesson_title());
+                this.title.setText(lesson.getTitle());
             }
         }
     }
