@@ -12,68 +12,26 @@ import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public abstract class Course extends Entity {
-
-
+@Deprecated
+public abstract class Course {
 	private String course_title;
 	private String course_banner;
 	private String course_description;
 	private String course_copyright;
-	private String course_uri;
-	private String course_zipuri;
 	
 	private String author_name;
 	private String author_email;
 	private String author_url;
 
-	private String visited;
-	private String dir_name;
-	private int lessonIndex=0;
-	private int lessonProgressIndex = 0;
-	private int progress = 0;
-	
-    private final HashMap<String, Resource> resourceMap = new HashMap<String, Resource>();
-	
-    private List<CourseContent> lessonList = new ArrayList<CourseContent>();
-
-    @Deprecated
-    public void addLesson(Lesson lesson) {
-        this.addContent(lesson);
-    }
-
-    @Deprecated
-    public List<CourseContent> getLessonList() {
-        return this.getContent();
-    }
-
-    @Deprecated
-    public void setLessonList(ArrayList<CourseContent> lessonList) {
-        this.setContent(lessonList);
-    }
+    private final List<CourseContent> content = new ArrayList<CourseContent>();
+    private final HashMap<String, Resource> resources = new HashMap<String, Resource>();
 
     public abstract long getId();
 
     public abstract int getVersion();
 
 	public Resource getResource(String resourceId) {
-		return resourceMap.get(resourceId);
-	}
-	public String getVisited(){
-		return visited;
-	}
-	
-	public void setVisited(String visited){
-		this.visited = visited;
-	}	
-
-
-	public void setDirName(String dir_name) {
-		// TODO Auto-generated method stub
-		this.dir_name = dir_name;		
-	}
-	
-	public String getDirName() {
-		return dir_name;
+		return resources.get(resourceId);
 	}
 
 	public String getCourseTitle() {
@@ -132,78 +90,18 @@ public abstract class Course extends Entity {
 		this.author_url = author_url;
 	}
 
-    @Deprecated
-	public String getCourseGUID() {
-        return Long.toString(this.getId());
-	}
-
-    @Deprecated
-	public HashMap<String, Resource> getResourceMap() {
-		return resourceMap;
-	}
-
-    @Deprecated
-	public void setResourceMap(HashMap<String, Resource> resourceMap) {
-        this.setResources(resourceMap != null ? resourceMap.values() : null);
-	}
-
-	public int getLessonIndex() {
-		return lessonIndex;
-	}
-
-	public void setLessonIndex(int lessonIndex) {
-		this.lessonIndex = lessonIndex;
-	}
-
-	public String getCourseURI() {
-		return course_uri;
-	}
-
-	public void setCourseURI(String course_uri) {
-		this.course_uri = course_uri;
-	}
-
-	public String getCourseZipUri() {
-		return course_zipuri;
-	}
-
-	public void setCourseZipUri(String course_zipuri) {
-		this.course_zipuri = course_zipuri;
-	}
-
-	public int getLessonProgressIndex() {
-		return lessonProgressIndex;
-	}
-
-	public void setLessonProgressIndex(int lessonProgressIndex) {
-		this.lessonProgressIndex = lessonProgressIndex;
-	}
-	
-	public int getProgress(){
-		return progress;
-	}
-
-	public void setProgress(int progress) {
-		this.progress = progress;
-	}
-	
-    @Deprecated
-    public List<CourseContent> getCourseContent() {
-        return this.getContent();
-    }
-
     public List<CourseContent> getContent() {
-        return Collections.unmodifiableList(this.lessonList);
+        return Collections.unmodifiableList(this.content);
     }
 
     protected void setContent(final List<CourseContent> content) {
-        this.lessonList.clear();
+        this.content.clear();
         this.addContent(content);
     }
 
     protected void addContent(final CourseContent content) {
         if (content != null) {
-            this.lessonList.add(content);
+            this.content.add(content);
         }
     }
 
@@ -216,17 +114,17 @@ public abstract class Course extends Entity {
     }
 
     public Collection<Resource> getResources() {
-        return Collections.unmodifiableCollection(this.resourceMap.values());
+        return Collections.unmodifiableCollection(this.resources.values());
     }
 
     public void setResources(final Collection<Resource> resources) {
-        this.resourceMap.clear();
+        this.resources.clear();
         this.addResources(resources);
     }
 
     public void addResource(final Resource resource) {
         if (resource != null) {
-            this.resourceMap.put(resource.getId(), resource);
+            this.resources.put(resource.getId(), resource);
         }
     }
 

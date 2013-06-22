@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.appdev.entity.Resource;
-import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
+import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -81,17 +81,14 @@ public class Course extends org.appdev.entity.Course {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
         final long courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), INVALID_COURSE);
-        return new Course(courseId).parseInternal(parser, schemaVersion);
+        return new Course(courseId).parse(parser, schemaVersion);
     }
 
-    private Course parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+    private Course parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
 
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
-
-        this.setCourseURI(parser.getAttributeValue(null, XML.ATTR_COURSE_URI));
-        this.setCourseZipUri(parser.getAttributeValue(null, XML.ATTR_COURSE_ZIPURI));
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -117,5 +114,4 @@ public class Course extends org.appdev.entity.Course {
         }
         return this;
     }
-
 }

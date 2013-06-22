@@ -12,9 +12,9 @@ import org.appdev.entity.CourseContent;
 import org.appdev.entity.Lesson;
 import org.appdev.entity.Quiz;
 import org.appdev.entity.Resource;
-import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
+import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -39,6 +39,26 @@ public class Manifest extends Course {
 
     public List<CourseContent> getContent() {
         return Collections.unmodifiableList(this.content);
+    }
+
+    /**
+     * find the index of the requested content, return -1 if it doesn't exist
+     * 
+     * @param contentId
+     *            the id of the content being searched for
+     * @return the index of the content item
+     */
+    public int findContent(final String contentId) {
+        if (contentId != null) {
+            int i = 0;
+            for (final CourseContent content : this.content) {
+                if (content.getId().equals(contentId)) {
+                    return i;
+                }
+                i++;
+            }
+        }
+        return -1;
     }
 
     public CourseContent getContent(final String contentId) {
