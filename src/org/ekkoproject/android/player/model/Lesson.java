@@ -16,7 +16,7 @@ public class Lesson extends CourseContent {
     private String title;
 
     private final List<Media> media = new ArrayList<Media>();
-    private final List<String> text = new ArrayList<String>();
+    private final List<Text> text = new ArrayList<Text>();
 
     @Override
     public String getId() {
@@ -42,16 +42,27 @@ public class Lesson extends CourseContent {
         return null;
     }
 
-    public List<String> getText() {
+    public List<Text> getText() {
         return Collections.unmodifiableList(this.text);
     }
 
-    public static Lesson parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
-        return new Lesson().parseInternal(parser, schemaVersion);
+    public Text getText(final String textId) {
+        if (textId != null) {
+            for (final Text text : this.text) {
+                if (textId.equals(text.getId())) {
+                    return text;
+                }
+            }
+        }
+        return null;
     }
 
-    private Lesson parseInternal(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+    public static Lesson fromXml(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        return new Lesson().parse(parser, schemaVersion);
+    }
+
+    private Lesson parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_CONTENT_LESSON);
 
@@ -71,8 +82,9 @@ public class Lesson extends CourseContent {
                     this.media.add(Media.parse(parser, schemaVersion));
                     continue;
                 } else if (XML.ELEMENT_LESSON_TEXT.equals(name)) {
-                    // TODO: we don't capture the text id currently
-                    this.text.add(parser.nextText());
+                    final String id = parser.getAttributeValue(null, XML.ATTR_TEXT_ID);
+                    final String content = parser.nextText();
+                    this.text.add(new Text(id, content));
                     parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_LESSON_TEXT);
                     continue;
                 }

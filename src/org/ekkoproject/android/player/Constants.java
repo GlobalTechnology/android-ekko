@@ -64,10 +64,6 @@ public final class Constants {
         /** course attributes */
         public static final String ATTR_COURSE_ID = "id";
         public static final String ATTR_COURSE_VERSION = "version";
-        @Deprecated
-        public static final String ATTR_COURSE_URI = "uri";
-        @Deprecated
-        public static final String ATTR_COURSE_ZIPURI = "zipUri";
 
         /** lesson attributes */
         public static final String ATTR_LESSON_ID = "id";
@@ -88,6 +84,7 @@ public final class Constants {
         /** content attributes */
         public static final String ATTR_MEDIA_ID = "id";
         public static final String ATTR_MEDIA_TYPE = "type";
+        public static final String ATTR_TEXT_ID = "id";
 
         /** resource attributes */
         public static final String ATTR_RESOURCE_ID = "id";

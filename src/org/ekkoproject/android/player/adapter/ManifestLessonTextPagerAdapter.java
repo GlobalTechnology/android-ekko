@@ -7,15 +7,16 @@ import java.util.List;
 
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Text;
 import org.ekkoproject.android.player.support.v4.fragment.lesson.TextFragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 public class ManifestLessonTextPagerAdapter extends AbstractManifestLessonPagerAdapter {
-    private static final List<String> NO_TEXT = Collections.emptyList();
+    private static final List<Text> NO_TEXT = Collections.emptyList();
 
-    private List<String> text = NO_TEXT;
+    private List<Text> text = NO_TEXT;
 
     public ManifestLessonTextPagerAdapter(final FragmentManager fm, final String lessonId) {
         super(fm, lessonId);
@@ -43,6 +44,8 @@ public class ManifestLessonTextPagerAdapter extends AbstractManifestLessonPagerA
         final long courseId = manifest != null ? manifest.getCourseId() : INVALID_COURSE;
         final Lesson lesson = this.getLesson();
         final String lessonId = lesson != null ? lesson.getId() : null;
-        return TextFragment.newInstance(courseId, lessonId, position);
+        final Text text = this.text.get(position);
+        final String textId = text != null ? text.getId() : null;
+        return TextFragment.newInstance(courseId, lessonId, textId);
     }
 }

@@ -21,16 +21,11 @@ public class Manifest extends Course {
 
     private final List<CourseContent> content = new ArrayList<CourseContent>();
 
-    @Deprecated
-    public long getId() {
-        return this.courseId;
-    }
-
     public long getCourseId() {
         return this.courseId;
     }
 
-    public int getVersion() {
+    public int getCourseVersion() {
         return this.version;
     }
 
@@ -159,7 +154,7 @@ public class Manifest extends Course {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_CONTENT_LESSON.equals(name)) {
-                    this.addContent(Lesson.parse(parser, schemaVersion));
+                    this.addContent(Lesson.fromXml(parser, schemaVersion));
                     continue;
                 } else if (XML.ELEMENT_CONTENT_QUIZ.equals(name)) {
                     this.addContent(Quiz.fromXml(parser, schemaVersion));

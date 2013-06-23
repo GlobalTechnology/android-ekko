@@ -2,11 +2,10 @@ package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
-import java.util.List;
-
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Text;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
 
 import android.annotation.TargetApi;
@@ -22,17 +21,17 @@ public class TextFragment extends AbstractManifestAwareFragment {
     private static final String ARG_TEXTID = TextFragment.class.getName() + ".ARG_TEXTID";
 
     private String lessonId = null;
-    private int textId = 0;
+    private String textId = null;
 
     private TextView textView = null;
 
-    public static TextFragment newInstance(final long courseId, final String lessonId, final int textId) {
+    public static TextFragment newInstance(final long courseId, final String lessonId, final String textId) {
         final TextFragment fragment = new TextFragment();
 
         // handle arguments
         final Bundle args = buildArgs(courseId);
         args.putString(ARG_CONTENTID, lessonId);
-        args.putInt(ARG_TEXTID, textId);
+        args.putString(ARG_TEXTID, textId);
         fragment.setArguments(args);
 
         return fragment;
@@ -47,11 +46,12 @@ public class TextFragment extends AbstractManifestAwareFragment {
 
         // process arguments
         final Bundle args = getArguments();
-        this.textId = args.getInt(ARG_TEXTID, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             this.lessonId = args.getString(ARG_CONTENTID, null);
+            this.textId = args.getString(ARG_TEXTID, null);
         } else {
             this.lessonId = args.getString(ARG_CONTENTID);
+            this.textId = args.getString(ARG_TEXTID);
         }
     }
 
@@ -95,9 +95,9 @@ public class TextFragment extends AbstractManifestAwareFragment {
                 // find the specified lesson text
                 final Lesson lesson = manifest.getLesson(this.lessonId);
                 if (lesson != null) {
-                    final List<String> text = lesson.getText();
-                    if (text.size() > this.textId) {
-                        this.textView.setText(Html.fromHtml(text.get(this.textId)));
+                    final Text text = lesson.getText(this.textId);
+                    if (text != null) {
+                        this.textView.setText(Html.fromHtml(text.getText()));
                     }
                 }
             }

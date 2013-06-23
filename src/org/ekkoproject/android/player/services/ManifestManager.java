@@ -240,7 +240,7 @@ public final class ManifestManager {
             if (manifest != null) {
                 // update the course object
                 course.setManifestFile(newName);
-                course.setManifestVersion(manifest.getVersion());
+                course.setManifestVersion(manifest.getCourseVersion());
                 this.dao.update(course, PROJECTION_MANIFEST);
 
                 // store the manifest
