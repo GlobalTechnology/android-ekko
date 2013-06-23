@@ -101,6 +101,15 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        // update the title/icon
+        // XXX: this is a hack, but the best way of dynamically managing it I
+        // could think of with current API's
+        final Manifest manifest = this.getManifest();
+        if (manifest != null) {
+            getSherlockActivity().getSupportActionBar().setTitle(manifest.getCourseTitle());
+        }
+
+        // add menu items
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_course, menu);
     }
@@ -138,6 +147,9 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
                     this.onSelectContent(content.get(0).getId());
                 }
             }
+
+            // update the action bar
+            this.getSherlockActivity().supportInvalidateOptionsMenu();
         }
     }
 
