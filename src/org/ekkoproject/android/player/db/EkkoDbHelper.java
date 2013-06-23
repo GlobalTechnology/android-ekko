@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class EkkoDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "Ekko.db";
 
     public EkkoDbHelper(final Context context) {
@@ -21,6 +21,8 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.CachedResource.SQL_INDEX_COURSE_ID);
         db.execSQL(Contract.CachedUriResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_INDEX_COURSE_ID);
+        db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
+        db.execSQL(Contract.Progress.SQL_INDEX_COURSE_ID);
     }
 
     @Override
@@ -42,6 +44,12 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
             if (newVersion <= 3) {
                 break;
             }
+            db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
+            db.execSQL(Contract.Progress.SQL_INDEX_COURSE_ID);
+        case 4:
+            if (newVersion <= 4) {
+                break;
+            }
             break;
         // default:
         // this.resetDatabase(db);
@@ -49,6 +57,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
     }
 
     private void resetDatabase(final SQLiteDatabase db) {
+        db.execSQL(Contract.Progress.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_DELETE_TABLE);

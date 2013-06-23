@@ -3,6 +3,7 @@ package org.ekkoproject.android.player.services;
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.services.ManifestManager.ACTION_UPDATE_MANIFEST;
+import static org.ekkoproject.android.player.services.ProgressManager.ACTION_UPDATE_PROGRESS;
 import static org.ekkoproject.android.player.sync.EkkoSyncService.ACTION_UPDATE_COURSES;
 
 import java.util.HashSet;
@@ -68,6 +69,11 @@ public final class EkkoBroadcastReceiver extends BroadcastReceiver {
                 final long courseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
                 ((ManifestUpdateListener) this.owner).onManifestUpdate(courseId);
             }
+        } else if (ACTION_UPDATE_PROGRESS.equals(action) && forCourse(intent)) {
+            if (owner instanceof ProgressUpdateListener) {
+                final long courseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
+                ((ProgressUpdateListener) this.owner).onProgressUpdate(courseId);
+            }
         }
     }
 
@@ -77,5 +83,9 @@ public final class EkkoBroadcastReceiver extends BroadcastReceiver {
 
     public interface ManifestUpdateListener {
         void onManifestUpdate(long courseId);
+    }
+
+    public interface ProgressUpdateListener {
+        void onProgressUpdate(long courseId);
     }
 }

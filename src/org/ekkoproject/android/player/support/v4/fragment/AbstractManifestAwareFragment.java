@@ -14,6 +14,7 @@ import org.ekkoproject.android.player.services.ManifestManager;
 import org.ekkoproject.android.player.tasks.UpdateManifestAdaptersAsyncTask;
 import org.ekkoproject.android.player.tasks.UpdateManifestAsyncTask;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -21,9 +22,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
-public abstract class AbstractManifestAwareFragment extends SherlockFragment implements
+public abstract class AbstractManifestAwareFragment extends AbstractFragment implements
         EkkoBroadcastReceiver.ManifestUpdateListener {
     private EkkoBroadcastReceiver broadcastReceiver = null;
     private ManifestManager manifestManager = null;
@@ -39,10 +38,16 @@ public abstract class AbstractManifestAwareFragment extends SherlockFragment imp
     }
 
     /** BEGIN lifecycle */
+
+    @Override
+    public void onAttach(final Activity activity) {
+        this.manifestManager = ManifestManager.getInstance(activity);
+        super.onAttach(activity);
+    }
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.manifestManager = ManifestManager.getInstance(getActivity());
 
         // process arguments
         this.courseId = getArguments().getLong(ARG_COURSEID, INVALID_COURSE);
@@ -51,8 +56,8 @@ public abstract class AbstractManifestAwareFragment extends SherlockFragment imp
     @Override
     public void onStart() {
         super.onStart();
-        this.updateManifest();
         this.setupBroadcastReceiver();
+        this.updateManifest();
     }
 
     @Override
@@ -161,7 +166,7 @@ public abstract class AbstractManifestAwareFragment extends SherlockFragment imp
                 @Override
                 protected void onPostExecute(final Manifest result) {
                     super.onPostExecute(result);
-                    onManifestUpdate(result);
+                    AbstractManifestAwareFragment.this.onManifestUpdate(result);
                 }
             }.execute(this.courseId);
         }

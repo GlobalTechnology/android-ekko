@@ -2,22 +2,27 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
+import java.util.Set;
+
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaPagerAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonTextPagerAdapter;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.services.ProgressManager;
 
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class LessonFragment extends AbstractManifestAwareFragment implements View.OnClickListener {
+public class LessonFragment extends AbstractManifestAndProgressAwareFragment implements View.OnClickListener {
     private static final String ARG_PAGERSTATE = LessonFragment.class.getName() + ".ARG_PAGERSTATE";
     private static final String ARG_MEDIAPAGERSTATE = LessonFragment.class.getName() + ".ARG_MEDIAPAGERSTATE";
     private static final String ARG_TEXTPAGERSTATE = LessonFragment.class.getName() + ".ARG_TEXTPAGERSTATE";
@@ -26,6 +31,7 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
     private ViewPager mediaPager = null;
     private ViewPager textPager = null;
     private TextView title = null;
+    private ProgressBar progressBar = null;
     private View nextButton = null;
     private View prevButton = null;
 
@@ -100,12 +106,19 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
         super.onManifestUpdate(manifest);
         this.updateMeta(manifest);
         this.updateManifestAdapters(manifest, this.mediaPager, this.textPager);
+        this.updateProgressBar(manifest, this.getProgress());
 
         // do we need to restore pager state?
         if (this.needsRestore) {
             this.restorePagerState();
             this.needsRestore = false;
         }
+    }
+
+    @Override
+    protected void onProgressUpdate(final Set<String> progress) {
+        super.onProgressUpdate(progress);
+        this.updateProgressBar(this.getManifest(), progress);
     }
 
     @Override
@@ -136,6 +149,7 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
 
     private void findViews() {
         this.title = findView(TextView.class, R.id.title);
+        this.progressBar = findView(ProgressBar.class, R.id.progress);
         this.mediaPager = findView(ViewPager.class, R.id.media);
         this.textPager = findView(ViewPager.class, R.id.text);
         this.nextButton = findView(View.class, R.id.nextContent);
@@ -144,6 +158,7 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
 
     private void clearViews() {
         this.title = null;
+        this.progressBar = null;
         this.mediaPager = null;
         this.textPager = null;
         this.nextButton = null;
@@ -157,6 +172,19 @@ public class LessonFragment extends AbstractManifestAwareFragment implements Vie
             if (lesson != null) {
                 this.title.setText(lesson.getTitle());
             }
+        }
+    }
+
+    private void updateProgressBar(final Manifest manifest, final Set<String> progress) {
+        if (this.progressBar != null) {
+            // retrieve the progress
+            final Lesson lesson = manifest != null ? manifest.getLesson(this.lessonId) : null;
+            final Pair<Integer, Integer> rawProgress = ProgressManager.getLessonProgress(this.getCourseId(), lesson,
+                    progress);
+
+            // update the progress bar
+            this.progressBar.setMax(rawProgress.second);
+            this.progressBar.setProgress(rawProgress.first);
         }
     }
 

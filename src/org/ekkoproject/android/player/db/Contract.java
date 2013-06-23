@@ -107,4 +107,22 @@ public final class Contract {
                 + " ON " + TABLE_NAME + "(" + COLUMN_NAME_COURSE_ID + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
+
+    public static final class Progress extends Base {
+        public static final String TABLE_NAME = "progress";
+        public static final String COLUMN_NAME_COURSE_ID = "courseId";
+        public static final String COLUMN_NAME_CONTENT_ID = "contentId";
+        public static final String COLUMN_NAME_COMPLETED = "completed";
+
+        protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_CONTENT_ID,
+                COLUMN_NAME_COMPLETED };
+
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
+                + " INTEGER," + COLUMN_NAME_CONTENT_ID + " TEXT," + COLUMN_NAME_COMPLETED + " INTEGER, PRIMARY KEY("
+                + COLUMN_NAME_COURSE_ID + ", " + COLUMN_NAME_CONTENT_ID + "))";
+        protected static final String SQL_INDEX_COURSE_ID = "CREATE INDEX " + TABLE_NAME + "_" + COLUMN_NAME_COURSE_ID
+                + " ON " + TABLE_NAME + "(" + COLUMN_NAME_COURSE_ID + ")";
+        protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    }
+
 }

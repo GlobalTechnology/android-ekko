@@ -116,6 +116,9 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
                         resource = manifest.getResource(this.media.getMediaResourceID());
                     }
 
+                    // mark the media as viewed
+                    this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
+
                     // check to see if the resource is a provider resource
                     if (resource != null && resource.isUri()) {
                         switch (resource.getProvider()) {
@@ -136,6 +139,9 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
                     startActivity(MediaVideoActivity.newIntent(getActivity(), this.getCourseId(),
                             this.media.getMediaResourceID()));
                 } else if (this.media.isImage()) {
+                    // mark the media as viewed
+                    this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
+
                     startActivity(MediaImageActivity.newIntent(getActivity(), this.getCourseId(),
                             this.media.getMediaResourceID()));
                 }

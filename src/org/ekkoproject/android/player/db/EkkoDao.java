@@ -9,6 +9,7 @@ import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.Progress;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,6 +24,7 @@ public class EkkoDao {
     private static final Mapper<Resource> RESOURCE_MAPPER = new ResourceMapper();
     private static final Mapper<CachedResource> CACHED_RESOURCE_MAPPER = new CachedResourceMapper();
     private static final Mapper<CachedUriResource> CACHED_URI_RESOURCE_MAPPER = new CachedUriResourceMapper();
+    private static final Mapper<Progress> PROGRESS_MAPPER = new ProgressMapper();
 
     private static Object instanceLock = new Object();
     private static EkkoDao instance = null;
@@ -156,6 +158,22 @@ public class EkkoDao {
             final String orderBy) {
         final Cursor c = this.dbHelper.getReadableDatabase().query(Contract.CachedUriResource.TABLE_NAME,
                 Contract.CachedUriResource.PROJECTION_ALL, whereClause, whereBindValues, null, null, orderBy);
+
+        if (c != null) {
+            c.moveToPosition(-1);
+        }
+
+        return c;
+    }
+
+    public Cursor getProgressCursor(final String whereClause, final String[] whereBindValues, final String orderBy) {
+        return this.getProgressCursor(Contract.Progress.PROJECTION_ALL, whereClause, whereBindValues, orderBy);
+    }
+
+    public Cursor getProgressCursor(final String[] projection, final String whereClause,
+            final String[] whereBindValues, final String orderBy) {
+        final Cursor c = this.dbHelper.getReadableDatabase().query(Contract.Progress.TABLE_NAME, projection,
+                whereClause, whereBindValues, null, null, orderBy);
 
         if (c != null) {
             c.moveToPosition(-1);
@@ -372,6 +390,42 @@ public class EkkoDao {
             db.delete(Contract.CachedUriResource.TABLE_NAME, Contract.CachedUriResource.COLUMN_NAME_COURSE_ID
                     + " = ? AND " + Contract.CachedUriResource.COLUMN_NAME_URI + " = ?",
                     new String[] { Long.toString(resource.getCourseId()), resource.getUri() });
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void insert(final Progress progress) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.insert(Contract.Progress.TABLE_NAME, null, PROGRESS_MAPPER.toContentValues(progress));
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void replace(final Progress progress) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            this.delete(progress);
+            this.insert(progress);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void delete(final Progress progress) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.delete(Contract.Progress.TABLE_NAME, Contract.Progress.COLUMN_NAME_COURSE_ID + " = ? AND "
+                    + Contract.Progress.COLUMN_NAME_CONTENT_ID + " = ?",
+                    new String[] { Long.toString(progress.getCourseId()), progress.getContentId() });
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();

@@ -2,27 +2,33 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
+import java.util.Set;
+
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
 import org.ekkoproject.android.player.adapter.ManifestLessonMediaAdapter;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.services.CourseManager;
+import org.ekkoproject.android.player.services.ProgressManager;
 
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
-public class CourseContentDrawerFragment extends AbstractManifestAwareFragment implements
+public class CourseContentDrawerFragment extends AbstractManifestAndProgressAwareFragment implements
         AdapterView.OnItemClickListener {
     private String contentId;
 
     private GridView mediaView = null;
+    private ProgressBar progressBar = null;
     private ListView contentListView = null;
 
     public static CourseContentDrawerFragment newInstance() {
@@ -73,6 +79,13 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment i
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
         this.updateManifestAdapters(manifest, this.mediaView, this.contentListView);
+        this.updateProgressBar(manifest, this.getProgress());
+    }
+
+    @Override
+    protected void onProgressUpdate(final Set<String> progress) {
+        super.onProgressUpdate(progress);
+        this.updateProgressBar(this.getManifest(), progress);
     }
 
     @Override
@@ -101,11 +114,13 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment i
     private void findViews() {
         this.mediaView = findView(GridView.class, R.id.mediaList);
         this.contentListView = findView(ListView.class, R.id.contentList);
+        this.progressBar = findView(ProgressBar.class, R.id.progress);
     }
 
     private void clearViews() {
         this.mediaView = null;
         this.contentListView = null;
+        this.progressBar = null;
     }
 
     private void setupContentListAdapter() {
@@ -132,6 +147,17 @@ public class CourseContentDrawerFragment extends AbstractManifestAwareFragment i
 
             // attach select item listener
             this.contentListView.setOnItemClickListener(this);
+        }
+    }
+
+    private void updateProgressBar(final Manifest manifest, final Set<String> progress) {
+        if (this.progressBar != null) {
+            // retrieve the progress
+            final Pair<Integer, Integer> rawProgress = ProgressManager.getCourseProgress(manifest, progress);
+
+            // update the progress bar
+            this.progressBar.setMax(rawProgress.second);
+            this.progressBar.setProgress(rawProgress.first);
         }
     }
 

@@ -15,10 +15,8 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
 
     @Override
     public ContentValues toContentValues(final Resource resource, final String[] projection) {
-        // generate all possible values
-        final ContentValues values = new ContentValues();
-
         // only add values in the projection
+        final ContentValues values = new ContentValues();
         for (final String field : projection) {
             if (Contract.Course.Resource.COLUMN_NAME_COURSE_ID.equals(field)) {
                 values.put(Contract.Course.Resource.COLUMN_NAME_COURSE_ID, resource.getCourseId());

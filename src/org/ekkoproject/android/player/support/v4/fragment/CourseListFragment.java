@@ -3,10 +3,13 @@ package org.ekkoproject.android.player.support.v4.fragment;
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
+import java.lang.ref.WeakReference;
+
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
+import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
@@ -22,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +33,7 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
@@ -50,6 +55,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
     private boolean needsRestore = false;
     private Bundle viewState = new Bundle();
 
+    private ProgressManager progressManager = null;
     private ResourceManager resourceManager = null;
     private EkkoDao dao = null;
     private EkkoBroadcastReceiver broadcastReceiver = null;
@@ -82,6 +88,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
         this.dao = EkkoDao.getInstance(activity);
+        this.progressManager = ProgressManager.getInstance(activity);
         this.resourceManager = ResourceManager.getInstance(activity);
     }
 
@@ -132,7 +139,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
         case R.id.refresh:
             EkkoSyncService.syncCourses(getActivity());
             return true;
@@ -315,14 +322,12 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
 
         @Override
         protected Cursor doInBackground(final Void... params) {
-            synchronized (CourseListFragment.this.dao) {
-                try {
-                    return CourseListFragment.this.dao.getCoursesCursor();
-                } catch (final SQLiteDatabaseLockedException e) {
-                    this.retry = true;
-                }
-                return null;
+            try {
+                return CourseListFragment.this.dao.getCoursesCursor();
+            } catch (final SQLiteDatabaseLockedException e) {
+                this.retry = true;
             }
+            return null;
         }
 
         @Override
@@ -346,6 +351,59 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
         }
     }
 
+    private class UpdateProgressBarAsyncTask extends AsyncTask<Long, Void, Pair<Integer, Integer>> {
+        private final WeakReference<ProgressBar> progressBar;
+
+        protected UpdateProgressBarAsyncTask(final ProgressBar progressBar) {
+            progressBar.setTag(R.id.progress_bar_update_task, new WeakReference<AsyncTask<?, ?, ?>>(this));
+            this.progressBar = new WeakReference<ProgressBar>(progressBar);
+        }
+
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        public AsyncTask<Long, Void, Pair<Integer, Integer>> execute(final long courseId) {
+            final Long[] params = new Long[] { courseId };
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                return this.executeOnExecutor(THREAD_POOL_EXECUTOR, params);
+            } else {
+                return this.execute(params);
+            }
+        }
+
+        @Override
+        protected Pair<Integer, Integer> doInBackground(final Long... params) {
+            if (params.length > 0 && this.checkProgressBar()) {
+                return CourseListFragment.this.progressManager.getCourseProgress(params[0]);
+            }
+
+            // default to no progress
+            return Pair.create(0, 1);
+        }
+
+        @Override
+        protected void onPostExecute(final Pair<Integer, Integer> progress) {
+            super.onPostExecute(progress);
+            if (this.checkProgressBar()) {
+                final ProgressBar progressBar = this.progressBar.get();
+                if (progressBar != null) {
+                    progressBar.setMax(progress.second);
+                    progressBar.setProgress(progress.first);
+                }
+            }
+        }
+
+        private boolean checkProgressBar() {
+            final ProgressBar progressBar = this.progressBar.get();
+            if (progressBar != null) {
+                final Object ref = progressBar.getTag(R.id.progress_bar_update_task);
+                if (ref instanceof WeakReference) {
+                    final Object task = ((WeakReference<?>) ref).get();
+                    return this == task;
+                }
+            }
+            return false;
+        }
+    }
+
     private class CourseViewBinder implements ViewBinder {
         @Override
         public boolean setViewValue(final View view, final Cursor c, final int columnIndex) {
@@ -363,6 +421,11 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
                 }
                 return true;
             case R.id.progress:
+                if (view instanceof ProgressBar) {
+                    ((ProgressBar) view).setProgress(0);
+                    new UpdateProgressBarAsyncTask((ProgressBar) view).execute(c.getLong(c
+                            .getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)));
+                }
                 return true;
             }
 

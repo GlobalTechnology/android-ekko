@@ -6,13 +6,13 @@ import android.os.Looper;
 
 public final class ThreadUtils {
     public static void assertNotOnUiThread() {
-        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+        if (isUiThread()) {
             throw new RuntimeException("unsupported method on UI thread");
         }
     }
 
     public static void assertOnUiThread() {
-        if (Looper.getMainLooper().getThread() != Thread.currentThread()) {
+        if (!isUiThread()) {
             throw new RuntimeException("method requires UI thread");
         }
     }
@@ -24,5 +24,9 @@ public final class ThreadUtils {
             }
             return locks.get(key);
         }
+    }
+
+    public static boolean isUiThread() {
+        return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 }
