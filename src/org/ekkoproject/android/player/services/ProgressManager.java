@@ -13,12 +13,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.appdev.entity.Media;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.model.Progress;
 import org.ekkoproject.android.player.model.Quiz;
 

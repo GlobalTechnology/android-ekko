@@ -5,9 +5,9 @@ import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.Media;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Lesson;
+import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.services.CourseManager;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
@@ -109,8 +109,8 @@ public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Me
 
     @Override
     protected void bindView(final View view, final Media media) {
-        final String thumbnail = media.getMediaThumbnailID();
-        final String resource = media.getMediaResourceID();
+        final String thumbnail = media.getThumbnail();
+        final String resource = media.getResource();
 
         // set the thumbnail image
         final View thumbnailView = view.findViewById(R.id.thumbnail);

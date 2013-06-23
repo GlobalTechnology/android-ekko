@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.Media;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
@@ -79,7 +78,7 @@ public class Lesson extends CourseContent {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_LESSON_MEDIA.equals(name)) {
-                    this.media.add(Media.parse(parser, schemaVersion));
+                    this.media.add(Media.fromXml(parser, schemaVersion));
                     continue;
                 } else if (XML.ELEMENT_LESSON_TEXT.equals(name)) {
                     final String id = parser.getAttributeValue(null, XML.ATTR_TEXT_ID);

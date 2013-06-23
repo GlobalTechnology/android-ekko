@@ -5,9 +5,9 @@ import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.Media;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.support.v4.fragment.lesson.MediaFragment;
 
 import android.support.v4.app.Fragment;

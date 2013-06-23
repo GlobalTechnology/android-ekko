@@ -6,13 +6,13 @@ import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
-import org.appdev.entity.Media;
 import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
 import org.ekkoproject.android.player.activity.MediaVideoActivity;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
@@ -113,7 +113,7 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
                     Resource resource = null;
                     final Manifest manifest = this.getManifest();
                     if (manifest != null) {
-                        resource = manifest.getResource(this.media.getMediaResourceID());
+                        resource = manifest.getResource(this.media.getResource());
                     }
 
                     // mark the media as viewed
@@ -137,13 +137,13 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
                     }
 
                     startActivity(MediaVideoActivity.newIntent(getActivity(), this.getCourseId(),
-                            this.media.getMediaResourceID()));
+                            this.media.getResource()));
                 } else if (this.media.isImage()) {
                     // mark the media as viewed
                     this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
 
                     startActivity(MediaImageActivity.newIntent(getActivity(), this.getCourseId(),
-                            this.media.getMediaResourceID()));
+                            this.media.getResource()));
                 }
             }
             break;
@@ -179,12 +179,12 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
             // find the resource id for the thumbnail
             String resourceId = null;
             if (this.media != null) {
-                resourceId = media.getMediaThumbnailID();
+                resourceId = media.getThumbnail();
 
                 // use the actual image if this is an image resource and
                 // there isn't a thumbnail
                 if (resourceId == null && media.isImage()) {
-                    resourceId = media.getMediaResourceID();
+                    resourceId = media.getResource();
                 }
             }
 
