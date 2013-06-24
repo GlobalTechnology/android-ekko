@@ -1,29 +1,68 @@
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <color name="ekko_darkblue">#00345E</color>
-    <color name="ekko_lightgrey">#E7E8EA</color>
+    <!-- TODO: maybe this isn't truly needed -->
+    <style name="Base" />
+
+    <!-- theme colors -->
+    <color name="ekko_lightblue">#5DA5E3</color>
+    <color name="ekko_mediumblue">#677EA0</color>
+    <color name="ekko_darkblue">#1F375D</color>
+    <color name="ekko_white">#FFFFFF</color>
+    <color name="ekko_orange">#CF6D2C</color>
+    <color name="ekko_grey">#E7E7E9</color>
+    <color name="ekko_lightgrey">#F5F5F5</color>
 
     <style name="Theme.Ekko" parent="@style/Theme.Sherlock.Light.DarkActionBar">
         <item name="actionBarStyle">@style/Widget.Ekko.ActionBar</item>
         <item name="android:actionBarStyle" tools:targetApi="honeycomb">@style/Widget.Ekko.ActionBar</item>
+        <item name="android:progressBarStyle">@style/Widget.Ekko.ProgressBar</item>
     </style>
 
+    <!-- Theme-wide defaults -->
+    <style name="Widget.Ekko.ProgressBar" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/ekko_progressbar</item>
+        <item name="android:progress">0</item>
+        <item name="android:max">1</item>
+    </style>
+
+    <style name="TextAppearance.Ekko" parent="Base"></style>
+
+    <!-- ActionBar design -->
     <style name="Widget.Ekko.ActionBar" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-        <item name="background">@color/ekko_darkblue</item>
-        <item name="android:background">@color/ekko_darkblue</item>
+        <item name="background">@drawable/ekko_actionbar_background</item>
+        <item name="android:background">@drawable/ekko_actionbar_background</item>
         <item name="titleTextStyle">@style/TextAppearance.Ekko.ActionBar.Title</item>
         <item name="android:titleTextStyle" tools:targetApi="honeycomb">@style/TextAppearance.Ekko.ActionBar.Title</item>
     </style>
 
+    <dimen name="ekko_actionbar_border_bottom">2dp</dimen>
+
     <style name="TextAppearance.Ekko.ActionBar.Title" parent="@style/TextAppearance.Sherlock.Widget.ActionBar.Title.Inverse">
-        <item name="android:textColor">@color/ekko_lightgrey</item>
+        <item name="android:textColor">@color/ekko_grey</item>
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="TextAppearance.Ekko.Course.Lesson.Text" parent="@android:style/TextAppearance">
-        <item name="android:padding">16dp</item>
-        <item name="android:textColor">#212121</item>
-        <item name="android:background">#F2F2F2</item>
+    <!-- InfoBar design -->
+    <style name="Widget.Ekko.Course.InfoBar" parent="Base">
+        <item name="android:background">@drawable/ekko_infobar_background</item>
+        <item name="android:layout_height">60dp</item>
     </style>
+
+    <dimen name="ekko_infobar_border_bottom">2dp</dimen>
+
+    <style name="TextAppearance.Ekko.InfoBar.Title" parent="TextAppearance.Ekko"></style>
+
+    <!-- Lesson design -->
+    <style name="Widget.Ekko.Course.Lesson.Text" parent="Base">
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@color/ekko_lightgrey</item>
+    </style>
+
+    <style name="TextAppearance.Ekko.Course.Lesson.Text" parent="@android:style/TextAppearance">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#212121</item>
+    </style>
+
+    <!-- miscellaneous -->
 
 </resources>
