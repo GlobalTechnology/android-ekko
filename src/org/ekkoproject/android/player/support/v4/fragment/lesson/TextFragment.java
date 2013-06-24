@@ -67,6 +67,14 @@ public class TextFragment extends AbstractManifestAwareFragment {
     }
 
     @Override
+    public void onUpdateUserVisibleHint(final boolean isVisibleToUser) {
+        super.onUpdateUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            this.getProgressManager().recordProgressAsync(this.getCourseId(), this.textId);
+        }
+    }
+
+    @Override
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
         this.updateTextView(manifest);

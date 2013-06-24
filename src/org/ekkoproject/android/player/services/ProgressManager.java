@@ -21,6 +21,7 @@ import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.model.Progress;
 import org.ekkoproject.android.player.model.Quiz;
+import org.ekkoproject.android.player.model.Text;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -130,7 +131,6 @@ public final class ProgressManager {
 
     public void recordProgressAsync(final long courseId, final String contentId) {
         assertOnUiThread();
-
         new RecordProgressAsyncTask(courseId, contentId).execute();
     }
 
@@ -151,13 +151,11 @@ public final class ProgressManager {
                 progress.setCompleted();
                 this.dao.insert(progress);
 
-                // remove stale progress data
+                // reload progress
                 synchronized (this.progress) {
                     this.progress.remove(courseId);
                 }
-
-                // broadcast a progress update
-                broadcastProgressUpdate(this.context, courseId);
+                this.loadProgress(courseId);
             }
         } catch (final SQLiteException e) {
         }
@@ -219,8 +217,12 @@ public final class ProgressManager {
                     complete++;
                 }
             }
-
-            // TODO include text progress once we track it
+            for (final Text text : lesson.getText()) {
+                total++;
+                if (progress.contains(text.getId())) {
+                    complete++;
+                }
+            }
 
             // check if the lesson is complete
             if (progress.contains(lesson.getId())) {
