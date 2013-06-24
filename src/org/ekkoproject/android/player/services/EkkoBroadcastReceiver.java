@@ -54,6 +54,8 @@ public final class EkkoBroadcastReceiver extends BroadcastReceiver {
     protected IntentFilter getIntentFilter() {
         final IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_UPDATE_COURSES);
+        filter.addAction(ACTION_UPDATE_PROGRESS);
+        filter.addAction(ACTION_UPDATE_MANIFEST);
         return filter;
     }
 
