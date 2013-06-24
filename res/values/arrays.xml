@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-    <!-- share items -->
-
-    <string-array name="head_titles">
-	    <item>Course List</item>
-	    <item>Course</item>
-    </string-array>
-</resources>
