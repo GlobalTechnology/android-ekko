@@ -10,6 +10,7 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentPagerAdapter;
 import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.widget.FocusingDrawerListener;
 
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
@@ -29,7 +30,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
-        CourseContentDrawerFragment.Listener, ViewPager.OnPageChangeListener {
+        QuizFragment.Listener, CourseContentDrawerFragment.Listener, ViewPager.OnPageChangeListener {
     private static final String ARG_ANIMATIONHACK = CourseFragment.class.getName() + ".ARG_ANIMATIONHACK";
 
     private int layout = R.layout.fragment_course;
@@ -97,6 +98,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         super.onActivityCreated(savedInstanceState);
         this.findViews();
         this.setupContentPager();
+        this.setupNavigationDrawer();
     }
 
     @Override
@@ -249,6 +251,12 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         this.contentPager = null;
         this.drawerLayout = null;
         this.slidingMenu = null;
+    }
+
+    private void setupNavigationDrawer() {
+        if (this.drawerLayout != null) {
+            this.drawerLayout.setDrawerListener(new FocusingDrawerListener());
+        }
     }
 
     private void updateNavigationDrawer() {
