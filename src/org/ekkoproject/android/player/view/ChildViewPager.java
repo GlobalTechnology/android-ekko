@@ -10,11 +10,13 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
+import android.view.ViewParent;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class ChildViewPager extends ViewPager {
     private static final int INVALID_POINTER = -1;
 
+    private boolean intercept = true;
     private boolean focusDetermined = false;
     private int touchSlop = 0;
     private int pointerId = 0;
@@ -36,16 +38,33 @@ public class ChildViewPager extends ViewPager {
         this.touchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
     }
 
+    private ViewPager getParentViewPager() {
+        ViewParent view = getParent();
+        while (view != null && !(view instanceof ViewPager)) {
+            view = view.getParent();
+        }
+        if (view instanceof ViewPager) {
+            return (ViewPager) view;
+        }
+        return null;
+    }
+
     @Override
     public boolean onInterceptTouchEvent(final MotionEvent ev) {
         switch (ev.getAction()) {
         case MotionEvent.ACTION_DOWN:
             // disable parents & reset tracking data on initial event
-            getParent().requestDisallowInterceptTouchEvent(true);
-            this.focusDetermined = false;
-            this.pointerId = ev.getPointerId(0);
-            this.initialX = MotionEventCompat.getX(ev, 0);
-            this.initialY = MotionEventCompat.getY(ev, 0);
+            final ViewPager parent = this.getParentViewPager();
+            if (parent != null) {
+                parent.requestDisallowInterceptTouchEvent(true);
+                this.intercept = true;
+                this.focusDetermined = false;
+                this.pointerId = ev.getPointerId(0);
+                this.initialX = MotionEventCompat.getX(ev, 0);
+                this.initialY = MotionEventCompat.getY(ev, 0);
+            } else {
+                this.intercept = false;
+            }
             break;
         }
 
@@ -55,7 +74,7 @@ public class ChildViewPager extends ViewPager {
     @Override
     public boolean onTouchEvent(final MotionEvent ev) {
         // attempt to determine focus
-        if (!this.focusDetermined) {
+        if (this.intercept && !this.focusDetermined) {
             switch (ev.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 // check for an actual scroll
@@ -73,10 +92,16 @@ public class ChildViewPager extends ViewPager {
                         final int count = adapter != null ? adapter.getCount() : 0;
                         if ((dx < 0.0f && curItem < count - 1) || (dx > 0.0f && curItem > 0)) {
                             // prevent parent focus
-                            getParent().requestDisallowInterceptTouchEvent(true);
+                            final ViewPager parent = this.getParentViewPager();
+                            if (parent != null) {
+                                parent.requestDisallowInterceptTouchEvent(true);
+                            }
                         } else if ((dx > 0.0f && curItem <= 0) || (dx < 0.0f && curItem >= count - 1)) {
                             // allow parent focus
-                            getParent().requestDisallowInterceptTouchEvent(false);
+                            final ViewPager parent = this.getParentViewPager();
+                            if (parent != null) {
+                                parent.requestDisallowInterceptTouchEvent(false);
+                            }
                         }
 
                         // we have determined the focus, quit checking
