@@ -8,23 +8,30 @@
     android:orientation="vertical"
     android:padding="5dip" >
 
-    <org.ekkoproject.android.player.view.ResourceImageView
-        android:id="@+id/banner"
-        android:layout_width="fill_parent"
-        android:layout_height="180dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/course_banner"
-        tools:ignore="ContentDescription" />
+    <org.ekkoproject.android.player.widget.RatioLayout
+        android:id="@+id/bannerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ekko:aspectRatioHeight="9"
+        ekko:aspectRatioWidth="16" >
+
+        <org.ekkoproject.android.player.view.ResourceImageView
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription" />
+    </org.ekkoproject.android.player.widget.RatioLayout>
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/banner"
-        android:layout_alignLeft="@+id/banner"
-        android:layout_alignRight="@+id/banner"
-        android:layout_alignTop="@+id/banner"
+        android:layout_alignBottom="@id/bannerContainer"
+        android:layout_alignLeft="@id/bannerContainer"
+        android:layout_alignRight="@id/bannerContainer"
+        android:layout_alignTop="@id/bannerContainer"
         android:layout_margin="1dp"
         android:gravity="center"
         android:textColor="#FFFFFF"
@@ -34,7 +41,7 @@
         android:id="@+id/progress"
         android:layout_width="fill_parent"
         android:layout_height="7dp"
-        android:layout_alignBottom="@+id/banner"
+        android:layout_alignBottom="@id/bannerContainer"
         android:layout_margin="1dp"
         android:gravity="bottom"
         android:visibility="visible" />

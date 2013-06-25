@@ -1,32 +1,38 @@
-package org.ekkoproject.android.player.view;
+package org.ekkoproject.android.player.widget;
 
 import org.ekkoproject.android.player.R;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 
-public class ScalableImageView extends ImageView {
+public class RatioLayout extends FrameLayout {
     private float aspectRatio = 0.0f;
 
-    public ScalableImageView(final Context context) {
+    public RatioLayout(Context context) {
         super(context);
     }
 
-    public ScalableImageView(final Context context, final AttributeSet attrs) {
+    public RatioLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.init(attrs);
     }
 
-    public ScalableImageView(final Context context, final AttributeSet attrs, final int defStyle) {
+    public RatioLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.init(attrs);
     }
 
     private void init(final AttributeSet attrs) {
         final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RatioLayout);
-        this.aspectRatio = a.getFloat(R.styleable.RatioLayout_aspectRatio, 0.0f);
+        final float width = a.getFloat(R.styleable.RatioLayout_aspectRatioWidth, 0.0f);
+        final float height = a.getFloat(R.styleable.RatioLayout_aspectRatioHeight, 0.0f);
+        if (height > 0.0f && width > 0.0f) {
+            this.aspectRatio = width / height;
+        } else {
+            this.aspectRatio = a.getFloat(R.styleable.RatioLayout_aspectRatio, 0.0f);
+        }
         a.recycle();
     }
 
@@ -50,7 +56,7 @@ public class ScalableImageView extends ImageView {
                     height = Math.min(height, MeasureSpec.getSize(heightMeasureSpec));
                 }
 
-                setMeasuredDimension(width, height);
+                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
                 return;
             }
             // scale based off static height
@@ -63,7 +69,7 @@ public class ScalableImageView extends ImageView {
                     width = Math.min(width, MeasureSpec.getSize(widthMeasureSpec));
                 }
 
-                setMeasuredDimension(width, height);
+                super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), heightMeasureSpec);
                 return;
             }
         }
