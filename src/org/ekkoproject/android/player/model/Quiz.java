@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.Question;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;

@@ -3,9 +3,9 @@ package org.ekkoproject.android.player.adapter;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.Option;
-import org.appdev.entity.Question;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.Option;
+import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.services.CourseManager;
 
 import android.content.Context;

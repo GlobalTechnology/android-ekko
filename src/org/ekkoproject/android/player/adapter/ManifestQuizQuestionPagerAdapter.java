@@ -5,8 +5,8 @@ import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import java.util.Collections;
 import java.util.List;
 
-import org.appdev.entity.Question;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.support.v4.fragment.QuestionFragment;
 
@@ -43,7 +43,7 @@ public class ManifestQuizQuestionPagerAdapter extends AbstractManifestQuizPagerA
         final long courseId = manifest != null ? manifest.getCourseId() : INVALID_COURSE;
         final Quiz quiz = this.getQuiz();
         final String quizId = quiz != null ? quiz.getId() : null;
-        final String questionId = this.questions.size() > position ? this.questions.get(position).getGuid() : null;
+        final String questionId = this.questions.size() > position ? this.questions.get(position).getId() : null;
         return QuestionFragment.newInstance(courseId, quizId, questionId);
     }
 
@@ -54,7 +54,7 @@ public class ManifestQuizQuestionPagerAdapter extends AbstractManifestQuizPagerA
             final String questionId = ((QuestionFragment) fragment).getQuestionId();
             if (questionId != null) {
                 for (int i = 0; i < this.questions.size(); i++) {
-                    if (questionId.equals(this.questions.get(i).getGuid())) {
+                    if (questionId.equals(this.questions.get(i).getId())) {
                         return i;
                     }
                 }

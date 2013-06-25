@@ -1,6 +1,6 @@
 package org.ekkoproject.android.player.adapter;
 
-import org.appdev.entity.Question;
+import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.model.Quiz;
 
 import android.content.Context;

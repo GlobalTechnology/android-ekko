@@ -1,4 +1,4 @@
-package org.appdev.entity;
+package org.ekkoproject.android.player.model;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import org.ekkoproject.android.player.Constants.XML;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class Option extends Entity {
+public class Option {
     private String id;
     private boolean answer = false;
     private String value;
