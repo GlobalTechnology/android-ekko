@@ -97,6 +97,23 @@ public class EkkoDao {
                 // return the loaded node
                 return (T) resource;
             }
+        } else if (entityClass.equals(Progress.class)) {
+            if (key.length != 2) {
+                throw new IllegalArgumentException("invalid Progress key");
+            }
+            final Cursor c = this.getProgressCursor(Contract.Progress.COLUMN_NAME_COURSE_ID + " = ? AND "
+                    + Contract.Progress.COLUMN_NAME_CONTENT_ID + " = ?",
+                    new String[] { key[0].toString(), key[1].toString() }, null);
+
+            if (c.getCount() > 0) {
+                // get the first node & close the cursor
+                c.moveToFirst();
+                final Progress progress = PROGRESS_MAPPER.toObject(c);
+                c.close();
+
+                // return the loaded node
+                return (T) progress;
+            }
         }
 
         // default to null
@@ -426,6 +443,18 @@ public class EkkoDao {
             db.delete(Contract.Progress.TABLE_NAME, Contract.Progress.COLUMN_NAME_COURSE_ID + " = ? AND "
                     + Contract.Progress.COLUMN_NAME_CONTENT_ID + " = ?",
                     new String[] { Long.toString(progress.getCourseId()), progress.getContentId() });
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void clearProgress(final long courseId) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.delete(Contract.Progress.TABLE_NAME, Contract.Progress.COLUMN_NAME_COURSE_ID + " = ?",
+                    new String[] { Long.toString(courseId) });
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
