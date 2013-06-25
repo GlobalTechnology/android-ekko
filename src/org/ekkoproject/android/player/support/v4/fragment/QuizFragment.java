@@ -9,12 +9,13 @@ import org.ekkoproject.android.player.model.Manifest;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class QuizFragment extends AbstractManifestAwareFragment {
+public class QuizFragment extends AbstractManifestAwareFragment implements QuestionFragment.Listener {
     private String quizId = null;
 
     private ViewPager questionsPager = null;
@@ -65,6 +66,37 @@ public class QuizFragment extends AbstractManifestAwareFragment {
     }
 
     @Override
+    public void onNavigatePrevious() {
+        if (this.questionsPager != null) {
+            final int index = this.questionsPager.getCurrentItem() - 1;
+            if (index >= 0) {
+                this.questionsPager.setCurrentItem(index, false);
+            } else {
+                final Object listener = this.getPotentialListener();
+                if (listener instanceof Listener) {
+                    ((Listener) listener).onNavigatePrevious();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onNavigateNext() {
+        if (this.questionsPager != null) {
+            final PagerAdapter adapter = this.questionsPager.getAdapter();
+            final int index = this.questionsPager.getCurrentItem() + 1;
+            if (adapter == null || index < adapter.getCount()) {
+                this.questionsPager.setCurrentItem(index, false);
+            } else {
+                final Object listener = this.getPotentialListener();
+                if (listener instanceof Listener) {
+                    ((Listener) listener).onNavigateNext();
+                }
+            }
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.clearViews();
@@ -89,5 +121,11 @@ public class QuizFragment extends AbstractManifestAwareFragment {
             this.questionsPager
                     .setAdapter(new ManifestQuizQuestionPagerAdapter(getChildFragmentManager(), this.quizId));
         }
+    }
+
+    public interface Listener {
+        void onNavigatePrevious();
+
+        void onNavigateNext();
     }
 }

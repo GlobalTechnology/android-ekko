@@ -6,8 +6,4 @@
     <!-- used by UpdateProgressBarAsyncTask's -->
     <item name="progress_bar_update_task" type="id"/>
 
-    <!-- Activity/Fragment id placeholders -->
-    <item name="nextContent" type="id"/>
-    <item name="prevContent" type="id"/>
-
 </resources>

@@ -156,27 +156,21 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     }
 
     @Override
-    public void onNextContent(final String contentId) {
-        final Manifest manifest = this.getManifest();
-        if (manifest != null) {
-            final int index = manifest.findContent(contentId) + 1;
-            final List<CourseContent> content = manifest.getContent();
-            if (content.size() > index) {
-                this.onSelectContent(content.get(index).getId());
-            }
+    public void onNavigateNext() {
+        if (this.contentPager != null) {
+            final int index = this.contentPager.getCurrentItem() + 1;
+            this.contentPager.setCurrentItem(index, false);
         }
+        return;
     }
 
     @Override
-    public void onPreviousContent(final String contentId) {
-        final Manifest manifest = this.getManifest();
-        if (manifest != null) {
-            final int index = manifest.findContent(contentId) - 1;
-            final List<CourseContent> content = manifest.getContent();
-            if (content.size() > 0) {
-                this.onSelectContent(content.get(index < 0 ? 0 : index).getId());
-            }
+    public void onNavigatePrevious() {
+        if (this.contentPager != null) {
+            final int index = this.contentPager.getCurrentItem() - 1;
+            this.contentPager.setCurrentItem(index, false);
         }
+        return;
     }
 
     @Override

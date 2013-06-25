@@ -91,11 +91,11 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
         final Object listener = this.getPotentialListener();
         if (listener instanceof Listener) {
             switch (v.getId()) {
-            case R.id.nextContent:
-                ((Listener) listener).onNextContent(this.lessonId);
+            case R.id.nextButton:
+                ((Listener) listener).onNavigateNext();
                 return;
-            case R.id.prevContent:
-                ((Listener) listener).onPreviousContent(this.lessonId);
+            case R.id.prevButton:
+                ((Listener) listener).onNavigatePrevious();
                 return;
             }
         }
@@ -152,8 +152,8 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
         this.progressBar = findView(ProgressBar.class, R.id.progress);
         this.mediaPager = findView(ViewPager.class, R.id.media);
         this.textPager = findView(ViewPager.class, R.id.text);
-        this.nextButton = findView(View.class, R.id.nextContent);
-        this.prevButton = findView(View.class, R.id.prevContent);
+        this.nextButton = findView(View.class, R.id.nextButton);
+        this.prevButton = findView(View.class, R.id.prevButton);
     }
 
     private void clearViews() {
@@ -228,8 +228,8 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
     }
 
     public interface Listener {
-        void onNextContent(String contentId);
+        void onNavigatePrevious();
 
-        void onPreviousContent(String contentId);
+        void onNavigateNext();
     }
 }
