@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
         QuizFragment.Listener, CourseContentDrawerFragment.Listener, ViewPager.OnPageChangeListener {
@@ -40,7 +39,6 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
     private ViewPager contentPager = null;
     private DrawerLayout drawerLayout = null;
-    private SlidingMenu slidingMenu = null;
 
     public static CourseFragment newInstance(final long courseId) {
         return newInstance(courseId, false);
@@ -126,9 +124,6 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
                 } else {
                     this.drawerLayout.openDrawer(GravityCompat.END);
                 }
-            }
-            if (this.slidingMenu != null) {
-                this.slidingMenu.toggle();
             }
             return true;
         default:
@@ -238,13 +233,11 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     private void findViews() {
         this.contentPager = findView(ViewPager.class, R.id.content);
         this.drawerLayout = findView(DrawerLayout.class, R.id.drawer_layout);
-        this.slidingMenu = findView(SlidingMenu.class, R.id.slidingmenu);
     }
 
     private void clearViews() {
         this.contentPager = null;
         this.drawerLayout = null;
-        this.slidingMenu = null;
     }
 
     private void setupNavigationDrawer() {
@@ -254,7 +247,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     }
 
     private void updateNavigationDrawer() {
-        if (this.slidingMenu != null || this.drawerLayout != null) {
+        if (this.drawerLayout != null) {
             getChildFragmentManager()
                     .beginTransaction()
                     .replace(R.id.frame_drawer_right,

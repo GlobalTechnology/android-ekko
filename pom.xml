@@ -39,13 +39,6 @@
       <type>apklib</type>
     </dependency>
 
-    <!-- Slidingmenu Library -->
-    <dependency>
-      <groupId>com.jeremyfeinstein.slidingmenu</groupId>
-      <artifactId>slidingmenu</artifactId>
-      <type>apklib</type>
-    </dependency>
-
     <!-- Viewpager Indicator -->
     <dependency>
       <groupId>com.viewpagerindicator</groupId>
