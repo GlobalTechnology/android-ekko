@@ -11,54 +11,13 @@
         ekko:aspectRatioHeight="9"
         ekko:aspectRatioWidth="16" >
 
-        <RelativeLayout
+        <org.ekkoproject.android.player.view.ChildViewPager
+            android:id="@+id/media"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-
-            <org.ekkoproject.android.player.view.ChildViewPager
-                android:id="@+id/media"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <com.viewpagerindicator.CirclePageIndicator
-                android:id="@+id/frame_lesson_media_indicator"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/media"
-                android:layout_marginTop="-25dp"
-                android:gravity="right" />
-        </RelativeLayout>
+            android:layout_height="match_parent" />
     </org.ekkoproject.android.player.view.RatioLayout>
 
-    <LinearLayout
-        style="@style/Widget.Ekko.Course.InfoBar"
-        android:layout_width="match_parent"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp" />
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:gravity="top" >
-
-            <ProgressBar
-                android:id="@+id/progress"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_gravity="center_vertical"
-                android:visibility="visible" />
-        </FrameLayout>
-    </LinearLayout>
+    <include layout="@layout/widget_infobar" />
 
     <org.ekkoproject.android.player.view.ChildViewPager
         android:id="@+id/text"
