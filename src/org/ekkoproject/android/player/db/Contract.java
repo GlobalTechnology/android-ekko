@@ -57,9 +57,15 @@ public final class Contract {
                     + COLUMN_NAME_PARENT_RESOURCE + " TEXT," + COLUMN_NAME_TYPE + " TEXT," + COLUMN_NAME_SHA1
                     + " TEXT," + COLUMN_NAME_SIZE + " INTEGER," + COLUMN_NAME_PROVIDER + " TEXT," + COLUMN_NAME_URI
                     + " TEXT," + COLUMN_NAME_MIMETYPE + " TEXT)";
-            protected static final String SQL_INDEX_COURSE_ID = "CREATE INDEX " + TABLE_NAME + "_"
-                    + COLUMN_NAME_COURSE_ID + " ON " + TABLE_NAME + "(" + COLUMN_NAME_COURSE_ID + ")";
             protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+            /**
+             * an index on course id's in unnecessary because the primary key
+             * covers this index
+             */
+            @Deprecated
+            protected static final String SQL_DROP_INDEX_COURSE_ID = "DROP INDEX IF EXISTS " + TABLE_NAME + "_"
+                    + COLUMN_NAME_COURSE_ID;
         }
     }
 
@@ -79,9 +85,15 @@ public final class Contract {
                 + " INTEGER," + COLUMN_NAME_SHA1 + " TEXT," + COLUMN_NAME_SIZE + " INTEGER," + COLUMN_NAME_PATH
                 + " TEXT," + COLUMN_NAME_LAST_ACCESSED + " INTEGER, PRIMARY KEY(" + COLUMN_NAME_COURSE_ID + ", "
                 + COLUMN_NAME_SHA1 + "))";
-        protected static final String SQL_INDEX_COURSE_ID = "CREATE INDEX " + TABLE_NAME + "_" + COLUMN_NAME_COURSE_ID
-                + " ON " + TABLE_NAME + "(" + COLUMN_NAME_COURSE_ID + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        /**
+         * an index on course id's in unnecessary because the primary key covers
+         * this index
+         */
+        @Deprecated
+        protected static final String SQL_DROP_INDEX_COURSE_ID = "DROP INDEX IF EXISTS " + TABLE_NAME + "_"
+                + COLUMN_NAME_COURSE_ID;
     }
 
     public static final class CachedUriResource extends Base {
@@ -103,9 +115,15 @@ public final class Contract {
                 + " TEXT," + COLUMN_NAME_EXPIRES + " INTEGER," + COLUMN_NAME_LAST_MODIFIED + " INTEGER,"
                 + COLUMN_NAME_LAST_ACCESSED + " INTEGER, PRIMARY KEY(" + COLUMN_NAME_COURSE_ID + ", " + COLUMN_NAME_URI
                 + "))";
-        protected static final String SQL_INDEX_COURSE_ID = "CREATE INDEX " + TABLE_NAME + "_" + COLUMN_NAME_COURSE_ID
-                + " ON " + TABLE_NAME + "(" + COLUMN_NAME_COURSE_ID + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        /**
+         * an index on course id's in unnecessary because the primary key covers
+         * this index
+         */
+        @Deprecated
+        protected static final String SQL_DROP_INDEX_COURSE_ID = "DROP INDEX IF EXISTS " + TABLE_NAME + "_"
+                + COLUMN_NAME_COURSE_ID;
     }
 
     public static final class Progress extends Base {
@@ -120,9 +138,31 @@ public final class Contract {
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
                 + " INTEGER," + COLUMN_NAME_CONTENT_ID + " TEXT," + COLUMN_NAME_COMPLETED + " INTEGER, PRIMARY KEY("
                 + COLUMN_NAME_COURSE_ID + ", " + COLUMN_NAME_CONTENT_ID + "))";
-        protected static final String SQL_INDEX_COURSE_ID = "CREATE INDEX " + TABLE_NAME + "_" + COLUMN_NAME_COURSE_ID
-                + " ON " + TABLE_NAME + "(" + COLUMN_NAME_COURSE_ID + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        /**
+         * an index on course id's in unnecessary because the primary key covers
+         * this index
+         */
+        @Deprecated
+        protected static final String SQL_DROP_INDEX_COURSE_ID = "DROP INDEX IF EXISTS " + TABLE_NAME + "_"
+                + COLUMN_NAME_COURSE_ID;
     }
 
+    public static final class Answer extends Base {
+        public static final String TABLE_NAME = "quizMultipleChoiceAnswers";
+        public static final String COLUMN_NAME_COURSE_ID = "courseId";
+        public static final String COLUMN_NAME_QUESTION_ID = "questionId";
+        public static final String COLUMN_NAME_ANSWER_ID = "answerId";
+        public static final String COLUMN_NAME_ANSWERED = "answered";
+
+        protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_QUESTION_ID,
+                COLUMN_NAME_ANSWER_ID, COLUMN_NAME_ANSWERED };
+
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
+                + " INTEGER," + COLUMN_NAME_QUESTION_ID + " TEXT," + COLUMN_NAME_ANSWER_ID + " TEXT,"
+                + COLUMN_NAME_ANSWERED + " INTEGER, PRIMARY KEY(" + COLUMN_NAME_COURSE_ID + ", "
+                + COLUMN_NAME_QUESTION_ID + ", " + COLUMN_NAME_ANSWER_ID + "))";
+        protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    }
 }

@@ -5,7 +5,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class EkkoDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 4;
+    /*
+     * Version history
+     * 
+     * 5: 6/25/2013
+     * 
+     * 6: 6/25/2013
+     */
+    public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "Ekko.db";
 
     public EkkoDbHelper(final Context context) {
@@ -16,38 +23,50 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL(Contract.Course.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_CREATE_TABLE);
-        db.execSQL(Contract.Course.Resource.SQL_INDEX_COURSE_ID);
         db.execSQL(Contract.CachedResource.SQL_CREATE_TABLE);
-        db.execSQL(Contract.CachedResource.SQL_INDEX_COURSE_ID);
         db.execSQL(Contract.CachedUriResource.SQL_CREATE_TABLE);
-        db.execSQL(Contract.CachedUriResource.SQL_INDEX_COURSE_ID);
         db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
-        db.execSQL(Contract.Progress.SQL_INDEX_COURSE_ID);
+        db.execSQL(Contract.Answer.SQL_CREATE_TABLE);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         switch (oldVersion) {
+        case 0:
+            // version too old, reset database
+            resetDatabase(db);
+            break;
         case 1:
             if (newVersion <= 1) {
                 break;
             }
             db.execSQL(Contract.CachedResource.SQL_CREATE_TABLE);
-            db.execSQL(Contract.CachedResource.SQL_INDEX_COURSE_ID);
         case 2:
             if (newVersion <= 2) {
                 break;
             }
             db.execSQL(Contract.CachedUriResource.SQL_CREATE_TABLE);
-            db.execSQL(Contract.CachedUriResource.SQL_INDEX_COURSE_ID);
         case 3:
             if (newVersion <= 3) {
                 break;
             }
             db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
-            db.execSQL(Contract.Progress.SQL_INDEX_COURSE_ID);
         case 4:
             if (newVersion <= 4) {
+                break;
+            }
+            db.execSQL(Contract.Answer.SQL_CREATE_TABLE);
+        case 5:
+            if (newVersion <= 5) {
+                break;
+            }
+            db.execSQL(Contract.Course.Resource.SQL_DROP_INDEX_COURSE_ID);
+            db.execSQL(Contract.CachedResource.SQL_DROP_INDEX_COURSE_ID);
+            db.execSQL(Contract.CachedUriResource.SQL_DROP_INDEX_COURSE_ID);
+            db.execSQL(Contract.Progress.SQL_DROP_INDEX_COURSE_ID);
+        case 6:
+            if (newVersion <= 6) {
                 break;
             }
             break;
@@ -57,6 +76,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
     }
 
     private void resetDatabase(final SQLiteDatabase db) {
+        db.execSQL(Contract.Answer.SQL_DELETE_TABLE);
         db.execSQL(Contract.Progress.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedResource.SQL_DELETE_TABLE);

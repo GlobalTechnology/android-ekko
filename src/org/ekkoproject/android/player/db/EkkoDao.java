@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Answer;
 import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
@@ -25,6 +26,7 @@ public class EkkoDao {
     private static final Mapper<CachedResource> CACHED_RESOURCE_MAPPER = new CachedResourceMapper();
     private static final Mapper<CachedUriResource> CACHED_URI_RESOURCE_MAPPER = new CachedUriResourceMapper();
     private static final Mapper<Progress> PROGRESS_MAPPER = new ProgressMapper();
+    private static final Mapper<Answer> ANSWER_MAPPER = new AnswerMapper();
 
     private static Object instanceLock = new Object();
     private static EkkoDao instance = null;
@@ -114,10 +116,115 @@ public class EkkoDao {
                 // return the loaded node
                 return (T) progress;
             }
+        } else if (entityClass.equals(Answer.class)) {
+            if (key.length != 3) {
+                throw new IllegalArgumentException("invalid Answer key");
+            }
+            final Cursor c = this.getAnswerCursor(Contract.Answer.COLUMN_NAME_COURSE_ID + " = ? AND "
+                    + Contract.Answer.COLUMN_NAME_QUESTION_ID + " = ? AND " + Contract.Answer.COLUMN_NAME_ANSWER_ID
+                    + " = ?", new String[] { key[0].toString(), key[1].toString(), key[2].toString() }, null);
+
+            if (c.getCount() > 0) {
+                // get the first node & close the cursor
+                c.moveToFirst();
+                final Answer answer = ANSWER_MAPPER.toObject(c);
+                c.close();
+
+                // return the loaded node
+                return (T) answer;
+            }
         }
 
         // default to null
         return null;
+    }
+
+    public void insert(final Object obj) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            // get parts of query based on the object type
+            final String table;
+            final ContentValues values;
+            if (obj instanceof Answer) {
+                table = Contract.Answer.TABLE_NAME;
+                values = ANSWER_MAPPER.toContentValues((Answer) obj);
+            } else if (obj instanceof Progress) {
+                table = Contract.Progress.TABLE_NAME;
+                values = PROGRESS_MAPPER.toContentValues((Progress) obj);
+            } else if (obj instanceof CachedResource) {
+                table = Contract.CachedResource.TABLE_NAME;
+                values = CACHED_RESOURCE_MAPPER.toContentValues((CachedResource) obj);
+            } else if (obj instanceof CachedUriResource) {
+                table = Contract.CachedUriResource.TABLE_NAME;
+                values = CACHED_URI_RESOURCE_MAPPER.toContentValues((CachedUriResource) obj);
+            } else {
+                throw new IllegalArgumentException("invalid object passed to EkkoDao.insert");
+            }
+
+            // execute insert
+            db.insert(table, null, values);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void replace(final Object obj) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            this.delete(obj);
+            this.insert(obj);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public void delete(final Object obj) {
+        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            // get parts of query based on the object type
+            final String table;
+            final String whereClause;
+            final String[] whereArgs;
+            if (obj instanceof Answer) {
+                table = Contract.Answer.TABLE_NAME;
+                whereClause = Contract.Answer.COLUMN_NAME_COURSE_ID + " = ? AND "
+                        + Contract.Answer.COLUMN_NAME_QUESTION_ID + " = ? AND " + Contract.Answer.COLUMN_NAME_ANSWER_ID
+                        + " = ?";
+                whereArgs = new String[] { Long.toString(((Answer) obj).getCourseId()), ((Answer) obj).getQuestionId(),
+                        ((Answer) obj).getAnswerId() };
+            } else if (obj instanceof Progress) {
+                table = Contract.Progress.TABLE_NAME;
+                whereClause = Contract.Progress.COLUMN_NAME_COURSE_ID + " = ? AND "
+                        + Contract.Progress.COLUMN_NAME_CONTENT_ID + " = ?";
+                whereArgs = new String[] { Long.toString(((Progress) obj).getCourseId()),
+                        ((Progress) obj).getContentId() };
+            } else if (obj instanceof CachedResource) {
+                table = Contract.CachedResource.TABLE_NAME;
+                whereClause = Contract.CachedResource.COLUMN_NAME_COURSE_ID + " = ? AND "
+                        + Contract.CachedResource.COLUMN_NAME_SHA1 + " = ?";
+                whereArgs = new String[] { Long.toString(((CachedResource) obj).getCourseId()),
+                        ((CachedResource) obj).getSha1() };
+            } else if (obj instanceof CachedUriResource) {
+                table = Contract.CachedUriResource.TABLE_NAME;
+                whereClause = Contract.CachedUriResource.COLUMN_NAME_COURSE_ID + " = ? AND "
+                        + Contract.CachedUriResource.COLUMN_NAME_URI + " = ?";
+                whereArgs = new String[] { Long.toString(((CachedUriResource) obj).getCourseId()),
+                        ((CachedUriResource) obj).getUri() };
+            } else {
+                throw new IllegalArgumentException("invalid object passed to EkkoDao.delete");
+            }
+
+            // execute delete
+            db.delete(table, whereClause, whereArgs);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public Course findCourse(final long id) {
@@ -199,6 +306,22 @@ public class EkkoDao {
         return c;
     }
 
+    public Cursor getAnswerCursor(final String whereClause, final String[] whereBindValues, final String orderBy) {
+        return this.getAnswerCursor(Contract.Answer.PROJECTION_ALL, whereClause, whereBindValues, orderBy);
+    }
+
+    public Cursor getAnswerCursor(final String[] projection, final String whereClause, final String[] whereBindValues,
+            final String orderBy) {
+        final Cursor c = this.dbHelper.getReadableDatabase().query(Contract.Answer.TABLE_NAME, projection, whereClause,
+                whereBindValues, null, null, orderBy);
+
+        if (c != null) {
+            c.moveToPosition(-1);
+        }
+
+        return c;
+    }
+
     private void loadResources(final Course course) {
         if (course != null) {
             // clear the current resources
@@ -226,6 +349,9 @@ public class EkkoDao {
                     course.addResource(resource);
                 }
             }
+
+            // close the cursor to prevent leaking it
+            c.close();
 
             // store child resources in dynamic resources
             for (final Entry<String, List<Resource>> entry : childResources.entrySet()) {
@@ -341,114 +467,6 @@ public class EkkoDao {
         }
     }
 
-    public void insert(final CachedResource resource) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            db.insert(Contract.CachedResource.TABLE_NAME, null, CACHED_RESOURCE_MAPPER.toContentValues(resource));
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void replace(final CachedResource resource) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            this.delete(resource);
-            this.insert(resource);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void delete(final CachedResource resource) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            db.delete(Contract.CachedResource.TABLE_NAME, Contract.CachedResource.COLUMN_NAME_COURSE_ID + " = ? AND "
-                    + Contract.CachedResource.COLUMN_NAME_SHA1 + " = ?",
-                    new String[] { Long.toString(resource.getCourseId()), resource.getSha1() });
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void insert(final CachedUriResource resource) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            db.insert(Contract.CachedUriResource.TABLE_NAME, null, CACHED_URI_RESOURCE_MAPPER.toContentValues(resource));
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void replace(final CachedUriResource resource) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            this.delete(resource);
-            this.insert(resource);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void delete(final CachedUriResource resource) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            db.delete(Contract.CachedUriResource.TABLE_NAME, Contract.CachedUriResource.COLUMN_NAME_COURSE_ID
-                    + " = ? AND " + Contract.CachedUriResource.COLUMN_NAME_URI + " = ?",
-                    new String[] { Long.toString(resource.getCourseId()), resource.getUri() });
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void insert(final Progress progress) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            db.insert(Contract.Progress.TABLE_NAME, null, PROGRESS_MAPPER.toContentValues(progress));
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void replace(final Progress progress) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            this.delete(progress);
-            this.insert(progress);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void delete(final Progress progress) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            db.delete(Contract.Progress.TABLE_NAME, Contract.Progress.COLUMN_NAME_COURSE_ID + " = ? AND "
-                    + Contract.Progress.COLUMN_NAME_CONTENT_ID + " = ?",
-                    new String[] { Long.toString(progress.getCourseId()), progress.getContentId() });
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
     public void clearProgress(final long courseId) {
         final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.beginTransaction();
@@ -459,5 +477,20 @@ public class EkkoDao {
         } finally {
             db.endTransaction();
         }
+    }
+
+    public List<Answer> getAnswers(final String whereClause, final String[] whereBindValues) {
+        final Cursor c = this.getAnswerCursor(whereClause, whereBindValues, null);
+
+        // process the answers
+        final List<Answer> answers = new ArrayList<Answer>();
+        while (c.moveToNext()) {
+            answers.add(ANSWER_MAPPER.toObject(c));
+        }
+
+        // close the cursor
+        c.close();
+
+        return answers;
     }
 }
