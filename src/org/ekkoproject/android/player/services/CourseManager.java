@@ -47,7 +47,7 @@ public class CourseManager {
                 response = map.getKey(id);
                 if (response == null) {
                     response = nextId.getAndIncrement();
-                    map.put(response, id);
+                    map.put(response, id.intern());
                 }
             }
         }
