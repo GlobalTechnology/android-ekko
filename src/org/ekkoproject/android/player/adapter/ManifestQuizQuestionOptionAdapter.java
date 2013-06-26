@@ -11,6 +11,7 @@ import org.ekkoproject.android.player.services.CourseManager;
 import android.content.Context;
 import android.text.Html;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -34,8 +35,21 @@ public class ManifestQuizQuestionOptionAdapter extends AbstractManifestQuizQuest
     }
 
     @Override
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    @Override
     public long getItemId(final int position) {
-        return CourseManager.convertId(this.getCourseId(), this.options.get(position).getId());
+        final List<Option> options = this.options;
+        if (position >= 0 && position < options.size()) {
+            final Option option = this.options.get(position);
+            if (option != null) {
+                return CourseManager.convertId(this.getCourseId(), option.getId());
+            }
+        }
+
+        return AdapterView.INVALID_ROW_ID;
     }
 
     @Override
