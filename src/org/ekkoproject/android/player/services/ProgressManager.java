@@ -15,11 +15,14 @@ import java.util.Set;
 
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.model.Answer;
 import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Media;
+import org.ekkoproject.android.player.model.Option;
 import org.ekkoproject.android.player.model.Progress;
+import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.model.Text;
 
@@ -92,35 +95,53 @@ public final class ProgressManager {
                 }
             }
 
-            // fetch a Cursor for all the progress in the specified course
-            Cursor c = null;
+            Cursor c1 = null;
+            Cursor c2 = null;
             try {
-                c = this.dao.getProgressCursor(new String[] { Contract.Progress.COLUMN_NAME_CONTENT_ID },
+                final Set<String> progress = new HashSet<String>();
+
+                // fetch a Cursor for all the regular progress in the specified
+                // course
+                c1 = this.dao.getProgressCursor(new String[] { Contract.Progress.COLUMN_NAME_CONTENT_ID },
                         Contract.Progress.COLUMN_NAME_COURSE_ID + "=?", new String[] { Long.toString(courseId) }, null);
-
-                // create a HashSet of all the progress
-                final int column = c.getColumnIndex(Contract.Progress.COLUMN_NAME_CONTENT_ID);
-                if (column != -1) {
-                    final Set<String> progress = new HashSet<String>();
-                    while (c.moveToNext()) {
-                        progress.add(c.getString(column));
+                final int column1 = c1.getColumnIndex(Contract.Progress.COLUMN_NAME_CONTENT_ID);
+                if (column1 != -1) {
+                    while (c1.moveToNext()) {
+                        progress.add(c1.getString(column1));
                     }
-
-                    // store the progress
-                    synchronized (this.progress) {
-                        this.progress.put(courseId, progress);
-                    }
-
-                    // broadcast a progress update
-                    broadcastProgressUpdate(this.context, courseId);
-
-                    return Collections.unmodifiableSet(progress);
                 }
+
+                // fetch a Cursor for all the quiz question answers in the
+                // specified course
+                // XXX: right now we handle answers as progress, this may need
+                // to change in the future
+                c2 = this.dao.getAnswerCursor(new String[] { Contract.Answer.COLUMN_NAME_ANSWER_ID },
+                        Contract.Answer.COLUMN_NAME_COURSE_ID + "=?", new String[] { Long.toString(courseId) }, null);
+                final int column2 = c2.getColumnIndex(Contract.Answer.COLUMN_NAME_ANSWER_ID);
+                if (column2 != -1) {
+                    while (c2.moveToNext()) {
+                        progress.add(c2.getString(column2));
+                    }
+                }
+
+                // store the progress
+                synchronized (this.progress) {
+                    this.progress.put(courseId, progress);
+                }
+
+                // broadcast a progress update
+                broadcastProgressUpdate(this.context, courseId);
+
+                return Collections.unmodifiableSet(progress);
+
             } catch (final SQLiteException e) {
                 // suppress db exceptions
             } finally {
-                if (c != null) {
-                    c.close();
+                if (c1 != null) {
+                    c1.close();
+                }
+                if (c2 != null) {
+                    c2.close();
                 }
             }
 
@@ -161,6 +182,61 @@ public final class ProgressManager {
         }
     }
 
+    public void recordAnswersAsync(final long courseId, final String questionId, final String... answers) {
+        assertOnUiThread();
+        new RecordAnswersAsyncTask(courseId, questionId, answers).execute();
+    }
+
+    public void recordAnswers(final long courseId, final String questionId, final String... answers) {
+        assertNotOnUiThread();
+
+        // short-circuit if this is an invalid course
+        if (courseId == INVALID_COURSE) {
+            return;
+        }
+
+        // record answers
+        try {
+            boolean changed = false;
+
+            final Map<String, Answer> existingAnswers = new HashMap<String, Answer>();
+            for (final Answer answer : this.dao.getAnswers(Contract.Answer.COLUMN_NAME_COURSE_ID + " = ? AND "
+                    + Contract.Answer.COLUMN_NAME_QUESTION_ID + " = ?", new String[] { Long.toString(courseId),
+                    questionId })) {
+                existingAnswers.put(answer.getAnswerId(), answer);
+            }
+
+            for (final String answerId : answers) {
+                // answer already recorded, do nothing
+                if (existingAnswers.containsKey(answerId)) {
+                    existingAnswers.remove(answerId);
+                }
+                // new answer, record it
+                else {
+                    final Answer answer = new Answer(courseId, questionId, answerId);
+                    answer.setAnswered();
+                    this.dao.insert(answer);
+                    changed = true;
+                }
+            }
+
+            // remove any remaining existing answers
+            for (final Answer oldAnswer : existingAnswers.values()) {
+                this.dao.delete(oldAnswer);
+                changed = true;
+            }
+
+            // something changed, we need to update
+            if (changed) {
+                synchronized (this.progress) {
+                    this.progress.remove(courseId);
+                }
+                this.loadProgress(courseId);
+            }
+        } catch (final SQLiteException e) {
+        }
+    }
+
     public final Pair<Integer, Integer> getCourseProgress(final long courseId) {
         assertNotOnUiThread();
 
@@ -187,14 +263,19 @@ public final class ProgressManager {
         int total = 0;
         if (manifest != null && progress != null) {
             for (final CourseContent content : manifest.getContent()) {
+                final Pair<Integer, Integer> contentProgress;
                 if (content instanceof Lesson) {
-                    final Pair<Integer, Integer> lessonProgress = getLessonProgress(manifest.getCourseId(),
-                            (Lesson) content, progress);
-                    complete += lessonProgress.first;
-                    total += lessonProgress.second;
+                    contentProgress = getLessonProgress(manifest.getCourseId(), (Lesson) content, progress);
                 } else if (content instanceof Quiz) {
-                    // TODO
+                    contentProgress = getQuizProgress(manifest.getCourseId(), (Quiz) content, progress);
+                } else {
+                    // we probably won't hit this, but let's be safe
+                    contentProgress = Pair.create(0, 0);
                 }
+
+                // add in progress stats
+                complete += contentProgress.first;
+                total += contentProgress.second;
             }
         }
 
@@ -227,7 +308,7 @@ public final class ProgressManager {
             // check if the lesson is complete
             if (progress.contains(lesson.getId())) {
                 lessonComplete = true;
-            } else if (complete == total) {
+            } else if (complete == total && total > 0) {
                 // lesson should be marked as complete, but isn't currently
                 // XXX: this isn't a clean implementation, but it works
                 if (instance != null) {
@@ -240,11 +321,62 @@ public final class ProgressManager {
             }
         }
 
-        if (total == 0) {
-            total = 1;
+        return Pair.create(lessonComplete ? total : complete, total);
+    }
+
+    public static final Pair<Integer, Integer> getQuizProgress(final long courseId, final Quiz quiz,
+            final Set<String> progress) {
+        int complete = 0;
+        int total = 0;
+        if (quiz != null && progress != null) {
+            // iterate over the questions
+            for (final Question question : quiz.getQuestions()) {
+                boolean correct = true;
+                total++;
+
+                // iterate over the options
+                for (final Option option : question.getOptions()) {
+                    if (option.isAnswer()) {
+                        correct = correct && progress.contains(option.getId());
+                    } else {
+                        correct = correct && !progress.contains(option.getId());
+                    }
+                }
+
+                if (correct) {
+                    complete++;
+                }
+            }
         }
 
-        return Pair.create(lessonComplete ? total : complete, total);
+        return Pair.create(complete, total);
+    }
+
+    private class RecordAnswersAsyncTask extends AsyncTask<Void, Void, Void> {
+        private final long courseId;
+        private final String questionId;
+        private final String[] answers;
+
+        public RecordAnswersAsyncTask(final long courseId, final String questionId, final String... answers) {
+            this.courseId = courseId;
+            this.questionId = questionId;
+            this.answers = answers;
+        }
+
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        public AsyncTask<Void, Void, Void> execute() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                return this.executeOnExecutor(THREAD_POOL_EXECUTOR);
+            } else {
+                return this.execute(new Void[] {});
+            }
+        }
+
+        @Override
+        protected Void doInBackground(final Void... params) {
+            ProgressManager.this.recordAnswers(this.courseId, this.questionId, this.answers);
+            return null;
+        }
     }
 
     private class RecordProgressAsyncTask extends AsyncTask<Void, Void, Void> {
