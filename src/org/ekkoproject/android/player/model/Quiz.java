@@ -40,6 +40,26 @@ public class Quiz extends CourseContent {
         return null;
     }
 
+    /**
+     * find the index of the requested question, return -1 if it doesn't exist
+     * 
+     * @param questionId
+     *            the id of the question being searched for
+     * @return the index of the question
+     */
+    public int findQuestion(final String questionId) {
+        if (questionId != null) {
+            int i = 0;
+            for (final Question question : this.questions) {
+                if (question.getId().equals(questionId)) {
+                    return i;
+                }
+                i++;
+            }
+        }
+        return -1;
+    }
+
     public static Quiz fromXml(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
             IOException {
         return new Quiz().parse(parser, schemaVersion);
