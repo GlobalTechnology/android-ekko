@@ -2,9 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/login"
+        android:orderInCategory="0"
+        android:showAsAction="never"
+        android:title="Login"/>
+    <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_menu_refresh"
-        android:orderInCategory="0"
+        android:orderInCategory="10"
         android:showAsAction="ifRoom"
         android:title="Refresh"/>
 
