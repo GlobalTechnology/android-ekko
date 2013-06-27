@@ -11,7 +11,7 @@
         android:layout_width="360dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:background="@color/white" >
+        android:background="@color/ekko_white" >
 
         <include layout="@layout/frame_drawer_right" />
     </FrameLayout>

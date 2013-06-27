@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.TextAppearance.Ekko.Course.Quiz.Option" parent="@android:style/TextAppearance">
+        <item name="android:drawableStart">@drawable/selector_ekko_quiz_question_option</item>
+    </style>
+
+</resources>

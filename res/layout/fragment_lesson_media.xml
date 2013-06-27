@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.ekkoproject.android.player.view.RatioLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.ekkoproject.android.player.widget.RatioLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ekko="http://schemas.android.com/apk/res-auto"
     android:id="@+id/openButton"
     android:layout_width="match_parent"
@@ -13,4 +13,4 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-</org.ekkoproject.android.player.view.RatioLayout>
+</org.ekkoproject.android.player.widget.RatioLayout>

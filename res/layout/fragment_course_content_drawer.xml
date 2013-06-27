@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Media List"
+            android:text="Media"
             android:textStyle="bold" />
 
         <GridView
@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Lesson List"
+            android:text="Lessons"
             android:textStyle="bold" />
 
         <ListView
@@ -61,4 +61,5 @@
             android:paddingLeft="@dimen/list_padding"
             android:paddingRight="@dimen/list_padding" />
     </LinearLayout>
+
 </LinearLayout>
