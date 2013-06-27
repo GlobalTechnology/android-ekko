@@ -1,24 +1,20 @@
 package org.appdev.entity;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.appdev.app.AppException;
-import org.appdev.utils.StringUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.util.ParserUtils;
+import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
-import android.util.Xml;
 
 /**
  * Courselist
  */
-public class CourseList extends Entity{
+public class CourseList {
 
 	public final static int CATALOG_ALL = 1;
 	
@@ -41,18 +37,6 @@ public class CourseList extends Entity{
 
 	public List<Course> getCourselist() {
 		return courseList;
-	}
-	
-	public static CourseList parse(InputStream inputStream) throws IOException, AppException {
-        try {
-            final XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
-            parser.setInput(inputStream, UTF8);
-            parser.nextTag();
-            return CourseList.parse(parser);
-        } catch (final XmlPullParserException e) {
-            throw AppException.xml(e);
-        }
 	}
 
 	public int getStart() {
@@ -102,9 +86,9 @@ public class CourseList extends Entity{
     private CourseList parseInternal(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSES);
 
-        this.start = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSES_START));
-        this.limit = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSES_LIMIT));
-        this.hasMore = StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_COURSES_HASMORE));
+        this.start = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSES_START), 0);
+        this.limit = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSES_LIMIT), 10);
+        this.hasMore = StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_COURSES_HASMORE), false);
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {

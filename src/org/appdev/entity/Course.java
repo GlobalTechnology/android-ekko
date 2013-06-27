@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.ekkoproject.android.player.Constants.XML;
+import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -23,12 +24,7 @@ public abstract class Course {
 	private String author_email;
 	private String author_url;
 
-    private final List<CourseContent> content = new ArrayList<CourseContent>();
     private final HashMap<String, Resource> resources = new HashMap<String, Resource>();
-
-    public abstract long getId();
-
-    public abstract int getVersion();
 
 	public Resource getResource(String resourceId) {
 		return resources.get(resourceId);
@@ -54,64 +50,21 @@ public abstract class Course {
 		return course_description;
 	}
 
-	public void setCourseDescription(String course_description) {
-		this.course_description = course_description;
-	}
-
 	public String getCourseCopyright() {
 		return course_copyright;
-	}
-
-	public void setCourseCopyright(String course_copyright) {
-		this.course_copyright = course_copyright;
 	}
 
 	public String getAuthorName() {
 		return author_name;
 	}
 
-	public void setAuthorName(String author_name) {
-		this.author_name = author_name;
-	}
-
 	public String getAuthorEmail() {
 		return author_email;
-	}
-
-	public void setAuthorEmail(String author_email) {
-		this.author_email = author_email;
 	}
 
 	public String getAuthorUrl() {
 		return author_url;
 	}
-
-	public void setAuthorUrl(String author_url) {
-		this.author_url = author_url;
-	}
-
-    public List<CourseContent> getContent() {
-        return Collections.unmodifiableList(this.content);
-    }
-
-    protected void setContent(final List<CourseContent> content) {
-        this.content.clear();
-        this.addContent(content);
-    }
-
-    protected void addContent(final CourseContent content) {
-        if (content != null) {
-            this.content.add(content);
-        }
-    }
-
-    protected void addContent(final List<CourseContent> content) {
-        if (content != null) {
-            for (final CourseContent item : content) {
-                this.addContent(item);
-            }
-        }
-    }
 
     public Collection<Resource> getResources() {
         return Collections.unmodifiableCollection(this.resources.values());
