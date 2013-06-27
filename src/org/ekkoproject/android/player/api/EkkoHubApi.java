@@ -300,8 +300,8 @@ public final class EkkoHubApi {
         HttpURLConnection conn = null;
         try {
             final List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-            params.add(new Pair<String, String>("start", Integer.toString(start)));
-            params.add(new Pair<String, String>("limit", Integer.toString(limit)));
+            params.add(Pair.create("start", Integer.toString(start)));
+            params.add(Pair.create("limit", Integer.toString(limit)));
             conn = this.apiGetRequest("courses", params, true);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
