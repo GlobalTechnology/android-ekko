@@ -20,7 +20,7 @@
 
     <!-- Theme-wide defaults -->
     <style name="Widget.Ekko.ProgressBar" parent="@android:style/Widget.ProgressBar.Horizontal">
-        <item name="android:progressDrawable">@drawable/ekko_progressbar</item>
+        <item name="android:progressDrawable">@drawable/progressbar_ekko</item>
         <item name="android:progress">0</item>
         <item name="android:max">1</item>
     </style>
@@ -29,8 +29,8 @@
 
     <!-- ActionBar design -->
     <style name="Widget.Ekko.ActionBar" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/ekko_actionbar_background</item>
-        <item name="android:background">@drawable/ekko_actionbar_background</item>
+        <item name="background">@drawable/bg_ekko_actionbar</item>
+        <item name="android:background">@drawable/bg_ekko_actionbar</item>
         <item name="titleTextStyle">@style/TextAppearance.Ekko.ActionBar.Title</item>
         <item name="android:titleTextStyle" tools:targetApi="honeycomb">@style/TextAppearance.Ekko.ActionBar.Title</item>
     </style>
@@ -47,7 +47,7 @@
 
     <!-- InfoBar design -->
     <style name="Widget.Ekko.Course.InfoBar" parent="Base">
-        <item name="android:background">@drawable/ekko_infobar_background</item>
+        <item name="android:background">@drawable/bg_ekko_infobar</item>
         <item name="android:layout_height">60dp</item>
     </style>
 
