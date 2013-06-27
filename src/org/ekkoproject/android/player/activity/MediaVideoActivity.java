@@ -12,6 +12,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,7 +21,7 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-public class MediaVideoActivity extends Activity {
+public class MediaVideoActivity extends Activity implements MediaPlayer.OnCompletionListener {
     private static final String EXTRA_RESOURCEID = MediaVideoActivity.class.getName() + ".EXTRA_RESOURCEID";
 
     private ResourceManager resources = null;
@@ -66,12 +67,18 @@ public class MediaVideoActivity extends Activity {
         }
     }
 
+    @Override
+    public void onCompletion(final MediaPlayer mp) {
+        finish();
+    }
+
     /** END lifecycle */
 
     private void setupVideoPlayer() {
         if (this.videoPlayer != null) {
             this.videoController = new MediaController(this);
             this.videoPlayer.setMediaController(this.videoController);
+            this.videoPlayer.setOnCompletionListener(this);
             new LoadVideoAsyncTask().execute();
         }
     }
