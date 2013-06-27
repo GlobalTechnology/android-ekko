@@ -13,9 +13,17 @@ public final class ViewUtils {
     }
 
     public static Bitmap getBitmapFromView(final View view) {
-        final Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-        return bitmap;
+        if (view != null) {
+            final int width = view.getWidth();
+            final int height = view.getHeight();
+            if (width > 0 && height > 0) {
+                final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                final Canvas canvas = new Canvas(bitmap);
+                view.draw(canvas);
+                return bitmap;
+            }
+        }
+
+        return null;
     }
 }
