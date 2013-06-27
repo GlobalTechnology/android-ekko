@@ -11,7 +11,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 public class AbstractFragment extends SherlockFragment implements OnUpdateVisibilityListener {
     private ProgressManager progressManager = null;
 
-    /** BEGIN lifecycle */
+    /* BEGIN lifecycle */
 
     @Override
     public void onAttach(final Activity activity) {
@@ -29,7 +29,7 @@ public class AbstractFragment extends SherlockFragment implements OnUpdateVisibi
         }
     }
 
-    /** END lifecycle */
+    /* END lifecycle */
 
     protected ProgressManager getProgressManager() {
         return this.progressManager;

@@ -31,6 +31,7 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     private String quizId = null;
     private String questionId = null;
 
+    private TextView title = null;
     private TextView questionView = null;
     private ListView optionsView = null;
     private ProgressBar progressBar = null;
@@ -83,6 +84,7 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     @Override
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
+        this.updateMeta(manifest);
         this.updateQuestion(manifest);
         this.updateManifestAdapters(manifest, this.optionsView);
     }
@@ -133,6 +135,7 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     }
 
     private void findViews() {
+        this.title = findView(TextView.class, R.id.title);
         this.questionView = findView(TextView.class, R.id.question);
         this.optionsView = findView(ListView.class, R.id.options);
         this.progressBar = findView(ProgressBar.class, R.id.progress);
@@ -141,6 +144,7 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     }
 
     private void clearViews() {
+        this.title = null;
         this.questionView = null;
         this.optionsView = null;
         this.progressBar = null;
@@ -206,6 +210,16 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
             for (int position = 0; position < this.optionsView.getCount(); position++) {
                 final long id = this.optionsView.getItemIdAtPosition(position);
                 this.optionsView.setItemChecked(position, progress.contains(CourseManager.convertId(courseId, id)));
+            }
+        }
+    }
+
+    private void updateMeta(final Manifest manifest) {
+        if (this.title != null) {
+            this.title.setText(null);
+            final Quiz quiz = manifest.getQuiz(this.quizId);
+            if (quiz != null) {
+                this.title.setText(quiz.getTitle());
             }
         }
     }
