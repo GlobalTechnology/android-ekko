@@ -78,7 +78,7 @@ public abstract class AbstractContentFragment extends AbstractManifestAndProgres
 
     /* END lifecycle */
 
-    protected String getContentId() {
+    public String getContentId() {
         return this.contentId;
     }
 

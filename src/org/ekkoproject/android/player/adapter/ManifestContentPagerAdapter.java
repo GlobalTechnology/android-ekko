@@ -9,6 +9,7 @@ import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Quiz;
+import org.ekkoproject.android.player.support.v4.fragment.AbstractContentFragment;
 import org.ekkoproject.android.player.support.v4.fragment.LessonFragment;
 import org.ekkoproject.android.player.support.v4.fragment.QuizFragment;
 
@@ -60,10 +61,11 @@ public class ManifestContentPagerAdapter extends AbstractManifestPagerAdapter {
     public int getItemPosition(final Object fragment) {
         // get the contentId represented by the fragment
         final String contentId;
+        if (fragment instanceof AbstractContentFragment) {
+            contentId = ((AbstractContentFragment) fragment).getContentId();
+        } else
         if (fragment instanceof LessonFragment) {
             contentId = ((LessonFragment) fragment).getLessonId();
-        } else if (fragment instanceof QuizFragment) {
-            contentId = ((QuizFragment) fragment).getQuizId();
         } else {
             contentId = null;
         }

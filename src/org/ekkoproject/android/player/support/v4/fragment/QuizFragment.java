@@ -1,51 +1,33 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
+import java.util.Set;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestQuizContentPagerAdapter;
 import org.ekkoproject.android.player.model.Manifest;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
-public class QuizFragment extends AbstractManifestAwareFragment implements AbstractContentFragment.Listener {
-    private String quizId = null;
-
-    private ViewPager questionsPager = null;
+public class QuizFragment extends AbstractContentFragment implements AbstractContentFragment.Listener {
+    private ViewPager contentPager = null;
 
     public static QuizFragment newInstance(final long courseId, final String quizId) {
         final QuizFragment fragment = new QuizFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
-        args.putString(ARG_CONTENTID, quizId);
+        final Bundle args = buildArgs(courseId, quizId);
         fragment.setArguments(args);
 
         return fragment;
     }
 
     /** BEGIN lifecycle */
-
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-    public void onCreate(final Bundle savedState) {
-        super.onCreate(savedState);
-
-        // process arguments
-        final Bundle args = getArguments();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-            this.quizId = args.getString(ARG_CONTENTID, null);
-        } else {
-            this.quizId = args.getString(ARG_CONTENTID);
-        }
-    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -56,21 +38,21 @@ public class QuizFragment extends AbstractManifestAwareFragment implements Abstr
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.findViews();
-        this.setupQuestionsAdapter();
+        this.setupContentPager();
     }
 
     @Override
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
-        this.updateManifestAdapters(manifest, this.questionsPager);
+        this.updateManifestAdapters(manifest, this.contentPager);
     }
 
     @Override
     public void onNavigatePrevious() {
-        if (this.questionsPager != null) {
-            final int index = this.questionsPager.getCurrentItem() - 1;
+        if (this.contentPager != null) {
+            final int index = this.contentPager.getCurrentItem() - 1;
             if (index >= 0) {
-                this.questionsPager.setCurrentItem(index, false);
+                this.contentPager.setCurrentItem(index, false);
             } else {
                 final Object listener = this.getPotentialListener();
                 if (listener instanceof Listener) {
@@ -82,11 +64,11 @@ public class QuizFragment extends AbstractManifestAwareFragment implements Abstr
 
     @Override
     public void onNavigateNext() {
-        if (this.questionsPager != null) {
-            final PagerAdapter adapter = this.questionsPager.getAdapter();
-            final int index = this.questionsPager.getCurrentItem() + 1;
+        if (this.contentPager != null) {
+            final PagerAdapter adapter = this.contentPager.getAdapter();
+            final int index = this.contentPager.getCurrentItem() + 1;
             if (adapter == null || index < adapter.getCount()) {
-                this.questionsPager.setCurrentItem(index, false);
+                this.contentPager.setCurrentItem(index, false);
             } else {
                 final Object listener = this.getPotentialListener();
                 if (listener instanceof Listener) {
@@ -104,28 +86,23 @@ public class QuizFragment extends AbstractManifestAwareFragment implements Abstr
 
     /** END lifecycle */
 
-    public String getQuizId() {
-        return this.quizId;
-    }
-
     private void findViews() {
-        this.questionsPager = findView(ViewPager.class, R.id.questions);
+        this.contentPager = findView(ViewPager.class, R.id.questions);
     }
 
     private void clearViews() {
-        this.questionsPager = null;
+        this.contentPager = null;
     }
 
-    private void setupQuestionsAdapter() {
-        if (this.questionsPager != null) {
-            this.questionsPager
-                    .setAdapter(new ManifestQuizContentPagerAdapter(getChildFragmentManager(), this.quizId));
+    private void setupContentPager() {
+        if (this.contentPager != null) {
+            this.contentPager.setAdapter(new ManifestQuizContentPagerAdapter(getChildFragmentManager(), this
+                    .getContentId()));
         }
     }
 
-    public interface Listener {
-        void onNavigatePrevious();
-
-        void onNavigateNext();
+    @Override
+    protected void updateProgressBar(final ProgressBar progressBar, final Manifest manifest, final Set<String> progress) {
+        // do nothing
     }
 }

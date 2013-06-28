@@ -29,7 +29,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
-        QuizFragment.Listener, CourseContentDrawerFragment.Listener, ViewPager.OnPageChangeListener {
+        AbstractContentFragment.Listener, CourseContentDrawerFragment.Listener, ViewPager.OnPageChangeListener {
     private static final String ARG_ANIMATIONHACK = CourseFragment.class.getName() + ".ARG_ANIMATIONHACK";
 
     private int layout = R.layout.fragment_course;
