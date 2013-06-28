@@ -6,7 +6,8 @@
 
     <ImageView
         android:id="@+id/prevButton"
-        android:layout_width="40dp"
+        style="@style/Widget.Ekko.Course.InfoBar.Button.Previous"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:contentDescription="@string/access_prev_lesson"
@@ -38,7 +39,8 @@
 
     <ImageView
         android:id="@+id/nextButton"
-        android:layout_width="40dp"
+        style="@style/Widget.Ekko.Course.InfoBar.Button.Next"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:contentDescription="@string/access_next_lesson"

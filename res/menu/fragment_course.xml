@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <item
         android:id="@+id/lessons"
-        android:icon="@drawable/ic_menu_lessons_list"
+        android:icon="@drawable/ic_menu_lesson_list"
         android:orderInCategory="100"
         android:showAsAction="always"
-        android:title="Lessons"/>
+        android:title="Lessons"
+        tools:ignore="AlwaysShowAction"/>
 
 </menu>

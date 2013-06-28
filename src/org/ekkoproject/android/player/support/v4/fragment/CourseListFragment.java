@@ -115,7 +115,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         switch (this.layout) {
-        case R.layout.course_list_main:
+        case R.layout.fragment_course_list_main:
         case R.layout.course_list_menu:
             return inflater.inflate(this.layout, container, false);
         default:
@@ -230,7 +230,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
         // select the layout
         final int layout = getArguments().getInt(ARG_LAYOUT, DEFAULT_LAYOUT);
         switch (layout) {
-        case R.layout.course_list_main:
+        case R.layout.fragment_course_list_main:
         case R.layout.course_list_menu:
             this.layout = layout;
             break;
@@ -240,7 +240,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
 
         // configure the item layout based on the main layout
         switch (this.layout) {
-        case R.layout.course_list_main:
+        case R.layout.fragment_course_list_main:
             this.itemLayout = R.layout.course_list_item_banner;
             break;
         case R.layout.course_list_menu:

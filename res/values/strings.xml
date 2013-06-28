@@ -1,10 +1,10 @@
 <resources>
 
+    <string name="app_name">EKKO</string>
     <string name="access_prev_lesson">Previous Lesson</string>
     <string name="access_next_lesson">Next Lesson</string>
-    
+
     <!-- deprecated -->
-    <string name="app_name">EKKO</string>
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
 

@@ -79,7 +79,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
         // update the title/icon
         // XXX: this is a hack, but the best way of dynamically managing it I
         // could think of with current API's
-        this.getSupportActionBar().setTitle("EKKO");
+        this.getSupportActionBar().setTitle(R.string.app_name);
 
         // add menu items
         final MenuInflater inflater = getSupportMenuInflater();
@@ -184,7 +184,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
     private void initFragments() {
         // attach the course list fragment
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_content, CourseListFragment.newInstance(R.layout.course_list_main, true)).commit();
+                .replace(R.id.frame_content, CourseListFragment.newInstance(R.layout.fragment_course_list_main, true)).commit();
     }
 
     private void openCourse(final long courseId) {
