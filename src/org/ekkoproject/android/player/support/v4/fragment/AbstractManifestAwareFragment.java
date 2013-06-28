@@ -109,7 +109,7 @@ public abstract class AbstractManifestAwareFragment extends AbstractFragment imp
         }
     }
 
-    protected final <T extends View> T findView(final Class<T> clazz, final int id) {
+    protected final <T> T findView(final Class<T> clazz, final int id) {
         final View root = getView();
         if (root != null) {
             final View view = root.findViewById(id);

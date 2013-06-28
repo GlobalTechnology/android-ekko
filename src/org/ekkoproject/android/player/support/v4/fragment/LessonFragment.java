@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.viewpagerindicator.PageIndicator;
+
 public class LessonFragment extends AbstractManifestAndProgressAwareFragment implements View.OnClickListener {
     private static final String ARG_PAGERSTATE = LessonFragment.class.getName() + ".ARG_PAGERSTATE";
     private static final String ARG_MEDIAPAGERSTATE = LessonFragment.class.getName() + ".ARG_MEDIAPAGERSTATE";
@@ -29,6 +31,7 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
     private String lessonId = null;
 
     private ViewPager mediaPager = null;
+    private PageIndicator mediaPagerIndicator = null;
     private ViewPager textPager = null;
     private TextView title = null;
     private ProgressBar progressBar = null;
@@ -81,7 +84,7 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
         super.onActivityCreated(savedInstanceState);
         this.needsRestore = true;
         this.findViews();
-        this.setupMediaPagerAdapter();
+        this.setupMediaPager();
         this.setupTextPagerAdapter();
         this.setupNavButtons();
     }
@@ -151,6 +154,7 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
         this.title = findView(TextView.class, R.id.title);
         this.progressBar = findView(ProgressBar.class, R.id.progress);
         this.mediaPager = findView(ViewPager.class, R.id.media);
+        this.mediaPagerIndicator = findView(PageIndicator.class, R.id.media_indicator);
         this.textPager = findView(ViewPager.class, R.id.text);
         this.nextButton = findView(View.class, R.id.nextButton);
         this.prevButton = findView(View.class, R.id.prevButton);
@@ -160,6 +164,7 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
         this.title = null;
         this.progressBar = null;
         this.mediaPager = null;
+        this.mediaPagerIndicator = null;
         this.textPager = null;
         this.nextButton = null;
         this.prevButton = null;
@@ -197,9 +202,15 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
         }
     }
 
-    private void setupMediaPagerAdapter() {
+    private void setupMediaPager() {
         if (this.mediaPager != null) {
+            // attach the PagerAdapter
             this.mediaPager.setAdapter(new ManifestLessonMediaPagerAdapter(getChildFragmentManager(), this.lessonId));
+
+            // attach to the PageIndicator
+            if (this.mediaPagerIndicator != null) {
+                this.mediaPagerIndicator.setViewPager(this.mediaPager);
+            }
         }
     }
 
