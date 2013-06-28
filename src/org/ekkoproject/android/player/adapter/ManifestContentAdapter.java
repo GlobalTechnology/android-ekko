@@ -110,10 +110,10 @@ public class ManifestContentAdapter extends AbstractManifestAdapter<CourseConten
         }
     }
 
-    private void bindQuizView(final View view, final Quiz lesson) {
+    private void bindQuizView(final View view, final Quiz quiz) {
         View v = view.findViewById(R.id.title);
         if (v instanceof TextView) {
-            ((TextView) v).setText("Quiz");
+            ((TextView) v).setText(quiz.getTitle());
         }
     }
 }
