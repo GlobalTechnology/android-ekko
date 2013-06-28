@@ -65,7 +65,9 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="Widget.Ekko.NavigationDrawer.Course" parent="Widget.Ekko.NavigationDrawer"></style>
+    <style name="Widget.Ekko.NavigationDrawer.Course" parent="Widget.Ekko.NavigationDrawer">
+        <item name="android:layout_width">320dp</item>
+    </style>
 
     <!-- InfoBar design -->
     <dimen name="ekko_infobar_border_bottom">2dp</dimen>
@@ -132,12 +134,12 @@
 
     <style name="Base.TextAppearance.Ekko.Course.Quiz.Option" parent="@android:style/TextAppearance.Large">
         <item name="android:drawableLeft">@drawable/selector_ekko_quiz_question_option</item>
-        <item name="android:drawablePadding">8dp</item>
     </style>
 
     <style name="TextAppearance.Ekko.Course.Quiz.Option" parent="Base.TextAppearance.Ekko.Course.Quiz.Option">
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">22sp</item>
+        <item name="android:drawablePadding">8dp</item>
     </style>
 
     <!-- miscellaneous -->
