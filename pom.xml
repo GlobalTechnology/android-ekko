@@ -14,35 +14,33 @@
 
   <name>Ekko</name>
 
+  <properties>
+    <thekey-lib.version>0.2.0-SNAPSHOT</thekey-lib.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>android.support</groupId>
       <artifactId>compatibility-v4</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-android</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.ccci.gto.android</groupId>
-      <artifactId>lib-thekey</artifactId>
-      <type>apklib</type>
-      <version>0.2.0-SNAPSHOT</version>
-    </dependency>
-
-    <!-- Actionbar Sherlock -->
-    <dependency>
       <groupId>com.actionbarsherlock</groupId>
       <artifactId>actionbarsherlock</artifactId>
       <type>apklib</type>
     </dependency>
-
-    <!-- Viewpager Indicator -->
     <dependency>
       <groupId>com.viewpagerindicator</groupId>
       <artifactId>library</artifactId>
+      <type>apklib</type>
+    </dependency>
+    <dependency>
+      <groupId>org.ccci.gto.android</groupId>
+      <artifactId>lib-thekey</artifactId>
       <type>apklib</type>
     </dependency>
   </dependencies>
