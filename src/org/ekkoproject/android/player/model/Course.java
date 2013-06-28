@@ -19,6 +19,9 @@ public class Course extends org.appdev.entity.Course {
     private String manifestFile;
     private int manifestVersion = 0;
 
+    /** flag that indicates this course is inaccessible for some reason */
+    private boolean accessible = true;
+
     private Date lastSynced = new Date(0);
 
     public Course(final long id) {
@@ -51,6 +54,14 @@ public class Course extends org.appdev.entity.Course {
 
     public void setManifestVersion(final int version) {
         this.manifestVersion = version;
+    }
+
+    public boolean isAccessible() {
+        return this.accessible;
+    }
+
+    public void setAccessible(final boolean accessible) {
+        this.accessible = accessible;
     }
 
     public long getLastSynced() {
