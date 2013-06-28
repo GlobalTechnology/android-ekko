@@ -15,8 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class QuizFragment extends AbstractManifestAwareFragment implements AbstractContentFragment.Listener,
-        QuestionFragment.Listener {
+public class QuizFragment extends AbstractManifestAwareFragment implements AbstractContentFragment.Listener {
     private String quizId = null;
 
     private ViewPager questionsPager = null;

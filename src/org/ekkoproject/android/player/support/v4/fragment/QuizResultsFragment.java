@@ -1,7 +1,5 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
-
 import java.util.Set;
 
 import org.ekkoproject.android.player.R;
@@ -24,8 +22,7 @@ public class QuizResultsFragment extends AbstractContentFragment {
         final QuizResultsFragment fragment = new QuizResultsFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
-        args.putString(ARG_CONTENTID, quizId);
+        final Bundle args = buildArgs(courseId, quizId);
         fragment.setArguments(args);
 
         return fragment;

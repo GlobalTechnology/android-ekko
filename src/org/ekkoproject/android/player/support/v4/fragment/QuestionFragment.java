@@ -1,7 +1,5 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,26 +22,19 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class QuestionFragment extends AbstractManifestAndProgressAwareFragment implements View.OnClickListener,
-        AdapterView.OnItemClickListener {
+public class QuestionFragment extends AbstractContentFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_QUESTIONID = QuestionFragment.class.getName() + ".ARG_QUESTIONID";
 
-    private String quizId = null;
     private String questionId = null;
 
-    private TextView title = null;
     private TextView questionView = null;
     private ListView optionsView = null;
-    private ProgressBar progressBar = null;
-    private View nextButton = null;
-    private View prevButton = null;
 
     public static QuestionFragment newInstance(final long courseId, final String quizId, final String questionId) {
         final QuestionFragment fragment = new QuestionFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
-        args.putString(ARG_CONTENTID, quizId);
+        final Bundle args = buildArgs(courseId, quizId);
         args.putString(ARG_QUESTIONID, questionId);
         fragment.setArguments(args);
 
@@ -60,10 +51,8 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
         // process arguments
         final Bundle args = getArguments();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-            this.quizId = args.getString(ARG_CONTENTID, null);
             this.questionId = args.getString(ARG_QUESTIONID, null);
         } else {
-            this.quizId = args.getString(ARG_CONTENTID);
             this.questionId = args.getString(ARG_QUESTIONID);
         }
     }
@@ -77,14 +66,12 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.findViews();
-        this.setupNavButtons();
         this.setupOptionsView();
     }
 
     @Override
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
-        this.updateMeta(manifest);
         this.updateQuestion(manifest);
         this.updateManifestAdapters(manifest, this.optionsView);
     }
@@ -108,21 +95,6 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     }
 
     @Override
-    public void onClick(final View v) {
-        final Object listener = this.getPotentialListener();
-        if (listener instanceof Listener) {
-            switch (v.getId()) {
-            case R.id.nextButton:
-                ((Listener) listener).onNavigateNext();
-                return;
-            case R.id.prevButton:
-                ((Listener) listener).onNavigatePrevious();
-                return;
-            }
-        }
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.clearViews();
@@ -135,37 +107,20 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     }
 
     private void findViews() {
-        this.title = findView(TextView.class, R.id.title);
         this.questionView = findView(TextView.class, R.id.question);
         this.optionsView = findView(ListView.class, R.id.options);
-        this.progressBar = findView(ProgressBar.class, R.id.progress);
-        this.nextButton = findView(View.class, R.id.nextButton);
-        this.prevButton = findView(View.class, R.id.prevButton);
     }
 
     private void clearViews() {
-        this.title = null;
         this.questionView = null;
         this.optionsView = null;
-        this.progressBar = null;
-        this.nextButton = null;
-        this.prevButton = null;
-    }
-
-    private void setupNavButtons() {
-        if (this.nextButton != null) {
-            this.nextButton.setOnClickListener(this);
-        }
-        if (this.prevButton != null) {
-            this.prevButton.setOnClickListener(this);
-        }
     }
 
     private void setupOptionsView() {
         if (this.optionsView != null) {
             // attach the data adapter
             final ManifestQuizQuestionOptionAdapter adapter = new ManifestQuizQuestionOptionAdapter(getActivity(),
-                    this.quizId, this.questionId);
+                    this.getContentId(), this.questionId);
             adapter.setLayout(R.layout.list_item_quiz_question_option);
             this.optionsView.setAdapter(adapter);
 
@@ -175,9 +130,9 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
     }
 
     private void updateQuestion(final Manifest manifest) {
-        if (this.questionView != null || this.progressBar != null) {
+        if (this.questionView != null) {
             // find the quiz & question
-            final Quiz quiz = manifest != null ? manifest.getQuiz(this.quizId) : null;
+            final Quiz quiz = manifest != null ? manifest.getQuiz(this.getContentId()) : null;
             final Question question = quiz != null ? quiz.getQuestion(this.questionId) : null;
 
             // update the question text
@@ -185,18 +140,6 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
                 this.questionView.setText("");
                 if (question != null) {
                     this.questionView.setText(Html.fromHtml(question.getQuestion()));
-                }
-            }
-
-            // update the progress bar (we handle quiz progress bars different
-            // to not give away answers)
-            if (this.progressBar != null) {
-                if (quiz != null) {
-                    this.progressBar.setMax(quiz.getQuestions().size());
-                    this.progressBar.setProgress(quiz.findQuestion(this.questionId));
-                } else {
-                    this.progressBar.setMax(1);
-                    this.progressBar.setProgress(0);
                 }
             }
         }
@@ -214,19 +157,17 @@ public class QuestionFragment extends AbstractManifestAndProgressAwareFragment i
         }
     }
 
-    private void updateMeta(final Manifest manifest) {
-        if (this.title != null) {
-            this.title.setText(null);
-            final Quiz quiz = manifest.getQuiz(this.quizId);
+    @Override
+    protected void updateProgressBar(ProgressBar progressBar, Manifest manifest, Set<String> progress) {
+        if (manifest != null) {
+            final Quiz quiz = manifest.getQuiz(this.getContentId());
             if (quiz != null) {
-                this.title.setText(quiz.getTitle());
+                progressBar.setMax(quiz.getQuestions().size());
+                progressBar.setProgress(quiz.findQuestion(this.questionId));
+            } else {
+                progressBar.setMax(0);
+                progressBar.setProgress(0);
             }
         }
-    }
-
-    public interface Listener {
-        void onNavigatePrevious();
-
-        void onNavigateNext();
     }
 }
