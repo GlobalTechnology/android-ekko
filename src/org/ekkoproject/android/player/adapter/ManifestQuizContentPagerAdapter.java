@@ -9,16 +9,17 @@ import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.support.v4.fragment.QuestionFragment;
+import org.ekkoproject.android.player.support.v4.fragment.QuizResultsFragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-public class ManifestQuizQuestionPagerAdapter extends AbstractManifestQuizPagerAdapter {
+public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAdapter {
     private static final List<Question> NO_QUESTIONS = Collections.emptyList();
 
     private List<Question> questions = NO_QUESTIONS;
-    
-    public ManifestQuizQuestionPagerAdapter(final FragmentManager fm, final String quizId) {
+
+    public ManifestQuizContentPagerAdapter(final FragmentManager fm, final String quizId) {
         super(fm, quizId);
     }
 
@@ -34,7 +35,7 @@ public class ManifestQuizQuestionPagerAdapter extends AbstractManifestQuizPagerA
 
     @Override
     public int getCount() {
-        return this.questions.size();
+        return this.questions.size() + 1;
     }
 
     @Override
@@ -43,8 +44,14 @@ public class ManifestQuizQuestionPagerAdapter extends AbstractManifestQuizPagerA
         final long courseId = manifest != null ? manifest.getCourseId() : INVALID_COURSE;
         final Quiz quiz = this.getQuiz();
         final String quizId = quiz != null ? quiz.getId() : null;
-        final String questionId = this.questions.size() > position ? this.questions.get(position).getId() : null;
-        return QuestionFragment.newInstance(courseId, quizId, questionId);
+
+        // last page (results)
+        if (this.questions.size() == position) {
+            return QuizResultsFragment.newInstance(courseId, quizId);
+        } else {
+            final String questionId = this.questions.size() > position ? this.questions.get(position).getId() : null;
+            return QuestionFragment.newInstance(courseId, quizId, questionId);
+        }
     }
 
     @Override

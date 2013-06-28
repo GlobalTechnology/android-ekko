@@ -3,7 +3,7 @@ package org.ekkoproject.android.player.support.v4.fragment;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
 import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.adapter.ManifestQuizQuestionPagerAdapter;
+import org.ekkoproject.android.player.adapter.ManifestQuizContentPagerAdapter;
 import org.ekkoproject.android.player.model.Manifest;
 
 import android.annotation.TargetApi;
@@ -15,7 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class QuizFragment extends AbstractManifestAwareFragment implements QuestionFragment.Listener {
+public class QuizFragment extends AbstractManifestAwareFragment implements AbstractContentFragment.Listener,
+        QuestionFragment.Listener {
     private String quizId = null;
 
     private ViewPager questionsPager = null;
@@ -119,7 +120,7 @@ public class QuizFragment extends AbstractManifestAwareFragment implements Quest
     private void setupQuestionsAdapter() {
         if (this.questionsPager != null) {
             this.questionsPager
-                    .setAdapter(new ManifestQuizQuestionPagerAdapter(getChildFragmentManager(), this.quizId));
+                    .setAdapter(new ManifestQuizContentPagerAdapter(getChildFragmentManager(), this.quizId));
         }
     }
 
