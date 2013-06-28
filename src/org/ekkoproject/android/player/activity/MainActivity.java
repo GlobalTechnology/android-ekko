@@ -184,7 +184,8 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
     private void initFragments() {
         // attach the course list fragment
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_content, CourseListFragment.newInstance(R.layout.fragment_course_list_main, true)).commit();
+                .replace(R.id.frame_content, CourseListFragment.newInstance(R.layout.fragment_course_list_main, true))
+                .commit();
     }
 
     private void openCourse(final long courseId) {
@@ -211,8 +212,8 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
     private void setupNavigationDrawer() {
         if (this.drawerView != null) {
             // TODO: come up with a sane way of managing navigation items
-            this.drawerView.setAdapter(new ArrayAdapter<String>(this, R.layout.activity_main_drawer_item, new String[] {
-                    "Login", "Languages" }));
+            this.drawerView.setAdapter(new ArrayAdapter<String>(this, R.layout.activity_main_drawer_item,
+                    new String[] { "Login" }));
             this.drawerView.setOnItemClickListener(new DrawerOnItemClickListener());
         }
 
