@@ -132,6 +132,7 @@
 
     <style name="Base.TextAppearance.Ekko.Course.Quiz.Option" parent="@android:style/TextAppearance.Large">
         <item name="android:drawableLeft">@drawable/selector_ekko_quiz_question_option</item>
+        <item name="android:drawablePadding">8dp</item>
     </style>
 
     <style name="TextAppearance.Ekko.Course.Quiz.Option" parent="Base.TextAppearance.Ekko.Course.Quiz.Option">
