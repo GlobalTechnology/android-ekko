@@ -3,6 +3,11 @@ package org.ekkoproject.android.player.sync;
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.appdev.entity.CourseList;
 import org.ekkoproject.android.player.api.ApiSocketException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
@@ -94,25 +99,41 @@ public class EkkoSyncService extends IntentService {
      * @throws InvalidSessionApiException
      */
     private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
+        // load all existing courses
+        final Map<Long, Course> existing = new HashMap<Long, Course>();
+        for (final Course course : this.dao.get(Course.class, false)) {
+            if (course != null) {
+                existing.put(course.getId(), course);
+            }
+        }
+
+        boolean error = false;
         boolean hasMore = true;
         int start = 0;
         int limit = 50;
+        final Set<Long> seen = new HashSet<Long>();
         while (hasMore) {
             final CourseList courses = this.ekkoApi.getCourseList(start, limit);
             if (courses != null) {
                 for (final Course course : courses.getCourselist()) {
+                    // update sync flags/data
+                    course.setAccessible(true);
                     course.setLastSynced();
 
-                    final Course existing = this.dao.findCourse(course.getId(), false);
-                    if (existing != null) {
+                    // should we insert or update
+                    final Course old = existing.remove(course.getId());
+                    if (old != null || seen.contains(course.getId())) {
                         this.dao.update(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
-                        if (course.getVersion() > existing.getManifestVersion()) {
+                        if (course.getVersion() > old.getManifestVersion()) {
                             EkkoSyncService.syncManifest(this, course.getId());
                         }
                     } else {
                         this.dao.insert(course);
                         EkkoSyncService.syncManifest(this, course.getId());
                     }
+
+                    // track courses we have seen
+                    seen.add(course.getId());
                 }
 
                 // broadcast that courses were just updated
@@ -125,7 +146,28 @@ public class EkkoSyncService extends IntentService {
                 start = courses.getStart() + limit;
                 hasMore = courses.isHasMore();
             } else {
+                // there was some sort of error preventing courses from being
+                // returned
+                error = true;
                 break;
+            }
+        }
+
+        // mark any remaining courses inaccessible
+        if (!error) {
+            boolean updated = false;
+            for (final Course course : existing.values()) {
+                // only update newly inaccessible courses
+                if (course.isAccessible()) {
+                    course.setAccessible(false);
+                    this.dao.update(course, new String[] { Contract.Course.COLUMN_NAME_ACCESSIBLE });
+                    updated = true;
+                }
+            }
+
+            // something changed, trigger an update
+            if (updated) {
+                broadcastCoursesUpdate(this);
             }
         }
     }

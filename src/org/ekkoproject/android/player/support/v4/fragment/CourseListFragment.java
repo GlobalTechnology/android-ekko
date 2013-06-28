@@ -323,7 +323,8 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
         @Override
         protected Cursor doInBackground(final Void... params) {
             try {
-                return CourseListFragment.this.dao.getCoursesCursor();
+                return CourseListFragment.this.dao.getCoursesCursor(Contract.Course.COLUMN_NAME_ACCESSIBLE + " = ?",
+                        new String[] { "1" });
             } catch (final SQLiteDatabaseLockedException e) {
                 this.retry = true;
             }

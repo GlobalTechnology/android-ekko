@@ -25,6 +25,8 @@ public final class CourseMapper extends AbstractMapper<Course> {
                 values.put(Contract.Course.COLUMN_NAME_COURSE_ID, course.getId());
             } else if (Contract.Course.COLUMN_NAME_VERSION.equals(field)) {
                 values.put(Contract.Course.COLUMN_NAME_VERSION, course.getVersion());
+            } else if (Contract.Course.COLUMN_NAME_ACCESSIBLE.equals(field)) {
+                values.put(Contract.Course.COLUMN_NAME_ACCESSIBLE, course.isAccessible() ? 1 : 0);
             } else if (Contract.Course.COLUMN_NAME_TITLE.equals(field)) {
                 values.put(Contract.Course.COLUMN_NAME_TITLE, course.getCourseTitle());
             } else if (Contract.Course.COLUMN_NAME_BANNER_RESOURCE.equals(field)) {
@@ -46,6 +48,7 @@ public final class CourseMapper extends AbstractMapper<Course> {
         final Course course = new Course(this.getLong(c, Contract.Course.COLUMN_NAME_COURSE_ID, INVALID_COURSE));
 
         course.setVersion(this.getInt(c, Contract.Course.COLUMN_NAME_VERSION));
+        course.setAccessible(this.getBool(c, Contract.Course.COLUMN_NAME_ACCESSIBLE, true));
         course.setCourseTitle(this.getString(c, Contract.Course.COLUMN_NAME_TITLE));
         course.setCourseBanner(this.getString(c, Contract.Course.COLUMN_NAME_BANNER_RESOURCE));
         course.setManifestFile(this.getString(c, Contract.Course.COLUMN_NAME_MANIFEST_FILE));

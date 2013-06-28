@@ -170,6 +170,55 @@ public class EkkoDao {
         }
     }
 
+    /**
+     * retrieve all objects of the specified type
+     * 
+     * @param clazz
+     *            the type of object to retrieve
+     * @return
+     */
+    public <T> List<T> get(final Class<T> clazz) {
+        return this.get(clazz, true);
+    }
+
+    public <T> List<T> get(final Class<T> clazz, final boolean loadChildren) {
+        return this.get(clazz, null, null, null, loadChildren);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> get(final Class<T> clazz, final String whereClause, final String[] whereBindValues,
+            final String orderBy, final boolean loadChildren) {
+        final Cursor c;
+        final Mapper<T> mapper;
+        if (Course.class.equals(clazz)) {
+            c = this.getCoursesCursor(whereClause, whereBindValues, orderBy);
+            mapper = (Mapper<T>) COURSE_MAPPER;
+        } else {
+            throw new IllegalArgumentException("invalid class specified");
+        }
+
+        // load all rows from the cursor
+        final List<T> results = new ArrayList<T>();
+        while (c.moveToNext()) {
+            results.add(mapper.toObject(c));
+        }
+
+        // close the cursor to prevent leaking it
+        c.close();
+
+        if (loadChildren) {
+            if (Course.class.equals(clazz)) {
+                // load resources
+                for (final Course course : (List<Course>) results) {
+                    this.loadResources(course);
+                }
+            }
+        }
+
+        // return the results
+        return results;
+    }
+
     public void replace(final Object obj) {
         final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.beginTransaction();
@@ -243,6 +292,11 @@ public class EkkoDao {
 
     public Cursor getCoursesCursor() {
         return this.getCoursesCursor(null, null, Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE");
+    }
+
+    public Cursor getCoursesCursor(final String whereClause, final String[] whereBindValues) {
+        return this.getCoursesCursor(whereClause, whereBindValues, Contract.Course.COLUMN_NAME_TITLE
+                + " COLLATE NOCASE");
     }
 
     public Cursor getCoursesCursor(final String whereClause, final String[] whereBindValues, final String orderBy) {

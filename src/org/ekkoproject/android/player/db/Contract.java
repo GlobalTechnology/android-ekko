@@ -17,21 +17,29 @@ public final class Contract {
         public static final String COLUMN_NAME_BANNER_RESOURCE = "bannerResource";
         public static final String COLUMN_NAME_MANIFEST_FILE = "manifestFile";
         public static final String COLUMN_NAME_MANIFEST_VERSION = "manifestVersion";
+        public static final String COLUMN_NAME_ACCESSIBLE = "accessible";
         public static final String COLUMN_NAME_LAST_SYNCED = "lastSynced";
 
         public static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_VERSION, COLUMN_NAME_TITLE,
                 COLUMN_NAME_BANNER_RESOURCE, COLUMN_NAME_MANIFEST_FILE, COLUMN_NAME_MANIFEST_VERSION,
-                COLUMN_NAME_LAST_SYNCED };
+                COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED };
         public static final String[] PROJECTION_UPDATE_EKKOHUB = { COLUMN_NAME_VERSION, COLUMN_NAME_TITLE,
-                COLUMN_NAME_BANNER_RESOURCE, COLUMN_NAME_LAST_SYNCED };
+                COLUMN_NAME_BANNER_RESOURCE, COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED };
         public static final String[] PROJECTION_UPDATE_MANIFEST = { COLUMN_NAME_MANIFEST_FILE,
                 COLUMN_NAME_MANIFEST_VERSION };
 
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
                 + " INTEGER PRIMARY KEY," + COLUMN_NAME_VERSION + " INTEGER," + COLUMN_NAME_TITLE + " TEXT,"
                 + COLUMN_NAME_BANNER_RESOURCE + " TEXT," + COLUMN_NAME_MANIFEST_FILE + " TEXT,"
-                + COLUMN_NAME_MANIFEST_VERSION + " INTEGER, " + COLUMN_NAME_LAST_SYNCED + " INTEGER)";
+                + COLUMN_NAME_MANIFEST_VERSION + " INTEGER, " + COLUMN_NAME_ACCESSIBLE + " INTEGER,"
+                + COLUMN_NAME_LAST_SYNCED + " INTEGER)";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        /* V7 updates */
+        protected static final String SQL_V7_ALTER_ACCESSIBLE = "ALTER TABLE " + TABLE_NAME + " ADD COLUMN "
+                + COLUMN_NAME_ACCESSIBLE + " INTEGER";
+        protected static final String SQL_V7_DEFAULT_ACCESSIBLE = "UPDATE " + TABLE_NAME + " SET "
+                + COLUMN_NAME_ACCESSIBLE + " = 1";
 
         private Course() {
         }

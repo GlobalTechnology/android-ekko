@@ -11,8 +11,10 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 5: 6/25/2013
      * 
      * 6: 6/25/2013
+     * 
+     * 7: 6/28/2013
      */
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
     public static final String DATABASE_NAME = "Ekko.db";
 
     public EkkoDbHelper(final Context context) {
@@ -69,10 +71,22 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
             if (newVersion <= 6) {
                 break;
             }
+            db.execSQL(Contract.Course.SQL_V7_ALTER_ACCESSIBLE);
+            db.execSQL(Contract.Course.SQL_V7_DEFAULT_ACCESSIBLE);
+        case 7:
+            if (newVersion <= 7) {
+                break;
+            }
             break;
         // default:
         // this.resetDatabase(db);
         }
+    }
+
+    @Override
+    public void onDowngrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        // don't try downgrading, just reset the database
+        this.resetDatabase(db);
     }
 
     private void resetDatabase(final SQLiteDatabase db) {

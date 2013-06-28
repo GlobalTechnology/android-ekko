@@ -3,6 +3,31 @@ package org.ekkoproject.android.player.db;
 import android.database.Cursor;
 
 public abstract class AbstractMapper<T> implements Mapper<T> {
+    /**
+     * returns a boolean value stored in the specified column. (SQLite doesn't
+     * support booleans, so we fake it using an integer)
+     * 
+     * @param c
+     *            SQLite results Cursor
+     * @param field
+     *            the name of the column
+     * @param defValue
+     *            the default value
+     * @return
+     */
+    protected final boolean getBool(final Cursor c, final String field, final boolean defValue) {
+        final int index = c.getColumnIndex(field);
+        if (index != -1) {
+            final int value = c.getInt(index);
+            if (value == 1) {
+                return true;
+            } else if (value == 0) {
+                return false;
+            }
+        }
+        return defValue;
+    }
+
     protected final int getInt(final Cursor c, final String field) {
         return this.getInt(c, field, 0);
     }
