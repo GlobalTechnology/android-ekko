@@ -95,7 +95,13 @@
     </style>
 
     <!-- Quiz design -->
-    <style name="Widget.Ekko.Course.Quiz.Question" parent="Base"></style>
+    <style name="Widget.Ekko.Course.Quiz.Top" parent="Base">
+        <item name="android:background">@drawable/bg_ekko_quiz</item>
+    </style>
+
+    <style name="Widget.Ekko.Course.Quiz.Question" parent="Widget.Ekko.Course.Quiz.Top"></style>
+
+    <style name="Widget.Ekko.Course.Quiz.Question.Results.Top" parent="Widget.Ekko.Course.Quiz.Top"></style>
 
     <style name="TextAppearance.Ekko.Course.Quiz.Question" parent="@android:style/TextAppearance.Large">
         <item name="android:textSize">32sp</item>

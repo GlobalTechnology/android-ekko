@@ -11,11 +11,17 @@
         ekko:aspectRatioHeight="9"
         ekko:aspectRatioWidth="16" >
 
-        <TextView
-            android:id="@+id/score"
-            style="@style/TextAppearance.Ekko.Course.Quiz.Question"
+        <FrameLayout
+            style="@style/Widget.Ekko.Course.Quiz.Question.Results.Top"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/score"
+                style="@style/TextAppearance.Ekko.Course.Quiz.Question"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
     </org.ekkoproject.android.player.widget.RatioLayout>
 
     <include layout="@layout/widget_infobar" />
