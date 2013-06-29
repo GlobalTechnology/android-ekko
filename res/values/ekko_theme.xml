@@ -15,6 +15,8 @@
     <style name="Theme.Ekko" parent="@style/Theme.Sherlock.Light.DarkActionBar">
         <item name="actionBarStyle">@style/Widget.Ekko.ActionBar</item>
         <item name="android:actionBarStyle" tools:targetApi="honeycomb">@style/Widget.Ekko.ActionBar</item>
+        <item name="actionOverflowButtonStyle">@style/Widget.Ekko.ActionButton.Overflow</item>
+        <item name="android:actionOverflowButtonStyle" tools:targetApi="honeycomb">@style/Widget.Ekko.ActionButton.Overflow</item>
         <item name="progressBarStyle">@style/Widget.Ekko.ProgressBar</item>
         <item name="android:progressBarStyle">@style/Widget.Ekko.ProgressBar</item>
     </style>
@@ -34,6 +36,10 @@
         <item name="android:background">@drawable/bg_ekko_actionbar</item>
         <item name="titleTextStyle">@style/TextAppearance.Ekko.ActionBar.Title</item>
         <item name="android:titleTextStyle" tools:targetApi="honeycomb">@style/TextAppearance.Ekko.ActionBar.Title</item>
+    </style>
+
+    <style name="Widget.Ekko.ActionButton.Overflow" parent="@style/Widget.Sherlock.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
     <dimen name="ekko_actionbar_border_bottom">2dp</dimen>

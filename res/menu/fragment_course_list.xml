@@ -5,12 +5,12 @@
         android:id="@+id/login"
         android:orderInCategory="0"
         android:showAsAction="never"
-        android:title="Login"/>
+        android:title="@string/action_login"/>
     <item
         android:id="@+id/refresh"
-        android:icon="@drawable/ic_menu_refresh"
+        android:icon="@drawable/ic_action_reload"
         android:orderInCategory="10"
         android:showAsAction="ifRoom"
-        android:title="Refresh"/>
+        android:title="@string/action_refresh"/>
 
 </menu>

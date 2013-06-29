@@ -4,10 +4,10 @@
 
     <item
         android:id="@+id/lessons"
-        android:icon="@drawable/ic_menu_lesson_list"
+        android:icon="@drawable/ic_action_overflow"
         android:orderInCategory="100"
         android:showAsAction="always"
-        android:title="Lessons"
+        android:title="@string/action_lessons"
         tools:ignore="AlwaysShowAction"/>
 
 </menu>
