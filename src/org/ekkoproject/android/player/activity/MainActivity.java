@@ -184,7 +184,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
     private void initFragments() {
         // attach the course list fragment
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_content, CourseListFragment.newInstance(R.layout.fragment_course_list_main, true))
+                .replace(R.id.frame_content, CourseListFragment.newInstance(R.layout.fragment_course_list_main, false))
                 .commit();
     }
 
@@ -192,10 +192,11 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
         // attach the course list fragment
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in,
-                        R.anim.slide_right_out)
+                // .setCustomAnimations(R.anim.slide_right_in,
+                // R.anim.slide_left_out, R.anim.slide_left_in,
+                // R.anim.slide_right_out)
                 .replace(R.id.frame_content,
-                        CourseFragment.newInstance(R.layout.fragment_course_drawer_wrapper, courseId, true))
+                        CourseFragment.newInstance(R.layout.fragment_course_drawer_wrapper, courseId, false))
                 .addToBackStack(null).commit();
 
         // update the DrawerLayout ActionBar toggle
