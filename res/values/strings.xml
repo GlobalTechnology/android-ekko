@@ -11,7 +11,7 @@
 
     <!-- ActionBar strings -->
     <string name="action_refresh">Refresh</string>
-    <string name="action_login">Login</string>
+    <string name="action_login">Logout</string>
     <string name="action_lessons">Lessons</string>
 
     <!-- deprecated -->

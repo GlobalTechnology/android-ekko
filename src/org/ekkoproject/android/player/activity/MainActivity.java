@@ -214,7 +214,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
         if (this.drawerView != null) {
             // TODO: come up with a sane way of managing navigation items
             this.drawerView.setAdapter(new ArrayAdapter<String>(this, R.layout.activity_main_drawer_item,
-                    new String[] { "Login" }));
+                    new String[] { "Logout" }));
             this.drawerView.setOnItemClickListener(new DrawerOnItemClickListener());
         }
 

@@ -52,6 +52,7 @@ public final class EkkoHubApi {
 
     private static final String PREFFILE_EKKOHUB = "ekkoHubApi";
     private static final String PREF_SESSIONID = "session_id";
+    private static final String PREF_SESSIONGUID = "session_guid";
 
     private final Context context;
     private final TheKey thekey;
@@ -89,11 +90,18 @@ public final class EkkoHubApi {
         }
     }
 
+    private String getSessionGuid() {
+        synchronized (LOCK_SESSION) {
+            return this.getPrefs().getString(PREF_SESSIONGUID, null);
+        }
+    }
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private void setSessionId(final String sessionId) {
         synchronized (LOCK_SESSION) {
             final Editor prefs = this.getPrefs().edit();
             prefs.putString(PREF_SESSIONID, sessionId);
+            prefs.putString(PREF_SESSIONGUID, this.thekey.getGuid());
 
             // store updates
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
@@ -153,7 +161,8 @@ public final class EkkoHubApi {
                     // get the session, establish a session if one doesn't exist
                     synchronized (LOCK_SESSION) {
                         sessionId = this.getSessionId();
-                        if (sessionId == null) {
+                        final String guid = this.getSessionGuid();
+                        if (sessionId == null || guid == null || !guid.equals(this.thekey.getGuid())) {
                             this.establishSession();
                             sessionId = this.getSessionId();
                         }
