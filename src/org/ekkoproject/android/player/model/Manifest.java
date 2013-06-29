@@ -102,11 +102,23 @@ public class Manifest extends Course {
     public static Manifest fromXml(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
-        return new Manifest().parse(parser, schemaVersion);
+        switch (schemaVersion) {
+        case 1:
+            return new Manifest().parse_v1(parser);
+        default:
+            return null;
+        }
     }
 
-    private Manifest parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
+    /**
+     * parse a manifest using schema version 1
+     * 
+     * @param parser
+     * @return
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
+    private Manifest parse_v1(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_MANIFEST);
 
         this.courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), INVALID_COURSE);
@@ -122,13 +134,13 @@ public class Manifest extends Course {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_META.equals(name)) {
-                    this.parseMeta(parser, schemaVersion);
+                    this.parseMeta(parser, 1);
                     continue;
                 } else if (XML.ELEMENT_CONTENT.equals(name)) {
-                    this.parseContent(parser, schemaVersion);
+                    this.parseContent(parser, 1);
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.setResources(Resource.parseResources(parser, this.getCourseId(), schemaVersion));
+                    this.setResources(Resource.parseResources(parser, this.getCourseId(), 1));
                     continue;
                 }
             }

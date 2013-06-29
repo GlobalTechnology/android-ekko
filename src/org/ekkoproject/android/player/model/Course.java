@@ -92,11 +92,23 @@ public class Course extends org.appdev.entity.Course {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
         final int schemaVersion = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_SCHEMAVERSION), 1);
         final long courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), INVALID_COURSE);
-        return new Course(courseId).parse(parser, schemaVersion);
+        switch (schemaVersion) {
+        case 1:
+            return new Course(courseId).parse_v1(parser);
+        default:
+            return null;
+        }
     }
 
-    private Course parse(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
-            IOException {
+    /**
+     * parse courses using manifest schema version 1
+     * 
+     * @param parser
+     * @return
+     * @throws XmlPullParserException
+     * @throws IOException
+     */
+    private Course parse_v1(final XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
 
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
@@ -111,10 +123,10 @@ public class Course extends org.appdev.entity.Course {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_META.equals(name)) {
-                    this.parseMeta(parser, schemaVersion);
+                    this.parseMeta(parser, 1);
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.setResources(Resource.parseResources(parser, this.getId(), schemaVersion));
+                    this.setResources(Resource.parseResources(parser, this.getId(), 1));
                     continue;
                 }
 
