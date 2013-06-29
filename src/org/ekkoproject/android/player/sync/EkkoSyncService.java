@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.appdev.entity.CourseList;
 import org.ekkoproject.android.player.api.ApiSocketException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.api.InvalidSessionApiException;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.services.ManifestManager;
 
 import android.app.IntentService;
@@ -115,7 +115,7 @@ public class EkkoSyncService extends IntentService {
         while (hasMore) {
             final CourseList courses = this.ekkoApi.getCourseList(start, limit);
             if (courses != null) {
-                for (final Course course : courses.getCourselist()) {
+                for (final Course course : courses.getCourses()) {
                     // update sync flags/data
                     course.setAccessible(true);
                     course.setLastSynced();
@@ -137,14 +137,14 @@ public class EkkoSyncService extends IntentService {
                 }
 
                 // broadcast that courses were just updated
-                if (courses.getCourselist().size() > 0) {
+                if (courses.getCourses().size() > 0) {
                     broadcastCoursesUpdate(this);
                 }
 
                 // update values
                 limit = courses.getLimit();
                 start = courses.getStart() + limit;
-                hasMore = courses.isHasMore();
+                hasMore = courses.hasMore();
             } else {
                 // there was some sort of error preventing courses from being
                 // returned

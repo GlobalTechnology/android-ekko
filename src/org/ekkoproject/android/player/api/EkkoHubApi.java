@@ -17,11 +17,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.appdev.entity.CourseList;
 import org.appdev.entity.Resource;
 import org.ccci.gto.android.thekey.TheKey;
 import org.ccci.gto.android.thekey.TheKeySocketException;
 import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.util.IOUtils;
 import org.ekkoproject.android.player.util.UriUtils;
 import org.slf4j.Logger;
@@ -310,7 +310,7 @@ public final class EkkoHubApi {
                     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
                     parser.setInput(conn.getInputStream(), "UTF-8");
                     parser.nextTag();
-                    return CourseList.parse(parser);
+                    return CourseList.fromXml(parser);
                 } catch (final XmlPullParserException e) {
                     LOG.error("course list parsing error", e);
                     return null;
