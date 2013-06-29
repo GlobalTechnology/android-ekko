@@ -29,7 +29,8 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
-        AbstractContentFragment.Listener, CourseContentDrawerFragment.Listener, ViewPager.OnPageChangeListener {
+        AbstractContentFragment.OnNavigateListener, CourseContentDrawerFragment.Listener,
+        ViewPager.OnPageChangeListener {
     private static final String ARG_ANIMATIONHACK = CourseFragment.class.getName() + ".ARG_ANIMATIONHACK";
 
     private int layout = R.layout.fragment_course;
@@ -151,18 +152,25 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     }
 
     @Override
-    public void onNavigateNext() {
+    public void onNavigateFirst() {
         if (this.contentPager != null) {
-            final int index = this.contentPager.getCurrentItem() + 1;
-            this.contentPager.setCurrentItem(index, false);
+            this.contentPager.setCurrentItem(0, false);
         }
-        return;
     }
 
     @Override
     public void onNavigatePrevious() {
         if (this.contentPager != null) {
             final int index = this.contentPager.getCurrentItem() - 1;
+            this.contentPager.setCurrentItem(index, false);
+        }
+        return;
+    }
+
+    @Override
+    public void onNavigateNext() {
+        if (this.contentPager != null) {
+            final int index = this.contentPager.getCurrentItem() + 1;
             this.contentPager.setCurrentItem(index, false);
         }
         return;

@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-public class QuizFragment extends AbstractContentFragment implements AbstractContentFragment.Listener {
+public class QuizFragment extends AbstractContentFragment implements AbstractContentFragment.OnNavigateListener {
     private ViewPager contentPager = null;
 
     public static QuizFragment newInstance(final long courseId, final String quizId) {
@@ -48,33 +48,46 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
     }
 
     @Override
+    public void onNavigateFirst() {
+        if (this.contentPager != null) {
+            this.contentPager.setCurrentItem(0, false);
+        }
+    }
+
+    @Override
     public void onNavigatePrevious() {
+        // try to handle it locally
         if (this.contentPager != null) {
             final int index = this.contentPager.getCurrentItem() - 1;
             if (index >= 0) {
                 this.contentPager.setCurrentItem(index, false);
-            } else {
-                final Object listener = this.getPotentialListener();
-                if (listener instanceof Listener) {
-                    ((Listener) listener).onNavigatePrevious();
-                }
+                return;
             }
+        }
+
+        // propagate request to parent
+        final Object listener = this.getPotentialListener();
+        if (listener instanceof OnNavigateListener) {
+            ((OnNavigateListener) listener).onNavigatePrevious();
         }
     }
 
     @Override
     public void onNavigateNext() {
+        // try to handle this locally
         if (this.contentPager != null) {
             final PagerAdapter adapter = this.contentPager.getAdapter();
             final int index = this.contentPager.getCurrentItem() + 1;
             if (adapter == null || index < adapter.getCount()) {
                 this.contentPager.setCurrentItem(index, false);
-            } else {
-                final Object listener = this.getPotentialListener();
-                if (listener instanceof Listener) {
-                    ((Listener) listener).onNavigateNext();
-                }
+                return;
             }
+        }
+
+        // propagate request to parent
+        final Object listener = this.getPotentialListener();
+        if (listener instanceof OnNavigateListener) {
+            ((OnNavigateListener) listener).onNavigateNext();
         }
     }
 

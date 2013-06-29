@@ -15,8 +15,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class QuizResultsFragment extends AbstractContentFragment {
+public class QuizResultsFragment extends AbstractContentFragment implements View.OnClickListener {
     private TextView score = null;
+
+    private View nextButton = null;
+    private View restartButton = null;
 
     public static QuizResultsFragment newInstance(final long courseId, final String quizId) {
         final QuizResultsFragment fragment = new QuizResultsFragment();
@@ -39,6 +42,7 @@ public class QuizResultsFragment extends AbstractContentFragment {
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.findViews();
+        this.setupButtons();
     }
 
     @Override
@@ -54,6 +58,21 @@ public class QuizResultsFragment extends AbstractContentFragment {
     }
 
     @Override
+    public void onClick(final View v) {
+        final Object listener = this.getPotentialListener();
+        if (listener instanceof OnNavigateListener) {
+            switch (v.getId()) {
+            case R.id.finish:
+                ((OnNavigateListener) listener).onNavigateNext();
+                break;
+            case R.id.start_over:
+                ((OnNavigateListener) listener).onNavigateFirst();
+                break;
+            }
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.clearViews();
@@ -63,10 +82,23 @@ public class QuizResultsFragment extends AbstractContentFragment {
 
     private void findViews() {
         this.score = findView(TextView.class, R.id.score);
+        this.nextButton = findView(View.class, R.id.finish);
+        this.restartButton = findView(View.class, R.id.start_over);
     }
 
     private void clearViews() {
         this.score = null;
+        this.nextButton = null;
+        this.restartButton = null;
+    }
+
+    private void setupButtons() {
+        if (this.nextButton != null) {
+            this.nextButton.setOnClickListener(this);
+        }
+        if (this.restartButton != null) {
+            this.restartButton.setOnClickListener(this);
+        }
     }
 
     private void updateScore(final Manifest manifest, final Set<String> progress) {

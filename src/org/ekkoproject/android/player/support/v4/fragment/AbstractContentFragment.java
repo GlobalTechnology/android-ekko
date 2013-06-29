@@ -125,20 +125,22 @@ public abstract class AbstractContentFragment extends AbstractManifestAndProgres
         @Override
         public void onClick(final View v) {
             final Object listener = AbstractContentFragment.this.getPotentialListener();
-            if (listener instanceof Listener) {
+            if (listener instanceof OnNavigateListener) {
                 switch (v.getId()) {
                 case R.id.nextButton:
-                    ((Listener) listener).onNavigateNext();
+                    ((OnNavigateListener) listener).onNavigateNext();
                     return;
                 case R.id.prevButton:
-                    ((Listener) listener).onNavigatePrevious();
+                    ((OnNavigateListener) listener).onNavigatePrevious();
                     return;
                 }
             }
         }
     }
 
-    public interface Listener {
+    public interface OnNavigateListener {
+        void onNavigateFirst();
+
         void onNavigatePrevious();
 
         void onNavigateNext();
