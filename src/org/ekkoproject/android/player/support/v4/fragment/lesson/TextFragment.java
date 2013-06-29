@@ -7,6 +7,7 @@ import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Text;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
+import org.ekkoproject.android.player.util.StringUtils;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -37,7 +38,7 @@ public class TextFragment extends AbstractManifestAwareFragment {
         return fragment;
     }
 
-    /** BEGIN lifecycle */
+    /* BEGIN lifecycle */
 
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -86,7 +87,7 @@ public class TextFragment extends AbstractManifestAwareFragment {
         this.clearViews();
     }
 
-    /** END lifecycle */
+    /* END lifecycle */
 
     private void findViews() {
         this.textView = findView(TextView.class, R.id.text);
@@ -105,7 +106,7 @@ public class TextFragment extends AbstractManifestAwareFragment {
                 if (lesson != null) {
                     final Text text = lesson.getText(this.textId);
                     if (text != null) {
-                        this.textView.setText(Html.fromHtml(text.getText()));
+                        this.textView.setText(StringUtils.trim(Html.fromHtml(text.getText())));
                     }
                 }
             }

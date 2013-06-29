@@ -39,4 +39,33 @@ public final class StringUtils {
         }
         return defValue;
     }
+
+    public static CharSequence trim(final CharSequence source) {
+        if (source != null) {
+            int start = 0;
+            int end = source.length() - 1;
+
+            // find start index
+            for (; start <= end && Character.isWhitespace(source.charAt(start)); start++) {
+            }
+
+            // find end index
+            for (; end >= start && Character.isWhitespace(source.charAt(end)); end--) {
+            }
+
+            // handle edge cases
+            // no whitespace
+            if (start == 0 && end == source.length() - 1) {
+                return source;
+            }
+            // string is only whitespace
+            else if (start > end) {
+                return "";
+            }
+
+            return source.subSequence(start, end + 1);
+        }
+
+        return source;
+    }
 }
