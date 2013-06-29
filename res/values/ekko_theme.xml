@@ -32,25 +32,6 @@
 
     <style name="Widget.Ekko.ListView" parent="@android:style/Widget.ListView" />
 
-    <!-- ActionBar design -->
-    <style name="Widget.Ekko.ActionBar" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/bg_ekko_actionbar</item>
-        <item name="android:background">@drawable/bg_ekko_actionbar</item>
-        <item name="titleTextStyle">@style/TextAppearance.Ekko.ActionBar.Title</item>
-        <item name="android:titleTextStyle" tools:targetApi="honeycomb">@style/TextAppearance.Ekko.ActionBar.Title</item>
-    </style>
-
-    <style name="Widget.Ekko.ActionButton.Overflow" parent="@style/Widget.Sherlock.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_action_overflow</item>
-    </style>
-
-    <dimen name="ekko_actionbar_border_bottom">2dp</dimen>
-
-    <style name="TextAppearance.Ekko.ActionBar.Title" parent="@style/TextAppearance.Sherlock.Widget.ActionBar.Title.Inverse">
-        <item name="android:textColor">@color/ekko_grey</item>
-        <item name="android:textSize" tools:ignore="SpUsage">18dp</item>
-    </style>
-
     <!-- Navigation Drawer -->
     <style name="Widget.Ekko.NavigationDrawer" parent="@style/Widget.Ekko.ListView">
         <item name="android:divider">@color/ekko_grey</item>
@@ -71,27 +52,6 @@
 
     <style name="Widget.Ekko.NavigationDrawer.Course" parent="Widget.Ekko.NavigationDrawer">
         <item name="android:layout_width">320dp</item>
-    </style>
-
-    <!-- InfoBar design -->
-    <dimen name="ekko_infobar_border_bottom">2dp</dimen>
-
-    <style name="Widget.Ekko.Course.InfoBar" parent="Base">
-        <item name="android:background">@drawable/bg_ekko_infobar</item>
-        <item name="android:layout_height">60dp</item>
-    </style>
-
-    <style name="Widget.Ekko.Course.InfoBar.Button" parent="Base">
-        <item name="android:padding">4dp</item>
-    </style>
-
-    <style name="Widget.Ekko.Course.InfoBar.Button.Previous" parent="Widget.Ekko.Course.InfoBar.Button"></style>
-
-    <style name="Widget.Ekko.Course.InfoBar.Button.Next" parent="Widget.Ekko.Course.InfoBar.Button"></style>
-
-    <style name="TextAppearance.Ekko.InfoBar.Title" parent="TextAppearance.Ekko">
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
     </style>
 
     <!-- Lesson design -->

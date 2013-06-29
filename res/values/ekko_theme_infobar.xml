@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <dimen name="ekko_infobar_border_bottom">2dp</dimen>
+
+    <style name="Widget.Ekko.Course.InfoBar" parent="Base">
+        <item name="android:background">@drawable/bg_ekko_infobar</item>
+        <item name="android:layout_height">60dp</item>
+    </style>
+
+    <style name="Widget.Ekko.Course.InfoBar.Button" parent="Base">
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="Widget.Ekko.Course.InfoBar.Button.Previous" parent="Widget.Ekko.Course.InfoBar.Button"></style>
+
+    <style name="Widget.Ekko.Course.InfoBar.Button.Next" parent="Widget.Ekko.Course.InfoBar.Button"></style>
+
+    <style name="TextAppearance.Ekko.InfoBar.Title" parent="TextAppearance.Ekko">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+</resources>
