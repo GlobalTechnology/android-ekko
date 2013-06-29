@@ -241,7 +241,7 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
         // configure the item layout based on the main layout
         switch (this.layout) {
         case R.layout.fragment_course_list_main:
-            this.itemLayout = R.layout.course_list_item_banner;
+            this.itemLayout = R.layout.list_item_course_card;
             break;
         case R.layout.course_list_menu:
         default:

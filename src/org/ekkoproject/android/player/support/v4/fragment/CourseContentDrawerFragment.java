@@ -127,8 +127,8 @@ public class CourseContentDrawerFragment extends AbstractManifestAndProgressAwar
         if (this.contentListView != null) {
             // attach adapter
             final ManifestContentAdapter adapter = new ManifestContentAdapter(getActivity());
-            adapter.setLessonView(R.layout.list_item_lesson_menu);
-            adapter.setQuizView(R.layout.list_item_quiz_menu);
+            adapter.setLessonView(R.layout.list_item_lesson);
+            adapter.setQuizView(R.layout.list_item_quiz);
             this.contentListView.setAdapter(adapter);
 
             // attach select item listener
