@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ekko="http://schemas.android.com/apk/res/org.ekkoproject.android.player"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
     <org.ekkoproject.android.player.widget.RatioLayout
-        xmlns:ekko="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         ekko:aspectRatioHeight="9"
         ekko:aspectRatioWidth="16" >
 
-        <FrameLayout
-            style="@style/Widget.Ekko.Course.Quiz.Question.Results.Top"
+        <RelativeLayout
+            style="@style/Widget.Ekko.Course.Quiz.Results.Top"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
             <TextView
+                style="@style/TextAppearance.Ekko.Course.Quiz.Results.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/quiz_results" />
+
+            <TextView
                 android:id="@+id/score"
-                style="@style/TextAppearance.Ekko.Course.Quiz.Question"
+                style="@style/TextAppearance.Ekko.Course.Quiz.Results.Score"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
+                android:layout_height="match_parent"
+                android:text="0/0"
+                tools:ignore="HardcodedText" />
+        </RelativeLayout>
     </org.ekkoproject.android.player.widget.RatioLayout>
 
     <include layout="@layout/widget_infobar" />
@@ -32,22 +41,22 @@
         android:layout_weight="1" >
 
         <Button
-            android:id="@+id/retake"
+            android:id="@+id/start_over"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="38dp"
-            android:text="Retake" />
+            android:layout_marginTop="32dp"
+            android:text="@string/quiz_restart" />
 
         <Button
             android:id="@+id/finish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/retake"
+            android:layout_below="@+id/start_over"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="22dp"
-            android:text="Finish" />
+            android:layout_marginTop="32dp"
+            android:text="@string/quiz_finish" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -4,6 +4,11 @@
     <string name="access_prev_lesson">Previous Lesson</string>
     <string name="access_next_lesson">Next Lesson</string>
 
+    <!-- Quiz strings -->
+    <string name="quiz_results">Results:</string>
+    <string name="quiz_restart">Start Over</string>
+    <string name="quiz_finish">Continue</string>
+
     <!-- deprecated -->
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
