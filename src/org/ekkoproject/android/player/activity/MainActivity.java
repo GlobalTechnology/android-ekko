@@ -79,7 +79,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
         // update the title/icon
         // XXX: this is a hack, but the best way of dynamically managing it I
         // could think of with current API's
-        this.getSupportActionBar().setTitle(R.string.app_name);
+        this.getSupportActionBar().setTitle("");
 
         // add menu items
         final MenuInflater inflater = getSupportMenuInflater();
