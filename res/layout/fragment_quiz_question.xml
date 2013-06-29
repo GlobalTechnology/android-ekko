@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ekko="http://schemas.android.com/apk/res/org.ekkoproject.android.player"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -26,12 +27,22 @@
 
     <include layout="@layout/widget_infobar" />
 
-    <ListView
-        android:id="@+id/options"
-        style="@style/Widget.Ekko.Course.Quiz.Question.Options"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:choiceMode="multipleChoice" />
+        android:layout_weight="1" >
+
+        <ListView
+            android:id="@+id/options"
+            style="@style/Widget.Ekko.Course.Quiz.Question.Options"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:choiceMode="multipleChoice" />
+
+        <ImageView
+            style="@style/Widget.Ekko.Course.InfoBar.Shadow"
+            android:layout_width="match_parent"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
 
 </LinearLayout>

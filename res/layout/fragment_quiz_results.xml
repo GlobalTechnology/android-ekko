@@ -57,6 +57,11 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="32dp"
             android:text="@string/quiz_finish" />
+
+        <ImageView
+            style="@style/Widget.Ekko.Course.InfoBar.Shadow"
+            android:layout_width="match_parent"
+            tools:ignore="ContentDescription" />
     </RelativeLayout>
 
 </LinearLayout>
