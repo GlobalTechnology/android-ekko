@@ -51,16 +51,12 @@
         <item name="android:background">@color/ekko_white</item>
     </style>
 
-    <dimen name="ekko_navigationdrawer_item_start_padding">16dp</dimen>
-
-    <style name="Base.TextAppearance.Ekko.NavigationDrawer.Item" parent="TextAppearance.Ekko">
-        <item name="android:paddingLeft">@dimen/ekko_navigationdrawer_item_start_padding</item>
-    </style>
-
-    <style name="TextAppearance.Ekko.NavigationDrawer.Item" parent="Base.TextAppearance.Ekko.NavigationDrawer.Item">
+    <style name="TextAppearance.Ekko.NavigationDrawer.Item" parent="TextAppearance.Ekko">
         <item name="android:textColor">#000000</item>
         <item name="android:textSize">18sp</item>
         <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingBottom">20dp</item>
         <item name="android:gravity">center_vertical</item>
     </style>
@@ -101,35 +97,27 @@
     <!-- Quiz design -->
     <style name="Widget.Ekko.Course.Quiz.Question" parent="Base"></style>
 
-    <dimen name="ekko_widget_course_quiz_question_padding_start">32dp</dimen>
-    <dimen name="ekko_widget_course_quiz_question_padding_end">32dp</dimen>
-
-    <style name="Base.TextAppearance.Ekko.Course.Quiz.Question" parent="@android:style/TextAppearance.Large">
-        <item name="android:paddingLeft">@dimen/ekko_widget_course_quiz_question_padding_start</item>
-        <item name="android:paddingRight">@dimen/ekko_widget_course_quiz_question_padding_end</item>
-    </style>
-
-    <style name="TextAppearance.Ekko.Course.Quiz.Question" parent="Base.TextAppearance.Ekko.Course.Quiz.Question">
+    <style name="TextAppearance.Ekko.Course.Quiz.Question" parent="@android:style/TextAppearance.Large">
         <item name="android:textSize">32sp</item>
         <item name="android:textColor">@color/ekko_orange</item>
         <item name="android:textStyle">italic</item>
         <item name="android:gravity">center</item>
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">32dp</item>
+        <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">32dp</item>
+        <item name="android:paddingLeft">32dp</item>
+        <item name="android:paddingRight">32dp</item>
     </style>
 
-    <dimen name="ekko_widget_course_quiz_question_option_padding_start">48dp</dimen>
-    <dimen name="ekko_widget_course_quiz_question_option_padding_end">48dp</dimen>
-
-    <style name="Base.Widget.Ekko.Course.Quiz.Question.Options" parent="@android:style/Widget.ListView">
-        <item name="android:paddingLeft">@dimen/ekko_widget_course_quiz_question_option_padding_start</item>
-        <item name="android:paddingRight">@dimen/ekko_widget_course_quiz_question_option_padding_end</item>
-    </style>
-
-    <style name="Widget.Ekko.Course.Quiz.Question.Options" parent="Base.Widget.Ekko.Course.Quiz.Question.Options">
+    <style name="Widget.Ekko.Course.Quiz.Question.Options" parent="@android:style/Widget.ListView">
         <item name="android:paddingTop">32dp</item>
         <item name="android:paddingBottom">32dp</item>
         <item name="android:listSelector">@android:color/transparent</item>
         <item name="android:divider">@android:color/transparent</item>
         <item name="android:dividerHeight">0dp</item>
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">48dp</item>
+        <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">48dp</item>
+        <item name="android:paddingLeft">48dp</item>
+        <item name="android:paddingRight">48dp</item>
     </style>
 
     <style name="Base.TextAppearance.Ekko.Course.Quiz.Option" parent="@android:style/TextAppearance.Large">
