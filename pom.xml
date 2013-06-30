@@ -14,6 +14,12 @@
 
   <name>Ekko</name>
 
+  <scm>
+    <connection>scm:git:git@git.gcx.org:android/ekko.git</connection>
+    <developerConnection>scm:git:git@git.gcx.org:android/ekko.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
   <properties>
     <thekey-lib.version>0.2.0-SNAPSHOT</thekey-lib.version>
   </properties>
