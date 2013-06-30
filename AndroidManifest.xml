@@ -1,46 +1,23 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.ekkoproject.android.player"
-    android:versionCode="3"
-    android:versionName="1.0-alpha" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1000" android:versionName="0.1.0-SNAPSHOT" package="org.ekkoproject.android.player">
 
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="17" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-    <application
-        android:allowBackup="false"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:logo="@drawable/ic_logo"
-        android:theme="@style/Theme.Ekko" >
-        <activity
-            android:name="org.ekkoproject.android.player.activity.SplashScreenActivity"
-            android:screenOrientation="sensorPortrait"
-            android:theme="@android:style/Theme.NoTitleBar" >
+    <application android:allowBackup="false" android:icon="@drawable/ic_launcher" android:label="@string/app_name" android:logo="@drawable/ic_logo" android:theme="@style/Theme.Ekko">
+        <activity android:name="org.ekkoproject.android.player.activity.SplashScreenActivity" android:screenOrientation="sensorPortrait" android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name="org.ekkoproject.android.player.activity.MainActivity"
-            android:screenOrientation="sensorPortrait" />
-        <activity
-            android:name="org.ekkoproject.android.player.activity.MediaImageActivity"
-            android:screenOrientation="sensor"
-            android:theme="@android:style/Theme.NoTitleBar" />
-        <activity
-            android:name="org.ekkoproject.android.player.activity.MediaVideoActivity"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity android:name="org.ekkoproject.android.player.activity.MainActivity" android:screenOrientation="sensorPortrait"/>
+        <activity android:name="org.ekkoproject.android.player.activity.MediaImageActivity" android:screenOrientation="sensor" android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="org.ekkoproject.android.player.activity.MediaVideoActivity" android:screenOrientation="sensorLandscape" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
 
-        <service
-            android:name="org.ekkoproject.android.player.sync.EkkoSyncService"
-            android:exported="false" />
+        <service android:exported="false" android:name="org.ekkoproject.android.player.sync.EkkoSyncService"/>
     </application>
 
 </manifest>
