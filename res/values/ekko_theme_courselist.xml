@@ -28,7 +28,7 @@
 
     <style name="Widget.Ekko.CourseList.Card.Shadow" parent="Base">
         <item name="android:background">@drawable/bg_ekko_course_card_shadow</item>
-        <item name="android:layout_height">2dp</item>
+        <item name="android:layout_height">3dp</item>
     </style>
 
     <style name="Widget.Ekko.CourseList.Card.ProgressBar" parent="Widget.Ekko.ProgressBar">
