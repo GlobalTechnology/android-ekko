@@ -14,20 +14,26 @@
         android:scaleType="fitCenter"
         android:src="@drawable/ic_prev_lesson" />
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/TextAppearance.Ekko.InfoBar.Title"
+    <RelativeLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
 
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_width="80dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center_vertical"
-        android:visibility="visible" />
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@style/Widget.Ekko.Course.InfoBar.ProgressBar"
+            android:layout_alignParentRight="true" />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/TextAppearance.Ekko.InfoBar.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/progress"
+            android:gravity="top"
+            android:text="Lesson Title" />
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/nextButton"

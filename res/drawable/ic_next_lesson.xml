@@ -3,7 +3,7 @@
 
     <item>
         <rotate
-            android:drawable="@drawable/ic_back_arrow"
+            android:drawable="@drawable/abs__ic_ab_back_holo_light"
             android:fromDegrees="180"
             android:pivotX="50%"
             android:pivotY="50%"

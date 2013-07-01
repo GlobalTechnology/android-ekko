@@ -8,20 +8,35 @@
         <item name="android:layout_height">60dp</item>
     </style>
 
-    <style name="Widget.Ekko.Course.InfoBar.Button" parent="Base">
-        <item name="android:padding">4dp</item>
+    <style name="Widget.Ekko.Course.InfoBar.Button" parent="Base"></style>
+
+    <style name="Widget.Ekko.Course.InfoBar.Button.Previous" parent="Widget.Ekko.Course.InfoBar.Button">
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">8dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">4dp</item>
+        <item name="android:paddingRight">4dp</item>
     </style>
 
-    <style name="Widget.Ekko.Course.InfoBar.Button.Previous" parent="Widget.Ekko.Course.InfoBar.Button"></style>
+    <style name="Widget.Ekko.Course.InfoBar.Button.Next" parent="Widget.Ekko.Course.InfoBar.Button">
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">4dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingEnd" tools:targetApi="jelly_bean_mr1">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
 
-    <style name="Widget.Ekko.Course.InfoBar.Button.Next" parent="Widget.Ekko.Course.InfoBar.Button"></style>
+    <style name="Widget.Ekko.Course.InfoBar.ProgressBar" parent="Widget.Ekko.ProgressBar">
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">4dp</item>
+    </style>
 
     <style name="Widget.Ekko.Course.InfoBar.Shadow" parent="Base">
         <item name="android:background">@drawable/bg_ekko_infobar_shadow</item>
         <item name="android:layout_height">3dp</item>
     </style>
 
-    <style name="TextAppearance.Ekko.InfoBar.Title" parent="TextAppearance.Ekko">
+    <style name="TextAppearance.Ekko.InfoBar.Title" parent="TextAppearance.Ekko.Large">
         <item name="android:textColor">#888888</item>
         <item name="android:textSize">22sp</item>
         <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-light</item>

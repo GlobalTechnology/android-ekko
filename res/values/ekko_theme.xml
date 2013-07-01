@@ -36,6 +36,10 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="TextAppearance.Ekko.Large" parent="TextAppearance.Ekko.Medium">
+        <item name="android:textSize">22sp</item>
+    </style>
+
     <style name="Widget.Ekko.ListView" parent="@android:style/Widget.ListView" />
 
     <!-- Navigation Drawer -->
