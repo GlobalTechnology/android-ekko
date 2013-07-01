@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>ekko</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1-SNAPSHOT</version>
   <packaging>apk</packaging>
 
   <name>Ekko</name>
@@ -17,7 +17,7 @@
   <scm>
     <connection>scm:git:git@git.gcx.org:android/ekko.git</connection>
     <developerConnection>scm:git:git@git.gcx.org:android/ekko.git</developerConnection>
-    <tag>v0.9.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
