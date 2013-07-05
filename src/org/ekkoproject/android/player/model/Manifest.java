@@ -21,6 +21,8 @@ public class Manifest extends Course {
 
     private final List<CourseContent> content = new ArrayList<CourseContent>();
 
+    private String completionMessage = null;
+
     public long getCourseId() {
         return this.courseId;
     }
@@ -80,23 +82,14 @@ public class Manifest extends Course {
         return null;
     }
 
-    protected void setContent(final List<CourseContent> content) {
-        this.content.clear();
-        this.addContent(content);
-    }
-
-    protected void addContent(final List<CourseContent> content) {
-        if (content != null) {
-            for (final CourseContent item : content) {
-                this.addContent(item);
-            }
-        }
-    }
-
-    protected void addContent(final CourseContent content) {
+    private void addContent(final CourseContent content) {
         if (content != null) {
             this.content.add(content);
         }
+    }
+
+    public String getCompletionMessage() {
+        return this.completionMessage;
     }
 
     public static Manifest fromXml(final XmlPullParser parser) throws XmlPullParserException, IOException {
@@ -139,6 +132,9 @@ public class Manifest extends Course {
                 } else if (XML.ELEMENT_CONTENT.equals(name)) {
                     this.parseContent(parser, 1);
                     continue;
+                } else if (XML.ELEMENT_COMPLETION.equals(name)) {
+                    this.parseCompletion(parser, 1);
+                    continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
                     this.setResources(Resource.parseResources(parser, this.getCourseId(), 1));
                     continue;
@@ -179,5 +175,30 @@ public class Manifest extends Course {
         }
 
         return this;
+    }
+
+    private void parseCompletion(final XmlPullParser parser, final int schemaVersion) throws XmlPullParserException,
+            IOException {
+        parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_COMPLETION);
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+
+            // process recognized nodes
+            final String ns = parser.getNamespace();
+            final String name = parser.getName();
+            if (XML.NS_EKKO.equals(ns)) {
+                if (XML.ELEMENT_COMPLETION_MESSAGE.equals(name)) {
+                    this.completionMessage = parser.nextText();
+                    parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_COMPLETION_MESSAGE);
+                    continue;
+                }
+            }
+
+            // skip unrecognized nodes
+            ParserUtils.skip(parser);
+        }
     }
 }
