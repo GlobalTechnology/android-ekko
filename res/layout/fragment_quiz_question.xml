@@ -37,7 +37,7 @@
             style="@style/Widget.Ekko.Course.Quiz.Question.Options"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:choiceMode="multipleChoice" />
+            android:choiceMode="singleChoice" />
 
         <ImageView
             style="@style/Widget.Ekko.Course.InfoBar.Shadow"
