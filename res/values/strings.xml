@@ -6,7 +6,7 @@
 
     <!-- Quiz strings -->
     <string name="quiz_results">Results:</string>
-    <string name="quiz_restart">Start Over</string>
+    <string name="quiz_show_answers">Show Answers</string>
     <string name="quiz_finish">Continue</string>
 
     <!-- ActionBar strings -->
