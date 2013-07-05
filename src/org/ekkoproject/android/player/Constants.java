@@ -49,6 +49,10 @@ public final class Constants {
         public static final String ELEMENT_QUIZ_QUESTION_OPTIONS = "options";
         public static final String ELEMENT_QUIZ_QUESTION_OPTION = "option";
 
+        /* complete elements */
+        public static final String ELEMENT_COMPLETION = "complete";
+        public static final String ELEMENT_COMPLETION_MESSAGE = "message";
+
         /** manifest attributes */
         public static final String ATTR_SCHEMAVERSION = "schemaVersion";
 
