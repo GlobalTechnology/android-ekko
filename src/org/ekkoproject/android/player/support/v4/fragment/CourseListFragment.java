@@ -18,7 +18,6 @@ import org.ekkoproject.android.player.view.ResourceImageView;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
@@ -318,27 +317,15 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
     }
 
     private class UpdateCursorAsyncTask extends AsyncTask<Void, Void, Cursor> {
-        boolean retry = false;
-
         @Override
         protected Cursor doInBackground(final Void... params) {
-            try {
-                return CourseListFragment.this.dao.getCoursesCursor(Contract.Course.COLUMN_NAME_ACCESSIBLE + " = ?",
-                        new String[] { "1" });
-            } catch (final SQLiteDatabaseLockedException e) {
-                this.retry = true;
-            }
-            return null;
+            return CourseListFragment.this.dao.getCoursesCursor(Contract.Course.COLUMN_NAME_ACCESSIBLE + " = ?",
+                    new String[] { "1" });
         }
 
         @Override
         protected void onPostExecute(final Cursor c) {
             super.onPostExecute(c);
-
-            if (this.retry) {
-                CourseListFragment.this.updateCoursesList();
-                return;
-            }
 
             // switch to the new db cursor
             final ListAdapter adapter = CourseListFragment.this.getListAdapter();
