@@ -17,6 +17,8 @@ import android.widget.ProgressBar;
 public class QuizFragment extends AbstractContentFragment implements AbstractContentFragment.OnNavigateListener {
     private ViewPager contentPager = null;
 
+    private boolean showAnswers = false;
+
     public static QuizFragment newInstance(final long courseId, final String quizId) {
         final QuizFragment fragment = new QuizFragment();
 
@@ -27,7 +29,7 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
         return fragment;
     }
 
-    /** BEGIN lifecycle */
+    /* BEGIN lifecycle */
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -97,7 +99,7 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
         this.clearViews();
     }
 
-    /** END lifecycle */
+    /* END lifecycle */
 
     private void findViews() {
         this.contentPager = findView(ViewPager.class, R.id.questions);
@@ -109,8 +111,20 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
 
     private void setupContentPager() {
         if (this.contentPager != null) {
-            this.contentPager.setAdapter(new ManifestQuizContentPagerAdapter(getChildFragmentManager(), this
-                    .getContentId()));
+            final ManifestQuizContentPagerAdapter adapter = new ManifestQuizContentPagerAdapter(
+                    getChildFragmentManager(), this.getContentId());
+            adapter.setShowAnswers(this.showAnswers);
+            this.contentPager.setAdapter(adapter);
+        }
+    }
+
+    public void showAnswers() {
+        this.showAnswers = true;
+        if (this.contentPager != null) {
+            final PagerAdapter adapter = this.contentPager.getAdapter();
+            if (adapter instanceof ManifestQuizContentPagerAdapter) {
+                ((ManifestQuizContentPagerAdapter) adapter).setShowAnswers(this.showAnswers);
+            }
         }
     }
 

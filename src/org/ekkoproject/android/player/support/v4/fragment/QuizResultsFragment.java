@@ -8,6 +8,7 @@ import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.services.ProgressManager;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +66,11 @@ public class QuizResultsFragment extends AbstractContentFragment implements View
             case R.id.finish:
                 ((OnNavigateListener) listener).onNavigateNext();
                 break;
-            case R.id.start_over:
+            case R.id.show_answers:
+                final Fragment parent = this.getParentFragment();
+                if (parent instanceof QuizFragment) {
+                    ((QuizFragment) parent).showAnswers();
+                }
                 ((OnNavigateListener) listener).onNavigateFirst();
                 break;
             }
@@ -83,7 +88,7 @@ public class QuizResultsFragment extends AbstractContentFragment implements View
     private void findViews() {
         this.score = findView(TextView.class, R.id.score);
         this.nextButton = findView(View.class, R.id.finish);
-        this.restartButton = findView(View.class, R.id.start_over);
+        this.restartButton = findView(View.class, R.id.show_answers);
     }
 
     private void clearViews() {

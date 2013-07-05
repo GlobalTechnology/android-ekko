@@ -24,18 +24,23 @@ import android.widget.TextView;
 
 public class QuestionFragment extends AbstractContentFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_QUESTIONID = QuestionFragment.class.getName() + ".ARG_QUESTIONID";
+    private static final String ARG_SHOWANSWER = QuestionFragment.class.getName() + ".ARG_SHOWANSWER";
 
     private String questionId = null;
+    private boolean showAnswers = false;
 
     private TextView questionView = null;
     private ListView optionsView = null;
+    private ManifestQuizQuestionOptionAdapter optionsViewAdapter = null;
 
-    public static QuestionFragment newInstance(final long courseId, final String quizId, final String questionId) {
+    public static QuestionFragment newInstance(final long courseId, final String quizId, final String questionId,
+            final boolean showAnswer) {
         final QuestionFragment fragment = new QuestionFragment();
 
         // handle arguments
         final Bundle args = buildArgs(courseId, quizId);
         args.putString(ARG_QUESTIONID, questionId);
+        args.putBoolean(ARG_SHOWANSWER, showAnswer);
         fragment.setArguments(args);
 
         return fragment;
@@ -50,6 +55,7 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
 
         // process arguments
         final Bundle args = getArguments();
+        this.showAnswers = args.getBoolean(ARG_SHOWANSWER, false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             this.questionId = args.getString(ARG_QUESTIONID, null);
         } else {
@@ -106,23 +112,34 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
         return this.questionId;
     }
 
+    public void setShowAnswers(final boolean showAnswers) {
+        final boolean changed = this.showAnswers != showAnswers;
+        this.showAnswers = showAnswers;
+        if (changed && this.optionsViewAdapter != null) {
+            this.optionsViewAdapter.setShowAnswers(this.showAnswers);
+        }
+    }
+
     private void findViews() {
         this.questionView = findView(TextView.class, R.id.question);
         this.optionsView = findView(ListView.class, R.id.options);
+        this.optionsViewAdapter = null;
     }
 
     private void clearViews() {
         this.questionView = null;
         this.optionsView = null;
+        this.optionsViewAdapter = null;
     }
 
     private void setupOptionsView() {
         if (this.optionsView != null) {
             // attach the data adapter
-            final ManifestQuizQuestionOptionAdapter adapter = new ManifestQuizQuestionOptionAdapter(getActivity(),
-                    this.getContentId(), this.questionId);
-            adapter.setLayout(R.layout.list_item_quiz_question_option);
-            this.optionsView.setAdapter(adapter);
+            this.optionsViewAdapter = new ManifestQuizQuestionOptionAdapter(getActivity(), this.getContentId(),
+                    this.questionId, this.showAnswers);
+            this.optionsViewAdapter.setLayout(R.layout.list_item_quiz_question_option);
+            this.optionsViewAdapter.setAnswerLayout(R.layout.list_item_quiz_question_option_answer);
+            this.optionsView.setAdapter(this.optionsViewAdapter);
 
             // setup an item click listener
             this.optionsView.setOnItemClickListener(this);

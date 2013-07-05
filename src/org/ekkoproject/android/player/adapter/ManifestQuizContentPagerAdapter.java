@@ -19,9 +19,13 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
 
     private List<Question> questions = NO_QUESTIONS;
 
+    private boolean showAnswers = false;
+
     public ManifestQuizContentPagerAdapter(final FragmentManager fm, final String quizId) {
         super(fm, quizId);
     }
+
+    /* BEGIN lifecycle */
 
     @Override
     protected void onNewQuiz(final Quiz quiz) {
@@ -30,6 +34,16 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
             this.questions = quiz.getQuestions();
         } else {
             this.questions = NO_QUESTIONS;
+        }
+    }
+
+    /* END lifecycle */
+
+    public void setShowAnswers(final boolean showAnswers) {
+        final boolean stateChanged = showAnswers != this.showAnswers;
+        this.showAnswers = showAnswers;
+        if (stateChanged) {
+            this.notifyDataSetChanged();
         }
     }
 
@@ -50,13 +64,16 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
             return QuizResultsFragment.newInstance(courseId, quizId);
         } else {
             final String questionId = this.questions.size() > position ? this.questions.get(position).getId() : null;
-            return QuestionFragment.newInstance(courseId, quizId, questionId);
+            return QuestionFragment.newInstance(courseId, quizId, questionId, this.showAnswers);
         }
     }
 
     @Override
     public int getItemPosition(final Object fragment) {
         if (fragment instanceof QuestionFragment) {
+            // XXX: this is a bit of a hack to push showAnswers updates
+            ((QuestionFragment) fragment).setShowAnswers(this.showAnswers);
+
             // search for this fragment
             final String questionId = ((QuestionFragment) fragment).getQuestionId();
             if (questionId != null) {
@@ -66,6 +83,9 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
                     }
                 }
             }
+        } else if (fragment instanceof QuizResultsFragment) {
+            // results fragment should always be last
+            return this.questions.size();
         }
 
         // the object wasn't found

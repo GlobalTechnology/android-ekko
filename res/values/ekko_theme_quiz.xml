@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Widget.Ekko.Course.Quiz.Top" parent="Base">
         <item name="android:background">@drawable/bg_ekko_quiz</item>
@@ -40,6 +40,8 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">22sp</item>
         <item name="android:drawablePadding">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="Widget.Ekko.Course.Quiz.Results.Top" parent="Widget.Ekko.Course.Quiz.Top"></style>
