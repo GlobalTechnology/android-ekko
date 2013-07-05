@@ -9,10 +9,10 @@ import org.ekkoproject.android.player.model.Manifest;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 public class QuizFragment extends AbstractContentFragment implements AbstractContentFragment.OnNavigateListener {
     private ViewPager contentPager = null;
@@ -129,7 +129,8 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
     }
 
     @Override
-    protected void updateProgressBar(final ProgressBar progressBar, final Manifest manifest, final Set<String> progress) {
-        // do nothing
+    protected Pair<Integer, Integer> getProgress(final Manifest manifest, final Set<String> progress) {
+        // we don't have progress for a QuizFragment
+        return null;
     }
 }

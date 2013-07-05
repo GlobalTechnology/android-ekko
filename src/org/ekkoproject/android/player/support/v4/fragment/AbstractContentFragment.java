@@ -11,6 +11,7 @@ import org.ekkoproject.android.player.model.Manifest;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
@@ -57,17 +58,13 @@ public abstract class AbstractContentFragment extends AbstractManifestAndProgres
     protected void onManifestUpdate(final Manifest manifest) {
         super.onManifestUpdate(manifest);
         this.updateMeta(manifest);
-        if (this.progressBar != null) {
-            this.updateProgressBar(this.progressBar, manifest, this.getProgress());
-        }
+        this.updateProgressBar(manifest, this.getProgress());
     }
 
     @Override
     protected void onProgressUpdate(final Set<String> progress) {
         super.onProgressUpdate(progress);
-        if (this.progressBar != null) {
-            this.updateProgressBar(this.progressBar, this.getManifest(), progress);
-        }
+        this.updateProgressBar(this.getManifest(), progress);
     }
 
     @Override
@@ -118,8 +115,17 @@ public abstract class AbstractContentFragment extends AbstractManifestAndProgres
         }
     }
 
-    protected abstract void updateProgressBar(final ProgressBar progressBar, final Manifest manifest,
-            final Set<String> progress);
+    private void updateProgressBar(final Manifest manifest, final Set<String> rawProgress) {
+        if (this.progressBar != null) {
+            final Pair<Integer, Integer> progress = this.getProgress(manifest, rawProgress);
+            if (progress != null) {
+                this.progressBar.setMax(progress.second);
+                this.progressBar.setProgress(progress.first);
+            }
+        }
+    }
+
+    protected abstract Pair<Integer, Integer> getProgress(final Manifest manifest, final Set<String> progress);
 
     private class NavButtonsOnClickListener implements View.OnClickListener {
         @Override

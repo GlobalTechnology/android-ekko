@@ -13,7 +13,6 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class QuizResultsFragment extends AbstractContentFragment implements View.OnClickListener {
@@ -121,16 +120,14 @@ public class QuizResultsFragment extends AbstractContentFragment implements View
     }
 
     @Override
-    protected void updateProgressBar(final ProgressBar progressBar, final Manifest manifest, final Set<String> progress) {
+    protected Pair<Integer, Integer> getProgress(final Manifest manifest, final Set<String> progress) {
         if (manifest != null) {
             final Quiz quiz = manifest.getQuiz(this.getContentId());
             if (quiz != null) {
-                progressBar.setMax(quiz.getQuestions().size());
-                progressBar.setProgress(quiz.getQuestions().size());
-            } else {
-                progressBar.setMax(0);
-                progressBar.setProgress(0);
+                return Pair.create(1, 1);
             }
         }
+
+        return null;
     }
 }

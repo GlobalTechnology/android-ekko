@@ -14,12 +14,12 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class QuestionFragment extends AbstractContentFragment implements AdapterView.OnItemClickListener {
@@ -175,16 +175,13 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
     }
 
     @Override
-    protected void updateProgressBar(ProgressBar progressBar, Manifest manifest, Set<String> progress) {
+    protected Pair<Integer, Integer> getProgress(Manifest manifest, Set<String> progress) {
         if (manifest != null) {
             final Quiz quiz = manifest.getQuiz(this.getContentId());
             if (quiz != null) {
-                progressBar.setMax(quiz.getQuestions().size());
-                progressBar.setProgress(quiz.findQuestion(this.questionId));
-            } else {
-                progressBar.setMax(0);
-                progressBar.setProgress(0);
+                return Pair.create(quiz.findQuestion(this.questionId), quiz.getQuestions().size());
             }
         }
+        return null;
     }
 }
