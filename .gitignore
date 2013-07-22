@@ -5,5 +5,7 @@
 target/
 bin/
 gen/
+gen-external-apklibs/
 
 .idea/
+ekko.iml
