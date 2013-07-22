@@ -205,14 +205,6 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // XXX: this is disabled because of a potential race between the close
-        // and the update task
-        // this.dao.close();
-    }
-
-    @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
