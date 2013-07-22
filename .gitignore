@@ -1,11 +1,18 @@
+# standard android ignores
+gen/
+
+# maven project ignores
+target/
+
+# eclipse project ignores
 .classpath
 .project
 .settings/
 .wtpmodules
-target/
 bin/
-gen/
-gen-external-apklibs/
 
+# Android Studio project ignores
 .idea/
 ekko.iml
+gen-external-apklibs/
+out/
