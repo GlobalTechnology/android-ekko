@@ -14,9 +14,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
@@ -226,17 +224,14 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
     }
 
     private void showLoginDialog() {
+        // Create and show the login dialog only if it is not currently displayed
         final FragmentManager fm = this.getSupportFragmentManager();
-        final FragmentTransaction ft = fm.beginTransaction();
-        final Fragment prev = fm.findFragmentByTag("loginDialog");
-        if (prev != null) {
-            ft.remove(prev);
+        if (fm.findFragmentByTag("loginDialog") == null) {
+            LoginDialogFragment
+                    .newInstance(THEKEY_CLIENTID)
+                    .show(fm.beginTransaction().addToBackStack("loginDialog"),
+                          "loginDialog");
         }
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        final LoginDialogFragment newFragment = LoginDialogFragment.newInstance(THEKEY_CLIENTID);
-        newFragment.show(ft, "loginDialog");
     }
 
     private class DrawerOnItemClickListener implements OnItemClickListener {
