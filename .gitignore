@@ -20,3 +20,4 @@ bin/
 ekko.iml
 gen-external-apklibs/
 out/
+local.properties
