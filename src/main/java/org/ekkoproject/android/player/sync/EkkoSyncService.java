@@ -3,24 +3,24 @@ package org.ekkoproject.android.player.sync;
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import android.app.IntentService;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 
-import org.ekkoproject.android.player.api.ApiSocketException;
+import org.ccci.gto.android.common.api.ApiSocketException;
+import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
-import org.ekkoproject.android.player.api.InvalidSessionApiException;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.services.ManifestManager;
 
-import android.app.IntentService;
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class EkkoSyncService extends IntentService {
     // actions this service can broadcast

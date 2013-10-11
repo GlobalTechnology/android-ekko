@@ -2,13 +2,6 @@ package org.ekkoproject.android.player.activity;
 
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
-import org.ccci.gto.android.thekey.TheKey;
-import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.support.v4.fragment.CourseFragment;
-import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
-import org.ekkoproject.android.player.sync.EkkoSyncService;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -27,6 +20,15 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
+import org.ccci.gto.android.thekey.TheKeyImpl;
+import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.support.v4.fragment.CourseFragment;
+import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
+import org.ekkoproject.android.player.sync.EkkoSyncService;
+
+import me.thekey.android.TheKey;
 
 public class MainActivity extends SherlockFragmentActivity implements LoginDialogFragment.Listener,
         CourseListFragment.Listener {
@@ -63,7 +65,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
         super.onStart();
 
         // display the login dialog if we don't have a valid GUID
-        final TheKey thekey = new TheKey(this, THEKEY_CLIENTID);
+        final TheKey thekey = new TheKeyImpl(this, THEKEY_CLIENTID);
         if (thekey.getGuid() == null) {
             this.showLoginDialog();
         } else {

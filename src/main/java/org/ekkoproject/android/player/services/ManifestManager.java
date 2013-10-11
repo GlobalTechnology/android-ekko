@@ -4,16 +4,14 @@ import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Xml;
 
-import org.ekkoproject.android.player.api.ApiSocketException;
+import org.ccci.gto.android.common.api.ApiSocketException;
+import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ekkoproject.android.player.api.EkkoHubApi;
-import org.ekkoproject.android.player.api.InvalidSessionApiException;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
@@ -24,10 +22,12 @@ import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Xml;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class ManifestManager {
     private static final Logger LOG = LoggerFactory.getLogger(ManifestManager.class);

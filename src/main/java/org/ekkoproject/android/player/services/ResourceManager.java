@@ -5,6 +5,28 @@ import static org.appdev.entity.Resource.PROVIDER_NONE;
 import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+
+import org.appdev.entity.Resource;
+import org.ccci.gto.android.common.api.ApiSocketException;
+import org.ccci.gto.android.common.api.InvalidSessionApiException;
+import org.ekkoproject.android.player.api.EkkoHubApi;
+import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.model.CachedResource;
+import org.ekkoproject.android.player.model.CachedUriResource;
+import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.util.IOUtils;
+import org.ekkoproject.android.player.util.MultiKeyLruCache;
+import org.ekkoproject.android.player.util.StringUtils;
+import org.ekkoproject.android.player.util.WeakMultiKeyLruCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,28 +45,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-
-import org.appdev.entity.Resource;
-import org.ekkoproject.android.player.api.ApiSocketException;
-import org.ekkoproject.android.player.api.EkkoHubApi;
-import org.ekkoproject.android.player.api.InvalidSessionApiException;
-import org.ekkoproject.android.player.db.EkkoDao;
-import org.ekkoproject.android.player.model.CachedResource;
-import org.ekkoproject.android.player.model.CachedUriResource;
-import org.ekkoproject.android.player.model.Course;
-import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.util.IOUtils;
-import org.ekkoproject.android.player.util.MultiKeyLruCache;
-import org.ekkoproject.android.player.util.StringUtils;
-import org.ekkoproject.android.player.util.WeakMultiKeyLruCache;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 
 public final class ResourceManager {
     private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);

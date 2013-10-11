@@ -251,9 +251,9 @@ public class CourseListFragment extends SherlockListFragment implements EkkoBroa
         // create CursorAdapter
         final SimpleCursorAdapter adapter;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            adapter = new SimpleCursorAdapter(getActivity(), this.itemLayout, (Cursor) null, FROM, TO, 0);
+            adapter = new SimpleCursorAdapter(getActivity(), this.itemLayout, null, FROM, TO, 0);
         } else {
-            adapter = new SimpleCursorAdapter(getActivity(), this.itemLayout, (Cursor) null, FROM, TO);
+            adapter = new SimpleCursorAdapter(getActivity(), this.itemLayout, null, FROM, TO);
         }
         adapter.setViewBinder(new CourseViewBinder());
         this.setListAdapter(adapter);
