@@ -63,6 +63,10 @@ repositories {
             password gcxMavenRepositoryPassword
         }
     }
+    // This is a temporary workaround until ViewPagerIndicator is distributed as an aar
+    maven {
+        url 'https://github.com/Dahlgren/vpi-aar/raw/master/'
+    }
 }
 
 dependencies {
@@ -70,4 +74,5 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-android', version: '1.6.1-RC1', ext: 'jar'
     compile group: 'com.actionbarsherlock', name: 'actionbarsherlock', version: '4.4.0', ext: 'aar'
     compile group: 'org.ccci.gto.android', name: 'lib-thekey', version: '0.3.0', ext: 'aar'
+    compile group: 'com.viewpagerindicator', name: 'library', version: '2.4.2-SNAPSHOT', ext: 'aar'
 }
