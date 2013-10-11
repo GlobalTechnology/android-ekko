@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="9001" android:versionName="0.9.1-SNAPSHOT" package="org.ekkoproject.android.player">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.ekkoproject.android.player">
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
 
