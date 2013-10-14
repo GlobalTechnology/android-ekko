@@ -8,11 +8,12 @@
         android:id="@+id/prevButton"
         style="@style/Widget.Ekko.Course.InfoBar.Button.Previous"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="@string/access_prev_lesson"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_prev_lesson" />
+        android:src="@drawable/ic_prev_lesson"
+        android:layout_gravity="center_vertical"/>
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -38,10 +39,11 @@
         android:id="@+id/nextButton"
         style="@style/Widget.Ekko.Course.InfoBar.Button.Next"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="@string/access_next_lesson"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_next_lesson" />
+        android:src="@drawable/ic_next_lesson"
+        android:layout_gravity="center_vertical" />
 
 </LinearLayout>
