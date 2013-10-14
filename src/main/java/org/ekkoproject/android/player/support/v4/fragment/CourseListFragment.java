@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.ListFragment;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,14 +19,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
+import org.ccci.gto.android.common.support.v4.fragment.AbstractListFragment;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
@@ -40,7 +38,7 @@ import org.ekkoproject.android.player.view.ResourceImageView;
 
 import java.lang.ref.WeakReference;
 
-public class CourseListFragment extends ListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
+public class CourseListFragment extends AbstractListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
     private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
@@ -319,13 +317,10 @@ public class CourseListFragment extends ListFragment implements EkkoBroadcastRec
             super.onPostExecute(c);
 
             // switch to the new db cursor
-            final ListAdapter adapter = CourseListFragment.this.getListAdapter();
-            if (adapter instanceof CursorAdapter) {
-                ((CursorAdapter) adapter).changeCursor(c);
-                if (CourseListFragment.this.needsRestore) {
-                    CourseListFragment.this.restoreViewState();
-                    CourseListFragment.this.needsRestore = false;
-                }
+            CourseListFragment.this.changeCursor(c);
+            if (CourseListFragment.this.needsRestore) {
+                CourseListFragment.this.restoreViewState();
+                CourseListFragment.this.needsRestore = false;
             }
         }
     }
