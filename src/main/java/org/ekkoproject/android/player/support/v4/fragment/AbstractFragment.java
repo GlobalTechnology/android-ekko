@@ -2,7 +2,6 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import android.app.Activity;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentUtils;
 
 import org.ekkoproject.android.player.services.ProgressManager;
 
@@ -20,7 +19,7 @@ public class AbstractFragment extends Fragment implements OnUpdateVisibilityList
     @Override
     public void onUpdateUserVisibleHint(final boolean isVisibleToUser) {
         // broadcast potential visibility change to all children fragments
-        for (final Fragment child : FragmentUtils.getChildFragments(this)) {
+        for (final Fragment child : this.getFragmentManager().getFragments()) {
             if (child instanceof OnUpdateVisibilityListener) {
                 ((OnUpdateVisibilityListener) child).onUpdateUserVisibleHint(child.getUserVisibleHint());
             }
