@@ -50,6 +50,13 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    productFlavors {
+        development {
+        }
+        production {
+        }
+    }
 }
 
 repositories {
