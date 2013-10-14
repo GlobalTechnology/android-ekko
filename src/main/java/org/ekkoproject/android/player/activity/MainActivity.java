@@ -10,16 +10,15 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
@@ -30,7 +29,7 @@ import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 import me.thekey.android.TheKey;
 
-public class MainActivity extends SherlockFragmentActivity implements LoginDialogFragment.Listener,
+public class MainActivity extends ActionBarActivity implements LoginDialogFragment.Listener,
         CourseListFragment.Listener {
     private DrawerLayout drawerLayout = null;
     private ListView drawerView = null;
@@ -82,7 +81,7 @@ public class MainActivity extends SherlockFragmentActivity implements LoginDialo
         this.getSupportActionBar().setTitle("");
 
         // add menu items
-        final MenuInflater inflater = getSupportMenuInflater();
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
         return super.onCreateOptionsMenu(menu);
     }

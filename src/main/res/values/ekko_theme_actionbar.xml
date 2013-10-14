@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Widget.Ekko.ActionBar" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+    <style name="Widget.Ekko.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@drawable/bg_ekko_actionbar</item>
         <item name="android:background">@drawable/bg_ekko_actionbar</item>
         <item name="titleTextStyle">@style/TextAppearance.Ekko.ActionBar.Title</item>
         <item name="android:titleTextStyle" tools:targetApi="honeycomb">@style/TextAppearance.Ekko.ActionBar.Title</item>
     </style>
 
-    <style name="Widget.Ekko.ActionButton.Overflow" parent="@style/Widget.Sherlock.ActionButton.Overflow">
+    <style name="Widget.Ekko.ActionButton.Overflow" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
     <dimen name="ekko_actionbar_border_bottom">2dp</dimen>
 
-    <style name="TextAppearance.Ekko.ActionBar.Title" parent="@style/TextAppearance.Sherlock.Widget.ActionBar.Title.Inverse">
+    <style name="TextAppearance.Ekko.ActionBar.Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
         <item name="android:textColor">@color/ekko_grey</item>
         <item name="android:textSize" tools:ignore="SpUsage">18dp</item>
     </style>

@@ -1,14 +1,12 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import org.ekkoproject.android.player.services.ProgressManager;
-
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentUtils;
 
-import com.actionbarsherlock.app.SherlockFragment;
+import org.ekkoproject.android.player.services.ProgressManager;
 
-public class AbstractFragment extends SherlockFragment implements OnUpdateVisibilityListener {
+public class AbstractFragment extends Fragment implements OnUpdateVisibilityListener {
     private ProgressManager progressManager = null;
 
     /* BEGIN lifecycle */

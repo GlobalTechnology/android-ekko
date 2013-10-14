@@ -3,7 +3,30 @@ package org.ekkoproject.android.player.support.v4.fragment;
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
-import java.lang.ref.WeakReference;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.v4.app.ListFragment;
+import android.util.Pair;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CursorAdapter;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
@@ -15,33 +38,9 @@ import org.ekkoproject.android.player.sync.EkkoSyncService;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Pair;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CursorAdapter;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.SimpleCursorAdapter.ViewBinder;
+import java.lang.ref.WeakReference;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-
-public class CourseListFragment extends SherlockListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
+public class CourseListFragment extends ListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
     private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";

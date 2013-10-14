@@ -4,7 +4,22 @@ import static org.ekkoproject.android.player.Constants.ARG_LAYOUT;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
-import java.util.List;
+import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentPagerAdapter;
@@ -12,21 +27,7 @@ import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.widget.FocusingDrawerListener;
 
-import android.annotation.TargetApi;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+import java.util.List;
 
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
         AbstractContentFragment.OnNavigateListener, CourseContentDrawerFragment.Listener,
@@ -103,11 +104,13 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         // update the title/icon
-        // XXX: this is a hack, but the best way of dynamically managing it I
-        // could think of with current API's
+        // XXX: this is a hack, but the best way of dynamically managing it I could think of with current API's
         final Manifest manifest = this.getManifest();
         if (manifest != null) {
-            getSherlockActivity().getSupportActionBar().setTitle(manifest.getCourseTitle());
+            final FragmentActivity activity = this.getActivity();
+            if(activity instanceof ActionBarActivity) {
+                ((ActionBarActivity) activity).getSupportActionBar().setTitle(manifest.getCourseTitle());
+            }
         }
 
         // add menu items
@@ -147,7 +150,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
             }
 
             // update the action bar
-            this.getSherlockActivity().supportInvalidateOptionsMenu();
+            this.getActivity().supportInvalidateOptionsMenu();
         }
     }
 
