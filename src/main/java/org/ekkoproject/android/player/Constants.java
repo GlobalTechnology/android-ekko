@@ -1,10 +1,7 @@
 package org.ekkoproject.android.player;
 
-import android.net.Uri;
-
 public final class Constants {
     public final static long THEKEY_CLIENTID = 85613451684391165L;
-    public final static Uri EKKOHUB_URI = Uri.parse("https://services.gcx.org/ekko/");
 
     public final static long INVALID_ID = Long.MIN_VALUE;
     public final static long INVALID_COURSE = -1;

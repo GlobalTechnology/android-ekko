@@ -40,7 +40,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     private static final String PREFFILE_EKKOHUB = "ekkoHubApi";
 
     public EkkoHubApi(final Context context) {
-        this(context, context.getResources().getString(R.string.ekkoSmxUri));
+        this(context, context.getString(R.string.ekkoSmxUri));
     }
 
     public EkkoHubApi(final Context context, final String hubUri) {
