@@ -78,8 +78,9 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 break;
             }
             break;
-        // default:
-        // this.resetDatabase(db);
+            default:
+                // unrecognized version, let's just reset the database
+                this.resetDatabase(db);
         }
     }
 

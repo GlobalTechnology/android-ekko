@@ -49,13 +49,13 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
     @Override
     public Resource toObject(final Cursor c) {
         final Resource resource = super.toObject(c);
-        resource.setParentId(c.getString((c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE))));
-        resource.setResourceType(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_TYPE)));
-        resource.setResourceMimeType(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_MIMETYPE)));
-        resource.setResourceSha1(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_SHA1)));
-        resource.setResourceSize(c.getLong(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_SIZE)));
-        resource.setProvider(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_PROVIDER)));
-        resource.setUri(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_URI)));
+        resource.setParentId(this.getString(c, Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE));
+        resource.setResourceType(this.getString(c, Contract.Course.Resource.COLUMN_NAME_TYPE));
+        resource.setResourceMimeType(this.getString(c, Contract.Course.Resource.COLUMN_NAME_MIMETYPE));
+        resource.setResourceSha1(this.getString(c, Contract.Course.Resource.COLUMN_NAME_SHA1));
+        resource.setResourceSize(this.getLong(c, Contract.Course.Resource.COLUMN_NAME_SIZE, 0));
+        resource.setProvider(this.getString(c, Contract.Course.Resource.COLUMN_NAME_PROVIDER));
+        resource.setUri(this.getString(c, Contract.Course.Resource.COLUMN_NAME_URI));
         return resource;
     }
 }

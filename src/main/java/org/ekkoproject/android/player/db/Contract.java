@@ -36,8 +36,10 @@ public final class Contract {
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
         /* V7 updates */
+        @Deprecated
         protected static final String SQL_V7_ALTER_ACCESSIBLE = "ALTER TABLE " + TABLE_NAME + " ADD COLUMN "
                 + COLUMN_NAME_ACCESSIBLE + " INTEGER";
+        @Deprecated
         protected static final String SQL_V7_DEFAULT_ACCESSIBLE = "UPDATE " + TABLE_NAME + " SET "
                 + COLUMN_NAME_ACCESSIBLE + " = 1";
 
@@ -68,7 +70,7 @@ public final class Contract {
             protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
             /**
-             * an index on course id's in unnecessary because the primary key
+             * an index on course id's is unnecessary because the primary key
              * covers this index
              */
             @Deprecated
@@ -98,7 +100,7 @@ public final class Contract {
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
         /**
-         * an index on course id's in unnecessary because the primary key covers
+         * an index on course id's is unnecessary because the primary key covers
          * this index
          */
         @Deprecated
