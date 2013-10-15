@@ -2,12 +2,6 @@ package org.ekkoproject.android.player.model;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.appdev.entity.Course;
 import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
@@ -15,11 +9,21 @@ import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class Manifest extends Course {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+public class Manifest {
     private long courseId;
     private int version;
 
+    private Meta meta;
+
     private final List<CourseContent> content = new ArrayList<CourseContent>();
+    private final HashMap<String, Resource> resources = new HashMap<String, Resource>();
 
     private String completionMessage = null;
 
@@ -29,6 +33,41 @@ public class Manifest extends Course {
 
     public int getCourseVersion() {
         return this.version;
+    }
+
+    public Meta getMeta() {
+        return this.meta;
+    }
+
+    public String getTitle() {
+        return this.meta != null ? this.meta.getTitle() : null;
+    }
+
+    public Resource getResource(final String resourceId) {
+        return resources.get(resourceId);
+    }
+
+    public Collection<Resource> getResources() {
+        return Collections.unmodifiableCollection(this.resources.values());
+    }
+
+    private void setResources(final Collection<Resource> resources) {
+        this.resources.clear();
+        this.addResources(resources);
+    }
+
+    private void addResource(final Resource resource) {
+        if (resource != null) {
+            this.resources.put(resource.getId(), resource);
+        }
+    }
+
+    private void addResources(final Collection<Resource> resources) {
+        if (resources != null) {
+            for (final Resource resource : resources) {
+                this.addResource(resource);
+            }
+        }
     }
 
     public List<CourseContent> getContent() {
@@ -127,7 +166,7 @@ public class Manifest extends Course {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_META.equals(name)) {
-                    this.parseMeta(parser, 1);
+                    this.meta = Meta.fromXml(parser, 1);
                     continue;
                 } else if (XML.ELEMENT_CONTENT.equals(name)) {
                     this.parseContent(parser, 1);

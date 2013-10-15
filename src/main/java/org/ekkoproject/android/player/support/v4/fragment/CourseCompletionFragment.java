@@ -86,7 +86,7 @@ public class CourseCompletionFragment extends AbstractContentFragment implements
             String title = null;
             if (manifest != null) {
                 message = manifest.getCompletionMessage();
-                title = manifest.getCourseTitle();
+                title = manifest.getTitle();
             }
 
             if (message == null || message.length() == 0) {

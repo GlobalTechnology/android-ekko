@@ -109,7 +109,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         if (manifest != null) {
             final FragmentActivity activity = this.getActivity();
             if(activity instanceof ActionBarActivity) {
-                ((ActionBarActivity) activity).getSupportActionBar().setTitle(manifest.getCourseTitle());
+                ((ActionBarActivity) activity).getSupportActionBar().setTitle(manifest.getTitle());
             }
         }
 

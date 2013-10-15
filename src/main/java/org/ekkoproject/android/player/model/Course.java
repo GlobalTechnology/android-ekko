@@ -2,9 +2,6 @@ package org.ekkoproject.android.player.model;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.io.IOException;
-import java.util.Date;
-
 import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
@@ -12,12 +9,23 @@ import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class Course extends org.appdev.entity.Course {
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+
+public class Course {
     private final long id;
     private int version = 0;
 
     private String manifestFile;
     private int manifestVersion = 0;
+
+    private String title;
+    private String banner;
+
+    private final HashMap<String, Resource> resources = new HashMap<String, Resource>();
 
     /** flag that indicates this course is inaccessible for some reason */
     private boolean accessible = true;
@@ -32,12 +40,28 @@ public class Course extends org.appdev.entity.Course {
         return this.id;
     }
 
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(final String title) {
+        this.title = title;
+    }
+
     public int getVersion() {
         return this.version;
     }
 
     public void setVersion(final int version) {
         this.version = version;
+    }
+
+    public String getBanner() {
+        return this.banner;
+    }
+
+    public void setBanner(final String resourceId) {
+        this.banner = resourceId;
     }
 
     public String getManifestFile() {
@@ -54,6 +78,33 @@ public class Course extends org.appdev.entity.Course {
 
     public void setManifestVersion(final int version) {
         this.manifestVersion = version;
+    }
+
+    public Resource getResource(final String resourceId) {
+        return resources.get(resourceId);
+    }
+
+    public Collection<Resource> getResources() {
+        return Collections.unmodifiableCollection(this.resources.values());
+    }
+
+    public void setResources(final Collection<Resource> resources) {
+        this.resources.clear();
+        this.addResources(resources);
+    }
+
+    public void addResource(final Resource resource) {
+        if (resource != null) {
+            this.resources.put(resource.getId(), resource);
+        }
+    }
+
+    public void addResources(final Collection<Resource> resources) {
+        if (resources != null) {
+            for (final Resource resource : resources) {
+                this.addResource(resource);
+            }
+        }
     }
 
     public boolean isAccessible() {
@@ -94,21 +145,23 @@ public class Course extends org.appdev.entity.Course {
         final long courseId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_COURSE_ID), INVALID_COURSE);
         switch (schemaVersion) {
         case 1:
-            return new Course(courseId).parse_v1(parser);
-        default:
+            return new Course(courseId).parse(parser, schemaVersion);
+            default:
             return null;
         }
     }
 
     /**
-     * parse courses using manifest schema version 1
+     * parse course xml
      * 
      * @param parser
+     * @param schemaVersion
      * @return
      * @throws XmlPullParserException
      * @throws IOException
      */
-    private Course parse_v1(final XmlPullParser parser) throws XmlPullParserException, IOException {
+    private Course parse(final XmlPullParser parser, final int schemaVersion)
+            throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
 
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
@@ -123,13 +176,16 @@ public class Course extends org.appdev.entity.Course {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_META.equals(name)) {
-                    this.parseMeta(parser, 1);
+                    final Meta meta = Meta.fromXml(parser, schemaVersion);
+                    if (meta != null) {
+                        this.title = meta.getTitle();
+                        this.banner = meta.getBanner();
+                    }
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {
-                    this.setResources(Resource.parseResources(parser, this.getId(), 1));
+                    this.setResources(Resource.parseResources(parser, this.getId(), schemaVersion));
                     continue;
                 }
-
             }
 
             // skip unrecognized nodes
