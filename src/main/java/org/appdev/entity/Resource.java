@@ -1,11 +1,5 @@
 package org.appdev.entity;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Manifest;
@@ -13,6 +7,12 @@ import org.ekkoproject.android.player.util.ParserUtils;
 import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class Resource {
     public static final int PROVIDER_UNKNOWN = -1;
@@ -32,6 +32,8 @@ public class Resource {
 	private String mimeType;
     private final List<Resource> resources = new ArrayList<Resource>();
 
+    private String parentId;
+
     public Resource(final long courseId, final String id) {
         this.courseId = courseId;
         this.id = id;
@@ -45,7 +47,15 @@ public class Resource {
         return this.id;
     }
 
-	public String getResourceSha1() {
+    public String getParentId() {
+        return this.parentId;
+    }
+
+    public void setParentId(final String parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getResourceSha1() {
 		return sha1;
 	}
 

@@ -33,6 +33,8 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
             values.put(field, resource.getProviderName());
         } else if (Contract.Course.Resource.COLUMN_NAME_URI.equals(field)) {
             values.put(field, resource.getUri());
+        } else if(Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE.equals(field)) {
+            values.put(field, resource.getParentId());
         } else {
             super.mapField(values, field, resource);
         }
@@ -47,6 +49,7 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
     @Override
     public Resource toObject(final Cursor c) {
         final Resource resource = super.toObject(c);
+        resource.setParentId(c.getString((c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE))));
         resource.setResourceType(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_TYPE)));
         resource.setResourceMimeType(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_MIMETYPE)));
         resource.setResourceSha1(c.getString(c.getColumnIndex(Contract.Course.Resource.COLUMN_NAME_SHA1)));
