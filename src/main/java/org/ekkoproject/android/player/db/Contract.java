@@ -10,23 +10,21 @@ public final class Contract {
     }
 
     public static final class Course extends Base {
-        public static final String TABLE_NAME = "course";
+        protected static final String TABLE_NAME = "course";
         public static final String COLUMN_NAME_COURSE_ID = _ID;
-        public static final String COLUMN_NAME_VERSION = "version";
+        protected static final String COLUMN_NAME_VERSION = "version";
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_BANNER_RESOURCE = "bannerResource";
         public static final String COLUMN_NAME_MANIFEST_FILE = "manifestFile";
         public static final String COLUMN_NAME_MANIFEST_VERSION = "manifestVersion";
         public static final String COLUMN_NAME_ACCESSIBLE = "accessible";
-        public static final String COLUMN_NAME_LAST_SYNCED = "lastSynced";
+        protected static final String COLUMN_NAME_LAST_SYNCED = "lastSynced";
 
-        public static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_VERSION, COLUMN_NAME_TITLE,
+        protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_VERSION, COLUMN_NAME_TITLE,
                 COLUMN_NAME_BANNER_RESOURCE, COLUMN_NAME_MANIFEST_FILE, COLUMN_NAME_MANIFEST_VERSION,
                 COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED };
         public static final String[] PROJECTION_UPDATE_EKKOHUB = { COLUMN_NAME_VERSION, COLUMN_NAME_TITLE,
                 COLUMN_NAME_BANNER_RESOURCE, COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED };
-        public static final String[] PROJECTION_UPDATE_MANIFEST = { COLUMN_NAME_MANIFEST_FILE,
-                COLUMN_NAME_MANIFEST_VERSION };
 
         protected static final String SQL_WHERE_PRIMARY_KEY = COLUMN_NAME_COURSE_ID + " = ?";
 
@@ -46,7 +44,7 @@ public final class Contract {
         private Course() {
         }
 
-        public static final class Resource extends Base {
+        protected static final class Resource extends Base {
             protected static final String TABLE_NAME = "courseResources";
             protected static final String COLUMN_NAME_COURSE_ID = "courseId";
             protected static final String COLUMN_NAME_RESOURCE_ID = "resourceId";
@@ -80,7 +78,7 @@ public final class Contract {
     }
 
     public static final class CachedResource extends Base {
-        public static final String TABLE_NAME = "cachedResources";
+        protected static final String TABLE_NAME = "cachedResources";
         public static final String COLUMN_NAME_COURSE_ID = "courseId";
         public static final String COLUMN_NAME_SHA1 = "sha1";
         public static final String COLUMN_NAME_SIZE = "size";
@@ -89,7 +87,6 @@ public final class Contract {
 
         protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_SHA1, COLUMN_NAME_SIZE,
                 COLUMN_NAME_PATH, COLUMN_NAME_LAST_ACCESSED };
-        protected static final String[] PROJECTION_ACCESS = { COLUMN_NAME_LAST_ACCESSED };
 
         protected static final String SQL_WHERE_PRIMARY_KEY =
                 COLUMN_NAME_COURSE_ID + " = ? AND " + COLUMN_NAME_SHA1 + " = ?";
@@ -110,7 +107,7 @@ public final class Contract {
     }
 
     public static final class CachedUriResource extends Base {
-        public static final String TABLE_NAME = "cachedUriResources";
+        protected static final String TABLE_NAME = "cachedUriResources";
         public static final String COLUMN_NAME_COURSE_ID = "courseId";
         public static final String COLUMN_NAME_URI = "uri";
         public static final String COLUMN_NAME_SIZE = "size";
@@ -121,7 +118,6 @@ public final class Contract {
 
         protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_URI, COLUMN_NAME_SIZE,
                 COLUMN_NAME_PATH, COLUMN_NAME_EXPIRES, COLUMN_NAME_LAST_MODIFIED, COLUMN_NAME_LAST_ACCESSED };
-        protected static final String[] PROJECTION_ACCESS = { COLUMN_NAME_LAST_ACCESSED };
 
         protected static final String SQL_WHERE_PRIMARY_KEY =
                 COLUMN_NAME_COURSE_ID + " = ? AND " + COLUMN_NAME_URI + " = ?";
@@ -143,7 +139,7 @@ public final class Contract {
     }
 
     public static final class Progress extends Base {
-        public static final String TABLE_NAME = "progress";
+        protected static final String TABLE_NAME = "progress";
         public static final String COLUMN_NAME_COURSE_ID = "courseId";
         public static final String COLUMN_NAME_CONTENT_ID = "contentId";
         public static final String COLUMN_NAME_COMPLETED = "completed";
@@ -169,7 +165,7 @@ public final class Contract {
     }
 
     public static final class Answer extends Base {
-        public static final String TABLE_NAME = "quizMultipleChoiceAnswers";
+        protected static final String TABLE_NAME = "quizMultipleChoiceAnswers";
         public static final String COLUMN_NAME_COURSE_ID = "courseId";
         public static final String COLUMN_NAME_QUESTION_ID = "questionId";
         public static final String COLUMN_NAME_ANSWER_ID = "answerId";
