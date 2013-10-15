@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.appdev.entity.Resource;
+import org.ccci.gto.android.common.db.Mapper;
 import org.ekkoproject.android.player.model.Answer;
 import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.CachedUriResource;

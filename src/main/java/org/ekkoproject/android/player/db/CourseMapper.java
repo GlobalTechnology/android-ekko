@@ -2,10 +2,11 @@ package org.ekkoproject.android.player.db;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import org.ekkoproject.android.player.model.Course;
-
 import android.content.ContentValues;
 import android.database.Cursor;
+
+import org.ccci.gto.android.common.db.AbstractMapper;
+import org.ekkoproject.android.player.model.Course;
 
 public final class CourseMapper extends AbstractMapper<Course> {
     @Override
@@ -14,39 +15,37 @@ public final class CourseMapper extends AbstractMapper<Course> {
     }
 
     @Override
-    public ContentValues toContentValues(final Course course, final String[] projection) {
-        final ContentValues values = new ContentValues();
-
-        // only add values in the projection
-        // XXX: I really want to use a switch for readability, but it requires
-        // java 1.7 for String switch support
-        for (final String field : projection) {
-            if (Contract.Course.COLUMN_NAME_COURSE_ID.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_COURSE_ID, course.getId());
-            } else if (Contract.Course.COLUMN_NAME_VERSION.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_VERSION, course.getVersion());
-            } else if (Contract.Course.COLUMN_NAME_ACCESSIBLE.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_ACCESSIBLE, course.isAccessible() ? 1 : 0);
-            } else if (Contract.Course.COLUMN_NAME_TITLE.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_TITLE, course.getCourseTitle());
-            } else if (Contract.Course.COLUMN_NAME_BANNER_RESOURCE.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_BANNER_RESOURCE, course.getCourseBanner());
-            } else if (Contract.Course.COLUMN_NAME_MANIFEST_FILE.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_MANIFEST_FILE, course.getManifestFile());
-            } else if (Contract.Course.COLUMN_NAME_MANIFEST_VERSION.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_MANIFEST_VERSION, course.getManifestVersion());
-            } else if (Contract.Course.COLUMN_NAME_LAST_SYNCED.equals(field)) {
-                values.put(Contract.Course.COLUMN_NAME_LAST_SYNCED, course.getLastSynced());
-            }
+    protected void mapField(final ContentValues values, final String field, final Course course) {
+        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
+        if (Contract.Course.COLUMN_NAME_COURSE_ID.equals(field)) {
+            values.put(field, course.getId());
+        } else if (Contract.Course.COLUMN_NAME_VERSION.equals(field)) {
+            values.put(field, course.getVersion());
+        } else if (Contract.Course.COLUMN_NAME_ACCESSIBLE.equals(field)) {
+            values.put(field, course.isAccessible() ? 1 : 0);
+        } else if (Contract.Course.COLUMN_NAME_TITLE.equals(field)) {
+            values.put(field, course.getCourseTitle());
+        } else if (Contract.Course.COLUMN_NAME_BANNER_RESOURCE.equals(field)) {
+            values.put(field, course.getCourseBanner());
+        } else if (Contract.Course.COLUMN_NAME_MANIFEST_FILE.equals(field)) {
+            values.put(field, course.getManifestFile());
+        } else if (Contract.Course.COLUMN_NAME_MANIFEST_VERSION.equals(field)) {
+            values.put(field, course.getManifestVersion());
+        } else if (Contract.Course.COLUMN_NAME_LAST_SYNCED.equals(field)) {
+            values.put(field, course.getLastSynced());
+        } else {
+            super.mapField(values, field, course);
         }
+    }
 
-        return values;
+    @Override
+    protected Course newObject(final Cursor c) {
+        return new Course(this.getLong(c, Contract.Course.COLUMN_NAME_COURSE_ID, INVALID_COURSE));
     }
 
     @Override
     public Course toObject(final Cursor c) {
-        final Course course = new Course(this.getLong(c, Contract.Course.COLUMN_NAME_COURSE_ID, INVALID_COURSE));
-
+        final Course course = super.toObject(c);
         course.setVersion(this.getInt(c, Contract.Course.COLUMN_NAME_VERSION));
         course.setAccessible(this.getBool(c, Contract.Course.COLUMN_NAME_ACCESSIBLE, true));
         course.setCourseTitle(this.getString(c, Contract.Course.COLUMN_NAME_TITLE));
@@ -54,7 +53,6 @@ public final class CourseMapper extends AbstractMapper<Course> {
         course.setManifestFile(this.getString(c, Contract.Course.COLUMN_NAME_MANIFEST_FILE));
         course.setManifestVersion(this.getInt(c, Contract.Course.COLUMN_NAME_MANIFEST_VERSION));
         course.setLastSynced(this.getLong(c, Contract.Course.COLUMN_NAME_LAST_SYNCED));
-
         return course;
     }
 }
