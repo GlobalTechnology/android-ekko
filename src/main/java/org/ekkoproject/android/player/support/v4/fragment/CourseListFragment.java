@@ -29,6 +29,7 @@ import org.ccci.gto.android.common.support.v4.fragment.AbstractListFragment;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.services.ResourceManager;
@@ -308,8 +309,9 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
     private class UpdateCursorAsyncTask extends AsyncTask<Void, Void, Cursor> {
         @Override
         protected Cursor doInBackground(final Void... params) {
-            return CourseListFragment.this.dao.getCoursesCursor(Contract.Course.COLUMN_NAME_ACCESSIBLE + " = ?",
-                    new String[] { "1" });
+            return CourseListFragment.this.dao.getCursor(Course.class, Contract.Course.COLUMN_NAME_ACCESSIBLE + " = ?",
+                                                         new String[] {"1"},
+                                                         Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE");
         }
 
         @Override

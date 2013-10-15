@@ -7,11 +7,15 @@ import static org.ekkoproject.android.player.util.ThreadUtils.assertOnUiThread;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 import static org.ekkoproject.android.player.util.ThreadUtils.isUiThread;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Pair;
 
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
@@ -26,15 +30,11 @@ import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.model.Text;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Pair;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public final class ProgressManager {
     /** broadcast actions */
@@ -100,10 +100,10 @@ public final class ProgressManager {
             try {
                 final Set<String> progress = new HashSet<String>();
 
-                // fetch a Cursor for all the regular progress in the specified
-                // course
-                c1 = this.dao.getProgressCursor(new String[] { Contract.Progress.COLUMN_NAME_CONTENT_ID },
-                        Contract.Progress.COLUMN_NAME_COURSE_ID + "=?", new String[] { Long.toString(courseId) }, null);
+                // fetch a Cursor for all the regular progress in the specified course
+                c1 = this.dao.getCursor(Progress.class, new String[] {Contract.Progress.COLUMN_NAME_CONTENT_ID},
+                                        Contract.Progress.COLUMN_NAME_COURSE_ID + "=?",
+                                        new String[] {Long.toString(courseId)}, null);
                 final int column1 = c1.getColumnIndex(Contract.Progress.COLUMN_NAME_CONTENT_ID);
                 if (column1 != -1) {
                     while (c1.moveToNext()) {
@@ -111,12 +111,11 @@ public final class ProgressManager {
                     }
                 }
 
-                // fetch a Cursor for all the quiz question answers in the
-                // specified course
-                // XXX: right now we handle answers as progress, this may need
-                // to change in the future
-                c2 = this.dao.getAnswerCursor(new String[] { Contract.Answer.COLUMN_NAME_ANSWER_ID },
-                        Contract.Answer.COLUMN_NAME_COURSE_ID + "=?", new String[] { Long.toString(courseId) }, null);
+                // fetch a Cursor for all the quiz question answers in the specified course
+                // XXX: right now we handle answers as progress, this may need to change in the future
+                c2 = this.dao.getCursor(Answer.class, new String[] {Contract.Answer.COLUMN_NAME_ANSWER_ID},
+                                        Contract.Answer.COLUMN_NAME_COURSE_ID + " = ?",
+                                        new String[] {Long.toString(courseId)}, null);
                 final int column2 = c2.getColumnIndex(Contract.Answer.COLUMN_NAME_ANSWER_ID);
                 if (column2 != -1) {
                     while (c2.moveToNext()) {
@@ -200,9 +199,10 @@ public final class ProgressManager {
             boolean changed = false;
 
             final Map<String, Answer> existingAnswers = new HashMap<String, Answer>();
-            for (final Answer answer : this.dao.getAnswers(Contract.Answer.COLUMN_NAME_COURSE_ID + " = ? AND "
-                    + Contract.Answer.COLUMN_NAME_QUESTION_ID + " = ?", new String[] { Long.toString(courseId),
-                    questionId })) {
+            for (final Answer answer : this.dao.get(Answer.class,
+                                                    Contract.Answer.COLUMN_NAME_COURSE_ID + " = ? AND " +
+                                                            Contract.Answer.COLUMN_NAME_QUESTION_ID + " = ?",
+                                                    new String[] {Long.toString(courseId), questionId})) {
                 existingAnswers.put(answer.getAnswerId(), answer);
             }
 

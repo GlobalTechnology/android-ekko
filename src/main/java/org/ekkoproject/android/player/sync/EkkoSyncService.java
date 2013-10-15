@@ -101,7 +101,7 @@ public class EkkoSyncService extends IntentService {
     private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
         // load all existing courses
         final Map<Long, Course> existing = new HashMap<Long, Course>();
-        for (final Course course : this.dao.get(Course.class, false)) {
+        for (final Course course : this.dao.getCourses(null, null, null, false)) {
             if (course != null) {
                 existing.put(course.getId(), course);
             }
@@ -123,12 +123,12 @@ public class EkkoSyncService extends IntentService {
                     // should we insert or update
                     final Course old = existing.remove(course.getId());
                     if (old != null || seen.contains(course.getId())) {
-                        this.dao.update(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
-                        if (course.getVersion() > old.getManifestVersion()) {
+                        this.dao.updateCourse(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB, true);
+                        if (old != null && course.getVersion() > old.getManifestVersion()) {
                             EkkoSyncService.syncManifest(this, course.getId());
                         }
                     } else {
-                        this.dao.insert(course);
+                        this.dao.insertCourse(course);
                         EkkoSyncService.syncManifest(this, course.getId());
                     }
 
@@ -160,7 +160,7 @@ public class EkkoSyncService extends IntentService {
                 // only update newly inaccessible courses
                 if (course.isAccessible()) {
                     course.setAccessible(false);
-                    this.dao.update(course, new String[] { Contract.Course.COLUMN_NAME_ACCESSIBLE });
+                    this.dao.updateCourse(course, new String[] {Contract.Course.COLUMN_NAME_ACCESSIBLE}, false);
                     updated = true;
                 }
             }

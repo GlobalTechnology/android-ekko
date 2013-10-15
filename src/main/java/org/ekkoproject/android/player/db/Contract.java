@@ -28,6 +28,8 @@ public final class Contract {
         public static final String[] PROJECTION_UPDATE_MANIFEST = { COLUMN_NAME_MANIFEST_FILE,
                 COLUMN_NAME_MANIFEST_VERSION };
 
+        protected static final String SQL_WHERE_PRIMARY_KEY = COLUMN_NAME_COURSE_ID + " = ?";
+
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
                 + " INTEGER PRIMARY KEY," + COLUMN_NAME_VERSION + " INTEGER," + COLUMN_NAME_TITLE + " TEXT,"
                 + COLUMN_NAME_BANNER_RESOURCE + " TEXT," + COLUMN_NAME_MANIFEST_FILE + " TEXT,"
@@ -89,6 +91,9 @@ public final class Contract {
                 COLUMN_NAME_PATH, COLUMN_NAME_LAST_ACCESSED };
         protected static final String[] PROJECTION_ACCESS = { COLUMN_NAME_LAST_ACCESSED };
 
+        protected static final String SQL_WHERE_PRIMARY_KEY =
+                COLUMN_NAME_COURSE_ID + " = ? AND " + COLUMN_NAME_SHA1 + " = ?";
+
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
                 + " INTEGER," + COLUMN_NAME_SHA1 + " TEXT," + COLUMN_NAME_SIZE + " INTEGER," + COLUMN_NAME_PATH
                 + " TEXT," + COLUMN_NAME_LAST_ACCESSED + " INTEGER, PRIMARY KEY(" + COLUMN_NAME_COURSE_ID + ", "
@@ -118,6 +123,9 @@ public final class Contract {
                 COLUMN_NAME_PATH, COLUMN_NAME_EXPIRES, COLUMN_NAME_LAST_MODIFIED, COLUMN_NAME_LAST_ACCESSED };
         protected static final String[] PROJECTION_ACCESS = { COLUMN_NAME_LAST_ACCESSED };
 
+        protected static final String SQL_WHERE_PRIMARY_KEY =
+                COLUMN_NAME_COURSE_ID + " = ? AND " + COLUMN_NAME_URI + " = ?";
+
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
                 + " INTEGER," + COLUMN_NAME_URI + " TEXT," + COLUMN_NAME_SIZE + " INTEGER," + COLUMN_NAME_PATH
                 + " TEXT," + COLUMN_NAME_EXPIRES + " INTEGER," + COLUMN_NAME_LAST_MODIFIED + " INTEGER,"
@@ -143,6 +151,9 @@ public final class Contract {
         protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_CONTENT_ID,
                 COLUMN_NAME_COMPLETED };
 
+        protected static final String SQL_WHERE_PRIMARY_KEY =
+                COLUMN_NAME_COURSE_ID + " = ? AND " + COLUMN_NAME_CONTENT_ID + " = ?";
+
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
                 + " INTEGER," + COLUMN_NAME_CONTENT_ID + " TEXT," + COLUMN_NAME_COMPLETED + " INTEGER, PRIMARY KEY("
                 + COLUMN_NAME_COURSE_ID + ", " + COLUMN_NAME_CONTENT_ID + "))";
@@ -166,6 +177,10 @@ public final class Contract {
 
         protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_QUESTION_ID,
                 COLUMN_NAME_ANSWER_ID, COLUMN_NAME_ANSWERED };
+
+        protected static final String SQL_WHERE_PRIMARY_KEY =
+                COLUMN_NAME_COURSE_ID + " = ? AND " + COLUMN_NAME_QUESTION_ID + " = ? AND " + COLUMN_NAME_ANSWER_ID +
+                        " = ?";
 
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_NAME_COURSE_ID
                 + " INTEGER," + COLUMN_NAME_QUESTION_ID + " TEXT," + COLUMN_NAME_ANSWER_ID + " TEXT,"
