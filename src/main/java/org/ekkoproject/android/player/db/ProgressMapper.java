@@ -17,11 +17,11 @@ public class ProgressMapper extends AbstractMapper<Progress> {
     @Override
     protected void mapField(final ContentValues values, final String field, final Progress progress) {
         // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.Progress.COLUMN_NAME_COURSE_ID.equals(field)) {
+        if (Contract.Progress.COLUMN_COURSE_ID.equals(field)) {
             values.put(field, progress.getCourseId());
-        } else if (Contract.Progress.COLUMN_NAME_CONTENT_ID.equals(field)) {
+        } else if (Contract.Progress.COLUMN_CONTENT_ID.equals(field)) {
             values.put(field, progress.getContentId());
-        } else if (Contract.Progress.COLUMN_NAME_COMPLETED.equals(field)) {
+        } else if (Contract.Progress.COLUMN_COMPLETED.equals(field)) {
             values.put(field, progress.getCompleted());
         } else {
             super.mapField(values, field, progress);
@@ -30,14 +30,14 @@ public class ProgressMapper extends AbstractMapper<Progress> {
 
     @Override
     protected Progress newObject(final Cursor c) {
-        return new Progress(this.getLong(c, Contract.Progress.COLUMN_NAME_COURSE_ID, INVALID_COURSE),
-                            this.getString(c, Contract.Progress.COLUMN_NAME_CONTENT_ID, null));
+        return new Progress(this.getLong(c, Contract.Progress.COLUMN_COURSE_ID, INVALID_COURSE),
+                            this.getString(c, Contract.Progress.COLUMN_CONTENT_ID, null));
     }
 
     @Override
     public Progress toObject(final Cursor c) {
         final Progress progress = super.toObject(c);
-        progress.setCompleted(this.getLong(c, Contract.Progress.COLUMN_NAME_COMPLETED, 0));
+        progress.setCompleted(this.getLong(c, Contract.Progress.COLUMN_COMPLETED, 0));
         return progress;
     }
 }

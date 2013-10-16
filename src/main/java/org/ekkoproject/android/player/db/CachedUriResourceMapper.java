@@ -17,19 +17,19 @@ public class CachedUriResourceMapper extends AbstractMapper<CachedUriResource> {
     @Override
     protected void mapField(final ContentValues values, final String field, final CachedUriResource resource) {
         // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.CachedUriResource.COLUMN_NAME_COURSE_ID.equals(field)) {
+        if (Contract.CachedUriResource.COLUMN_COURSE_ID.equals(field)) {
             values.put(field, resource.getCourseId());
-        } else if (Contract.CachedUriResource.COLUMN_NAME_URI.equals(field)) {
+        } else if (Contract.CachedUriResource.COLUMN_URI.equals(field)) {
             values.put(field, resource.getUri());
-        } else if (Contract.CachedUriResource.COLUMN_NAME_SIZE.equals(field)) {
+        } else if (Contract.CachedUriResource.COLUMN_SIZE.equals(field)) {
             values.put(field, resource.getSize());
-        } else if (Contract.CachedUriResource.COLUMN_NAME_PATH.equals(field)) {
+        } else if (Contract.CachedUriResource.COLUMN_PATH.equals(field)) {
             values.put(field, resource.getPath());
-        } else if (Contract.CachedUriResource.COLUMN_NAME_EXPIRES.equals(field)) {
+        } else if (Contract.CachedUriResource.COLUMN_EXPIRES.equals(field)) {
             values.put(field, resource.getExpires());
-        } else if (Contract.CachedUriResource.COLUMN_NAME_LAST_ACCESSED.equals(field)) {
+        } else if (Contract.CachedUriResource.COLUMN_LAST_ACCESSED.equals(field)) {
             values.put(field, resource.getLastAccessed());
-        } else if (Contract.CachedUriResource.COLUMN_NAME_LAST_MODIFIED.equals(field)) {
+        } else if (Contract.CachedUriResource.COLUMN_LAST_MODIFIED.equals(field)) {
             values.put(field, resource.getLastAccessed());
         } else {
             super.mapField(values, field, resource);
@@ -44,13 +44,13 @@ public class CachedUriResourceMapper extends AbstractMapper<CachedUriResource> {
     @Override
     public CachedUriResource toObject(final Cursor c) {
         final CachedUriResource resource = super.toObject(c);
-        resource.setCourseId(this.getLong(c, Contract.CachedUriResource.COLUMN_NAME_COURSE_ID, INVALID_COURSE));
-        resource.setUri(this.getString(c, Contract.CachedUriResource.COLUMN_NAME_URI, null));
-        resource.setSize(this.getLong(c, Contract.CachedUriResource.COLUMN_NAME_SIZE, 0));
-        resource.setPath(this.getString(c, Contract.CachedUriResource.COLUMN_NAME_PATH, null));
-        resource.setExpires(this.getLong(c, Contract.CachedUriResource.COLUMN_NAME_EXPIRES, 0));
-        resource.setLastModified(this.getLong(c, Contract.CachedUriResource.COLUMN_NAME_LAST_MODIFIED, 0));
-        resource.setLastAccessed(this.getLong(c, Contract.CachedUriResource.COLUMN_NAME_LAST_ACCESSED, 0));
+        resource.setCourseId(this.getLong(c, Contract.CachedUriResource.COLUMN_COURSE_ID, INVALID_COURSE));
+        resource.setUri(this.getString(c, Contract.CachedUriResource.COLUMN_URI, null));
+        resource.setSize(this.getLong(c, Contract.CachedUriResource.COLUMN_SIZE, 0));
+        resource.setPath(this.getString(c, Contract.CachedUriResource.COLUMN_PATH, null));
+        resource.setExpires(this.getLong(c, Contract.CachedUriResource.COLUMN_EXPIRES, 0));
+        resource.setLastModified(this.getLong(c, Contract.CachedUriResource.COLUMN_LAST_MODIFIED, 0));
+        resource.setLastAccessed(this.getLong(c, Contract.CachedUriResource.COLUMN_LAST_ACCESSED, 0));
         return resource;
     }
 }

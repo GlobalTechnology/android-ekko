@@ -286,7 +286,7 @@ public class EkkoDao extends AbstractDao {
         final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
-            db.delete(this.getTable(Progress.class), Contract.Progress.COLUMN_NAME_COURSE_ID + " = ?",
+            db.delete(this.getTable(Progress.class), Contract.Progress.COLUMN_COURSE_ID + " = ?",
                       new String[] {Long.toString(courseId)});
             db.setTransactionSuccessful();
         } finally {
