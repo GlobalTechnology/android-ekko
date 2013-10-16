@@ -204,47 +204,6 @@ public class EkkoDao extends AbstractDao {
         return courses;
     }
 
-    public void insertCourse(final Course course) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            this.insert(course);
-            this.insertResources(course);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void updateCourse(final Course course, final String[] projection, final boolean updateResources) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            if(updateResources) {
-                this.deleteResources(course);
-            }
-            this.update(course, projection);
-            if(updateResources) {
-                this.insertResources(course);
-            }
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
-    public void deleteCourse(final Course course) {
-        final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            this.deleteResources(course);
-            this.delete(course);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-    }
-
     private void loadResources(final Course course) {
         if (course != null) {
             // clear the current resources
@@ -277,7 +236,7 @@ public class EkkoDao extends AbstractDao {
         }
     }
 
-    private void insertResources(final Course course) {
+    public void insertResources(final Course course) {
         final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {
@@ -311,7 +270,7 @@ public class EkkoDao extends AbstractDao {
         }
     }
 
-    private void deleteResources(final Course course) {
+    public void deleteResources(final Course course) {
         final SQLiteDatabase db = this.dbHelper.getWritableDatabase();
         db.beginTransaction();
         try {

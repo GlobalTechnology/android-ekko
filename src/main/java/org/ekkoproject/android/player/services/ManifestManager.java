@@ -145,7 +145,7 @@ public final class ManifestManager {
                 // it on the course object
                 course.setManifestFile(null);
                 course.setManifestVersion(0);
-                dao.updateCourse(course, PROJECTION_MANIFEST, false);
+                this.dao.update(course, PROJECTION_MANIFEST);
             }
 
             // manifest doesn't exist, try downloading it
@@ -241,7 +241,7 @@ public final class ManifestManager {
                 // update the course object
                 course.setManifestFile(newName);
                 course.setManifestVersion(manifest.getCourseVersion());
-                this.dao.updateCourse(course, PROJECTION_MANIFEST, false);
+                this.dao.update(course, PROJECTION_MANIFEST);
 
                 // store the manifest
                 storeManifest(courseId, manifest);

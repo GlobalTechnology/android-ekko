@@ -7,18 +7,22 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.LongSparseArray;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
+import org.ccci.gto.android.common.db.AbstractDao.Transaction;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.model.Access;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.services.ManifestManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,7 +104,7 @@ public class EkkoSyncService extends IntentService {
      */
     private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
         // load all existing courses
-        final Map<Long, Course> existing = new HashMap<Long, Course>();
+        final LongSparseArray<Course> existing = new LongSparseArray<Course>();
         for (final Course course : this.dao.getCourses(null, null, null, false)) {
             if (course != null) {
                 existing.put(course.getId(), course);
@@ -111,29 +115,47 @@ public class EkkoSyncService extends IntentService {
         boolean hasMore = true;
         int start = 0;
         int limit = 50;
-        final Set<Long> seen = new HashSet<Long>();
+        final Map<String, Set<Long>> visible = new HashMap<String, Set<Long>>();
         while (hasMore) {
             final CourseList courses = this.ekkoApi.getCourseList(start, limit);
             if (courses != null) {
-                for (final Course course : courses.getCourses()) {
-                    // update sync flags/data
-                    course.setAccessible(true);
-                    course.setLastSynced();
+                final Transaction tx = this.dao.beginTransaction();
+                try {
+                    for (final Course course : courses.getCourses()) {
+                        // update sync date
+                        course.setLastSynced();
 
-                    // should we insert or update
-                    final Course old = existing.remove(course.getId());
-                    if (old != null || seen.contains(course.getId())) {
-                        this.dao.updateCourse(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB, true);
-                        if (old != null && course.getVersion() > old.getManifestVersion()) {
+                        // update/insert course & resources
+                        this.dao.deleteResources(course);
+                        this.dao.updateOrInsert(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
+                        this.dao.insertResources(course);
+
+                        // schedule a manifest sync?
+                        final Course old = existing.get(course.getId());
+                        if (old == null || course.getVersion() > old.getManifestVersion()) {
                             EkkoSyncService.syncManifest(this, course.getId());
                         }
-                    } else {
-                        this.dao.insertCourse(course);
-                        EkkoSyncService.syncManifest(this, course.getId());
-                    }
+                        existing.put(course.getId(), course);
 
-                    // track courses we have seen
-                    seen.add(course.getId());
+                        // update the access for this course
+                        final Access access = course.getAccess();
+                        if (access != null) {
+                            access.setVisible(true);
+                            this.dao.updateOrInsert(access, new String[] {Contract.Access.COLUMN_ADMIN,
+                                    Contract.Access.COLUMN_ENROLLED, Contract.Access.COLUMN_PENDING,
+                                    Contract.Access.COLUMN_CONTENT_VISIBLE, Contract.Access.COLUMN_VISIBLE});
+
+                            // track this course as visible
+                            final String guid = access.getGuid();
+                            if (!visible.containsKey(guid)) {
+                                visible.put(guid, new HashSet<Long>());
+                            }
+                            visible.get(guid).add(access.getCourseId());
+                        }
+                    }
+                    tx.setTransactionSuccessful();
+                } finally {
+                    tx.endTransaction();
                 }
 
                 // broadcast that courses were just updated
@@ -153,21 +175,26 @@ public class EkkoSyncService extends IntentService {
             }
         }
 
-        // mark any remaining courses inaccessible
-        if (!error) {
-            boolean updated = false;
-            for (final Course course : existing.values()) {
-                // only update newly inaccessible courses
-                if (course.isAccessible()) {
-                    course.setAccessible(false);
-                    this.dao.updateCourse(course, new String[] {Contract.Course.COLUMN_NAME_ACCESSIBLE}, false);
-                    updated = true;
-                }
-            }
+        if(!error) {
+            // mark any courses not returned as invisible
+            final Transaction tx = this.dao.beginTransaction();
+            try {
+                for (final Map.Entry<String, Set<Long>> entry : visible.entrySet()) {
+                    final String guid = entry.getKey();
+                    final Set<Long> ids = entry.getValue();
 
-            // something changed, trigger an update
-            if (updated) {
-                broadcastCoursesUpdate(this);
+                    final List<Access> known = this.dao.get(Access.class, Contract.Access.COLUMN_GUID + " = ? AND " +
+                            Contract.Access.COLUMN_VISIBLE + " = 1", new String[] {guid});
+                    for (final Access access : known) {
+                        if (!ids.contains(access.getCourseId())) {
+                            access.setVisible(false);
+                            this.dao.update(access, new String[] {Contract.Access.COLUMN_VISIBLE});
+                        }
+                    }
+                }
+                tx.setTransactionSuccessful();
+            } finally {
+                tx.endTransaction();
             }
         }
     }
