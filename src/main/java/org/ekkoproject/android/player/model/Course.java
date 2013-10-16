@@ -25,6 +25,11 @@ public class Course {
     private String title;
     private String banner;
 
+    private String enrollmentType;
+    private boolean publicCourse = false;
+
+    private Access access;
+
     private final HashMap<String, Resource> resources = new HashMap<String, Resource>();
 
     /** flag that indicates this course is inaccessible for some reason */
@@ -107,6 +112,10 @@ public class Course {
         }
     }
 
+    public Access getAccess() {
+        return this.access;
+    }
+
     public boolean isAccessible() {
         return this.accessible;
     }
@@ -186,11 +195,28 @@ public class Course {
                     this.setResources(Resource.parseResources(parser, this.getId(), schemaVersion));
                     continue;
                 }
+            } else if (XML.NS_HUB.equals(ns)) {
+                if (XML.ELEMENT_ACCESS.equals(name)) {
+                    this.enrollmentType = parser.getAttributeValue(null, XML.ATTR_ACCESS_ENROLLMENT_TYPE);
+                    this.publicCourse =
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_PUBLIC), false);
+
+                    this.access = new Access(this.id, parser.getAttributeValue(null, XML.ATTR_ACCESS_GUID));
+                    this.access.setAdmin(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_ADMIN), false));
+                    this.access.setEnrolled(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_ENROLLED), false));
+                    this.access.setPending(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_PENDING), false));
+                    this.access.setContentVisible(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_CONTENT_VISIBLE), false));
+                }
             }
 
             // skip unrecognized nodes
             ParserUtils.skip(parser);
         }
+
         return this;
     }
 }

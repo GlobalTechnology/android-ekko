@@ -20,6 +20,7 @@ public final class Constants {
 
         public static final String ELEMENT_COURSES = "courses";
         public static final String ELEMENT_COURSE = "course";
+        public static final String ELEMENT_ACCESS = "access";
         public static final String ELEMENT_MANIFEST = "course";
         public static final String ELEMENT_RESOURCES = "resources";
         public static final String ELEMENT_RESOURCE = "resource";
@@ -49,6 +50,15 @@ public final class Constants {
         /* complete elements */
         public static final String ELEMENT_COMPLETION = "complete";
         public static final String ELEMENT_COMPLETION_MESSAGE = "message";
+
+        /** access attributes */
+        public static final String ATTR_ACCESS_GUID = "guid";
+        public static final String ATTR_ACCESS_ENROLLMENT_TYPE = "enrollmentType";
+        public static final String ATTR_ACCESS_ADMIN = "admin";
+        public static final String ATTR_ACCESS_ENROLLED = "enrolled";
+        public static final String ATTR_ACCESS_PUBLIC = "public";
+        public static final String ATTR_ACCESS_PENDING = "pending";
+        public static final String ATTR_ACCESS_CONTENT_VISIBLE = "contentVisible";
 
         /** manifest attributes */
         public static final String ATTR_SCHEMAVERSION = "schemaVersion";
