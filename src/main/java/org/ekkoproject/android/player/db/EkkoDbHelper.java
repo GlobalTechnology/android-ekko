@@ -9,12 +9,11 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * Version history
      * 
      * 5: 6/25/2013
-     * 
      * 6: 6/25/2013
-     * 
      * 7: 6/28/2013
+     * 8: 10/16/2013
      */
-    public static final int DATABASE_VERSION = 7;
+    public static final int DATABASE_VERSION = 8;
     public static final String DATABASE_NAME = "Ekko.db";
 
     public EkkoDbHelper(final Context context) {
@@ -23,6 +22,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(final SQLiteDatabase db) {
+        db.execSQL(Contract.Access.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedResource.SQL_CREATE_TABLE);
@@ -77,7 +77,12 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
             if (newVersion <= 7) {
                 break;
             }
-            break;
+            db.execSQL(Contract.Access.SQL_CREATE_TABLE);
+            case 8:
+                if (newVersion <= 8) {
+                    break;
+                }
+                break;
             default:
                 // unrecognized version, let's just reset the database
                 this.resetDatabase(db);
@@ -97,6 +102,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.CachedResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.SQL_DELETE_TABLE);
+        db.execSQL(Contract.Access.SQL_DELETE_TABLE);
         this.onCreate(db);
     }
 }

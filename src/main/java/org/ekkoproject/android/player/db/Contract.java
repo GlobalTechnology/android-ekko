@@ -9,6 +9,40 @@ public final class Contract {
     private static abstract class Base implements BaseColumns {
     }
 
+    public static final class Access extends Base {
+        protected static final String TABLE_NAME = "courseAccess";
+        public static final String COLUMN_GUID = "guid";
+        protected static final String COLUMN_COURSE_ID = _ID;
+        public static final String COLUMN_ADMIN = "admin";
+        public static final String COLUMN_ENROLLED = "enrolled";
+        public static final String COLUMN_PENDING = "pending";
+        public static final String COLUMN_CONTENT_VISIBLE = "contentVisible";
+        public static final String COLUMN_VISIBLE = "visible";
+
+        protected static final String[] PROJECTION_ALL =
+                {COLUMN_COURSE_ID, COLUMN_GUID, COLUMN_ADMIN, COLUMN_ENROLLED, COLUMN_PENDING, COLUMN_CONTENT_VISIBLE,
+                        COLUMN_VISIBLE};
+
+        private static final String SQL_PREFIX = TABLE_NAME + ".";
+
+        protected static final String SQL_WHERE_PRIMARY_KEY = COLUMN_GUID + " = ? AND " + COLUMN_COURSE_ID + " = ?";
+
+        private static final String SQL_COLUMN_GUID = COLUMN_GUID + " TEXT";
+        private static final String SQL_COLUMN_COURSE_ID = COLUMN_COURSE_ID + " TEXT";
+        private static final String SQL_COLUMN_ADMIN = COLUMN_ADMIN + " INTEGER";
+        private static final String SQL_COLUMN_ENROLLED = COLUMN_ENROLLED + " INTEGER";
+        private static final String SQL_COLUMN_PENDING = COLUMN_PENDING + " INTEGER";
+        private static final String SQL_COLUMN_CONTENT_VISIBLE = COLUMN_CONTENT_VISIBLE + " INTEGER";
+        private static final String SQL_COLUMN_VISIBLE = COLUMN_VISIBLE + " INTEGER";
+        private static final String SQL_PRIMARY_KEY = "PRIMARY KEY(" + COLUMN_GUID + "," + COLUMN_COURSE_ID + ")";
+
+        protected static final String SQL_CREATE_TABLE =
+                "CREATE TABLE " + TABLE_NAME + " (" + SQL_COLUMN_GUID + "," + SQL_COLUMN_COURSE_ID + "," +
+                        SQL_COLUMN_ADMIN + "," + SQL_COLUMN_ENROLLED + "," + SQL_COLUMN_PENDING + "," +
+                        SQL_COLUMN_CONTENT_VISIBLE + "," + SQL_COLUMN_VISIBLE + "," + SQL_PRIMARY_KEY + ")";
+        protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    }
+
     public static final class Course extends Base {
         protected static final String TABLE_NAME = "course";
         public static final String COLUMN_NAME_COURSE_ID = _ID;
