@@ -118,6 +118,53 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         return null;
     }
 
+    public Course enroll(final long id) throws ApiSocketException, InvalidSessionApiException {
+        HttpURLConnection conn = null;
+        try {
+            final Request request = new Request("courses/course/" + Long.toString(id) + "/enroll");
+            request.method = "POST";
+            conn = this.sendRequest(request);
+
+            if (conn != null && conn.getResponseCode() == HTTP_OK) {
+                try {
+                    final XmlPullParser parser = Xml.newPullParser();
+                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
+                    parser.setInput(conn.getInputStream(), "UTF-8");
+                    parser.nextTag();
+                    return Course.fromXml(parser);
+                } catch (final XmlPullParserException e) {
+                    LOG.error("course list parsing error", e);
+                    return null;
+                }
+            }
+        } catch (final IOException e) {
+            throw new ApiSocketException(e);
+        } finally {
+            IOUtils.closeQuietly(conn);
+        }
+
+        return null;
+    }
+
+    public boolean unenroll(final long id) throws ApiSocketException, InvalidSessionApiException {
+        HttpURLConnection conn = null;
+        try {
+            final Request request = new Request("courses/course/" + Long.toString(id) + "/unenroll");
+            request.method = "POST";
+            conn = this.sendRequest(request);
+
+            if(conn != null && conn.getResponseCode() == HTTP_OK) {
+                return true;
+            }
+        } catch (final IOException e) {
+            throw new ApiSocketException(e);
+        } finally {
+            IOUtils.closeQuietly(conn);
+        }
+
+        return false;
+    }
+
     public long streamManifest(final long id, final OutputStream out) throws ApiSocketException,
             InvalidSessionApiException {
         HttpURLConnection conn = null;
