@@ -27,8 +27,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class EkkoHubApi extends AbstractGtoSmxApi {
     private static final Logger LOG = LoggerFactory.getLogger(EkkoHubApi.class);
@@ -67,10 +65,11 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
             InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
-            final List<Pair<String, String>> params = new ArrayList<Pair<String, String>>();
-            params.add(Pair.create("start", Integer.toString(start)));
-            params.add(Pair.create("limit", Integer.toString(limit)));
-            conn = this.apiGetRequest("courses", params, true);
+            final Request request = new Request("courses");
+            request.replaceParams = true;
+            request.params.add(Pair.create("start", Integer.toString(start)));
+            request.params.add(Pair.create("limit", Integer.toString(limit)));
+            conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 try {
@@ -96,7 +95,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     public Course getCourse(final long id) throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
-            conn = this.apiGetRequest("courses/course/" + Long.toString(id));
+            conn = this.sendRequest(new Request("courses/course/" + Long.toString(id)));
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 try {
@@ -123,7 +122,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
             InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
-            conn = this.apiGetRequest("courses/course/" + Long.toString(id) + "/manifest");
+            conn = this.sendRequest(new Request("courses/course/" + Long.toString(id) + "/manifest"));
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 return IOUtils.copy(conn.getInputStream(), out);
@@ -146,7 +145,8 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
             throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
-            conn = this.apiGetRequest("courses/course/" + Long.toString(courseId) + "/resources/resource/" + sha1);
+            conn = this.sendRequest(
+                    new Request("courses/course/" + Long.toString(courseId) + "/resources/resource/" + sha1));
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 return IOUtils.copy(conn.getInputStream(), out);
