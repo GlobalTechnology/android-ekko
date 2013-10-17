@@ -11,12 +11,12 @@ import android.util.Xml;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
+import org.ccci.gto.android.common.util.IOUtils;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
