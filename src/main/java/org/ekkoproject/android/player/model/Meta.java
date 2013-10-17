@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.model;
 
+import org.ccci.gto.android.common.util.XmlUtils;
 import org.ekkoproject.android.player.Constants;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
@@ -42,7 +43,7 @@ public class Meta {
             final String name = parser.getName();
             if (Constants.XML.NS_EKKO.equals(ns)) {
                 if (Constants.XML.ELEMENT_META_TITLE.equals(name)) {
-                    this.title = parser.nextText();
+                    this.title = XmlUtils.safeNextText(parser);
                     parser.require(XmlPullParser.END_TAG, Constants.XML.NS_EKKO, Constants.XML.ELEMENT_META_TITLE);
                     continue;
                 } else if (Constants.XML.ELEMENT_META_BANNER.equals(name)) {

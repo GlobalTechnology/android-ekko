@@ -1,14 +1,15 @@
 package org.ekkoproject.android.player.model;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import org.ccci.gto.android.common.util.XmlUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Question {
     private String id;
@@ -55,7 +56,7 @@ public class Question {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_QUIZ_QUESTION_TEXT.equals(name)) {
-                    this.question = parser.nextText();
+                    this.question = XmlUtils.safeNextText(parser);
                     parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_QUIZ_QUESTION_TEXT);
                     continue;
                 } else if (XML.ELEMENT_QUIZ_QUESTION_OPTIONS.equals(name)) {

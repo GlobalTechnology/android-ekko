@@ -3,6 +3,7 @@ package org.ekkoproject.android.player.model;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
 import org.appdev.entity.Resource;
+import org.ccci.gto.android.common.util.XmlUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.ekkoproject.android.player.util.StringUtils;
@@ -230,7 +231,7 @@ public class Manifest {
             final String name = parser.getName();
             if (XML.NS_EKKO.equals(ns)) {
                 if (XML.ELEMENT_COMPLETION_MESSAGE.equals(name)) {
-                    this.completionMessage = parser.nextText();
+                    this.completionMessage = XmlUtils.safeNextText(parser);
                     parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_COMPLETION_MESSAGE);
                     continue;
                 }

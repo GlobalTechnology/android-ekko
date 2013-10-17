@@ -1,14 +1,15 @@
 package org.ekkoproject.android.player.model;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import org.ccci.gto.android.common.util.XmlUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Lesson extends CourseContent {
     private String id;
@@ -82,7 +83,7 @@ public class Lesson extends CourseContent {
                     continue;
                 } else if (XML.ELEMENT_LESSON_TEXT.equals(name)) {
                     final String id = parser.getAttributeValue(null, XML.ATTR_TEXT_ID);
-                    final String content = parser.nextText();
+                    final String content = XmlUtils.safeNextText(parser);
                     this.text.add(new Text(id, content));
                     parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_LESSON_TEXT);
                     continue;

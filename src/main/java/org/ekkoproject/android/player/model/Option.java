@@ -1,10 +1,11 @@
 package org.ekkoproject.android.player.model;
 
-import java.io.IOException;
-
+import org.ccci.gto.android.common.util.XmlUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 public class Option {
     private String id;
@@ -34,7 +35,7 @@ public class Option {
 
         this.id = parser.getAttributeValue(null, XML.ATTR_OPTION_ID);
         this.answer = parser.getAttributeValue(null, XML.ATTR_OPTION_ANSWER) != null;
-        this.value = parser.nextText();
+        this.value = XmlUtils.safeNextText(parser);
 
         parser.require(XmlPullParser.END_TAG, XML.NS_EKKO, XML.ELEMENT_QUIZ_QUESTION_OPTION);
 
