@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.content.Loader;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,27 +27,27 @@ import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
+import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
 import org.ccci.gto.android.common.support.v4.fragment.AbstractListFragment;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
-import org.ekkoproject.android.player.db.EkkoDao;
-import org.ekkoproject.android.player.model.Course;
-import org.ekkoproject.android.player.model.Permission;
-import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.services.ResourceManager;
+import org.ekkoproject.android.player.support.v4.content.CourseListCursorLoader;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
 
 import java.lang.ref.WeakReference;
 
-public class CourseListFragment extends AbstractListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
+public class CourseListFragment extends AbstractListFragment {
     private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
     private static final String ARG_GUID = CourseListFragment.class.getName() + ".ARG_GUID";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
     private static final String ARG_LISTVIEWSTATE = CourseListFragment.class.getName() + ".ARG_LISTVIEWSTATE";
+
+    private static final int LOADER_COURSES = 1;
 
     private String guid = GUID_GUEST;
     private int layout = DEFAULT_LAYOUT;
@@ -58,8 +59,6 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
 
     private ProgressManager progressManager = null;
     private ResourceManager resourceManager = null;
-    private EkkoDao dao = null;
-    private EkkoBroadcastReceiver broadcastReceiver = null;
 
     private ListView listView = null;
 
@@ -89,7 +88,6 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
     @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
-        this.dao = EkkoDao.getInstance(activity);
         this.progressManager = ProgressManager.getInstance(activity);
         this.resourceManager = ResourceManager.getInstance(activity);
     }
@@ -140,17 +138,12 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
     }
 
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         this.findViews();
-        this.needsRestore = true;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         this.setupListAdapter();
-        this.setupBroadcastReceiver();
+        this.startLoaders();
+        this.needsRestore = true;
     }
 
     @Override
@@ -162,11 +155,6 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
         default:
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onCourseUpdate() {
-        this.updateCoursesList();
     }
 
     @Override
@@ -196,7 +184,6 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
     public void onStop() {
         super.onStop();
         this.saveViewState();
-        this.cleanupBroadcastReceiver();
         this.cleanupListAdapter();
     }
 
@@ -259,9 +246,10 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
         }
     }
 
-    private static final String[] FROM = new String[] { Contract.Course.COLUMN_NAME_TITLE,
-            Contract.Course.COLUMN_NAME_BANNER_RESOURCE, Contract.Course._ID };
-    private static final int[] TO = new int[] { R.id.title, R.id.banner, R.id.progress };
+    private static final String[] FROM =
+            new String[] {Contract.Course.COLUMN_NAME_TITLE, Contract.Course.COLUMN_NAME_BANNER_RESOURCE,
+                    Contract.Course.COLUMN_NAME_COURSE_ID, Contract.Course.COLUMN_NAME_COURSE_ID};
+    private static final int[] TO = new int[] {R.id.title, R.id.banner, R.id.progress, R.id.progress};
 
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -275,32 +263,14 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
         }
         adapter.setViewBinder(new CourseViewBinder());
         this.setListAdapter(adapter);
-
-        // trigger an initial update
-        this.updateCoursesList();
-    }
-
-    private void setupBroadcastReceiver() {
-        if (this.broadcastReceiver != null) {
-            this.cleanupBroadcastReceiver();
-        }
-
-        this.broadcastReceiver = new EkkoBroadcastReceiver(this).registerReceiver();
     }
 
     private void cleanupListAdapter() {
         this.setListAdapter(null);
     }
 
-    private void cleanupBroadcastReceiver() {
-        if (this.broadcastReceiver != null) {
-            this.broadcastReceiver.unregisterReceiver();
-            this.broadcastReceiver = null;
-        }
-    }
-
-    private void updateCoursesList() {
-        new UpdateCursorAsyncTask().execute();
+    private void startLoaders() {
+        this.getLoaderManager().initLoader(LOADER_COURSES, null, new CursorLoaderCallbacks()).forceLoad();
     }
 
     private void findViews() {
@@ -326,40 +296,27 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
         }
     }
 
-    // TODO: convert this into a ContentLoader
-    private class UpdateCursorAsyncTask extends AsyncTask<Void, Void, Cursor> {
-        @SuppressWarnings("unchecked")
-        private final Pair<String, Class<?>>[] JOINS =
-                (Pair<String, Class<?>>[]) new Pair<?, ?>[] {Pair.create((String) null, Permission.class)};
-        private final String[] PROJECTION =
-                new String[] {Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_COURSE_ID,
-                        Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE,
-                        Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_BANNER_RESOURCE,
-                        Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_ENROLLMENT_TYPE,
-                        Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE,
-                        Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_ENROLLED,
-                };
-        private final String SQL_WHERE =
-                Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ? AND " +
-                        Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_VISIBLE + " = 1";
-        private final String SQL_ORDERBY =
-                Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE";
-
+    private class CursorLoaderCallbacks extends SimpleLoaderCallbacks<Cursor> {
         @Override
-        protected Cursor doInBackground(final Void... params) {
-            return CourseListFragment.this.dao.getCursor(Course.class, JOINS, PROJECTION, SQL_WHERE,
-                                                         new String[] {CourseListFragment.this.guid}, SQL_ORDERBY);
+        public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
+            switch (id) {
+                case LOADER_COURSES:
+                    return new CourseListCursorLoader(getActivity(), guid);
+                default:
+                    return null;
+            }
         }
 
         @Override
-        protected void onPostExecute(final Cursor c) {
-            super.onPostExecute(c);
-
-            // switch to the new db cursor
-            CourseListFragment.this.changeCursor(c);
-            if (CourseListFragment.this.needsRestore) {
-                CourseListFragment.this.restoreViewState();
-                CourseListFragment.this.needsRestore = false;
+        public void onLoadFinished(final Loader loader, final Cursor cursor) {
+            switch (loader.getId()) {
+                case LOADER_COURSES:
+                    swapCursor(cursor);
+                    if (needsRestore) {
+                        restoreViewState();
+                        needsRestore = false;
+                    }
+                    break;
             }
         }
     }
