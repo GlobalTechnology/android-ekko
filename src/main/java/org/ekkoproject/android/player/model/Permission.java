@@ -12,7 +12,7 @@ public class Permission {
 
     public Permission(final long courseId, final String guid) {
         this.courseId = courseId;
-        this.guid = guid;
+        this.guid = guid != null ? guid.toUpperCase() : "";
     }
 
     public long getCourseId() {

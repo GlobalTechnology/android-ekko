@@ -37,9 +37,6 @@ public class Course {
 
     private final HashMap<String, Resource> resources = new HashMap<String, Resource>();
 
-    /** flag that indicates this course is inaccessible for some reason */
-    private boolean accessible = true;
-
     private Date lastSynced = new Date(0);
 
     public Course(final long id) {
@@ -147,14 +144,6 @@ public class Course {
 
     public Permission getPermission() {
         return this.permission;
-    }
-
-    public boolean isAccessible() {
-        return this.accessible;
-    }
-
-    public void setAccessible(final boolean accessible) {
-        this.accessible = accessible;
     }
 
     public long getLastSynced() {

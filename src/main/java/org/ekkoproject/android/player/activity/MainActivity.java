@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.activity;
 
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.content.Context;
@@ -35,15 +36,18 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     private ListView drawerView = null;
     private ActionBarDrawerToggle drawerToggle = null;
 
+    private TheKey thekey;
+
     public static final Intent newIntent(final Context context) {
         return new Intent(context, MainActivity.class);
     }
 
-    /** BEGIN lifecycle */
+    /* BEGIN lifecycle */
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.thekey = new TheKeyImpl(this, THEKEY_CLIENTID);
         this.setContentView(R.layout.activity_main);
         this.findViews();
         this.setupActionBar();
@@ -64,8 +68,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         super.onStart();
 
         // display the login dialog if we don't have a valid GUID
-        final TheKey thekey = new TheKeyImpl(this, THEKEY_CLIENTID);
-        if (thekey.getGuid() == null) {
+        if (this.thekey.getGuid() == null) {
             this.showLoginDialog();
         } else {
             // trigger a sync
@@ -165,7 +168,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         }
     }
 
-    /** END lifecycle */
+    /* END lifecycle */
 
     private void findViews() {
         this.drawerLayout = findView(DrawerLayout.class, R.id.drawer_layout);
@@ -182,9 +185,9 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
 
     private void initFragments() {
         // attach the course list fragment
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_content, CourseListFragment.newInstance(R.layout.fragment_course_list_main, false))
-                .commit();
+        final String guid = this.thekey.getGuid();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, CourseListFragment
+                .newInstance(guid != null ? guid : GUID_GUEST, R.layout.fragment_course_list_main)).commit();
     }
 
     private void openCourse(final long courseId) {

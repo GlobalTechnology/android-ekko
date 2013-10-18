@@ -7,6 +7,8 @@ public final class Constants {
     public final static long INVALID_COURSE = -1;
     public final static int DEFAULT_LAYOUT = 0;
 
+    public final static String GUID_GUEST = "GUEST";
+
     /** common arguments */
     public static final String ARG_LAYOUT = Constants.class.getPackage().getName() + ".ARG_LAYOUT";
 

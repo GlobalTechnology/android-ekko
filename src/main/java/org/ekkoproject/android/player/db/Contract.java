@@ -41,14 +41,19 @@ public final class Contract {
 
         protected static final String SQL_WHERE_PRIMARY_KEY = COLUMN_GUID + " = ? AND " + COLUMN_COURSE_ID + " = ?";
 
-        protected static final String SQL_CREATE_TABLE =
-                "CREATE TABLE " + TABLE_NAME + " (" + SQL_COLUMN_GUID + "," + SQL_COLUMN_COURSE_ID + "," +
-                        SQL_COLUMN_ADMIN + "," + SQL_COLUMN_ENROLLED + "," + SQL_COLUMN_PENDING + "," +
-                        SQL_COLUMN_CONTENT_VISIBLE + "," + SQL_COLUMN_VISIBLE + "," + SQL_PRIMARY_KEY + ")";
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_GUID, SQL_COLUMN_COURSE_ID, SQL_COLUMN_ADMIN, SQL_COLUMN_ENROLLED,
+                      SQL_COLUMN_PENDING, SQL_COLUMN_CONTENT_VISIBLE, SQL_COLUMN_VISIBLE, SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
     public static final class Course extends Base {
+        // removed columns, we are temporarily keeping these columns because there isn't a simple way to drop columns
+        @Deprecated
+        private static final String COLUMN_NAME_ACCESSIBLE = "accessible";
+        @Deprecated
+        private static final String SQL_COLUMN_ACCESSIBLE = COLUMN_NAME_ACCESSIBLE + " INTEGER";
+
         protected static final String TABLE_NAME = "course";
         public static final String COLUMN_NAME_COURSE_ID = _ID;
         protected static final String COLUMN_NAME_VERSION = "version";
@@ -58,16 +63,15 @@ public final class Contract {
         public static final String COLUMN_ENROLLMENT_TYPE = "enrollmentType";
         public static final String COLUMN_NAME_MANIFEST_FILE = "manifestFile";
         public static final String COLUMN_NAME_MANIFEST_VERSION = "manifestVersion";
-        public static final String COLUMN_NAME_ACCESSIBLE = "accessible";
         protected static final String COLUMN_NAME_LAST_SYNCED = "lastSynced";
 
         protected static final String[] PROJECTION_ALL =
                 {COLUMN_NAME_COURSE_ID, COLUMN_NAME_VERSION, COLUMN_NAME_TITLE, COLUMN_NAME_BANNER_RESOURCE,
                         COLUMN_PUBLIC, COLUMN_ENROLLMENT_TYPE, COLUMN_NAME_MANIFEST_FILE, COLUMN_NAME_MANIFEST_VERSION,
-                        COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED};
+                        COLUMN_NAME_LAST_SYNCED};
         public static final String[] PROJECTION_UPDATE_EKKOHUB =
                 {COLUMN_NAME_VERSION, COLUMN_NAME_TITLE, COLUMN_NAME_BANNER_RESOURCE, COLUMN_PUBLIC,
-                        COLUMN_ENROLLMENT_TYPE, COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED};
+                        COLUMN_ENROLLMENT_TYPE, COLUMN_NAME_LAST_SYNCED};
 
         public static final String SQL_PREFIX = TABLE_NAME + ".";
 
@@ -79,7 +83,6 @@ public final class Contract {
         private static final String SQL_COLUMN_ENROLLMENT_TYPE = COLUMN_ENROLLMENT_TYPE + " INTEGER";
         private static final String SQL_COLUMN_MANIFEST_FILE = COLUMN_NAME_MANIFEST_FILE + " TEXT";
         private static final String SQL_COLUMN_MANIFEST_VERSION = COLUMN_NAME_MANIFEST_VERSION + " INTEGER";
-        private static final String SQL_COLUMN_ACCESSIBLE = COLUMN_NAME_ACCESSIBLE + " INTEGER";
         private static final String SQL_COLUMN_LAST_SYNCED = COLUMN_NAME_LAST_SYNCED + " INTEGER";
         private static final String SQL_PRIMARY_KEY = "PRIMARY KEY(" + COLUMN_NAME_COURSE_ID + ")";
 

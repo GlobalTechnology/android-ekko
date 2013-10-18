@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import android.annotation.TargetApi;
@@ -30,6 +31,7 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.services.ResourceManager;
@@ -42,9 +44,11 @@ import java.lang.ref.WeakReference;
 public class CourseListFragment extends AbstractListFragment implements EkkoBroadcastReceiver.CourseUpdateListener {
     private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
+    private static final String ARG_GUID = CourseListFragment.class.getName() + ".ARG_GUID";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
     private static final String ARG_LISTVIEWSTATE = CourseListFragment.class.getName() + ".ARG_LISTVIEWSTATE";
 
+    private String guid = GUID_GUEST;
     private int layout = DEFAULT_LAYOUT;
     private int itemLayout = R.layout.course_list_item_simple;
     private boolean animationHack = false;
@@ -59,27 +63,28 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
 
     private ListView listView = null;
 
-    public static CourseListFragment newInstance() {
-        return newInstance(DEFAULT_LAYOUT);
+    public static CourseListFragment newInstance(final String guid) {
+        return newInstance(guid, DEFAULT_LAYOUT);
     }
 
-    public static CourseListFragment newInstance(final int layout) {
-        return newInstance(layout, false);
+    public static CourseListFragment newInstance(final String guid, final int layout) {
+        return newInstance(guid, layout, false);
     }
 
-    public static CourseListFragment newInstance(final int layout, final boolean animationHack) {
+    public static CourseListFragment newInstance(final String guid, final int layout, final boolean animationHack) {
         final CourseListFragment fragment = new CourseListFragment();
 
         // handle arguments
         final Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT, layout);
+        args.putString(ARG_GUID, guid);
         args.putBoolean(ARG_ANIMATIONHACK, animationHack);
         fragment.setArguments(args);
 
         return fragment;
     }
 
-    /** BEGIN Lifecycle */
+    /* BEGIN Lifecycle */
 
     @Override
     public void onAttach(final Activity activity) {
@@ -89,12 +94,26 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
         this.resourceManager = ResourceManager.getInstance(activity);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Override
     public void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
         this.setHasOptionsMenu(true);
+
+        // process arguments
         this.configLayout();
-        this.animationHack = getArguments().getBoolean(ARG_ANIMATIONHACK, this.animationHack);
+        final Bundle args = this.getArguments();
+        if (args != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                this.guid = args.getString(ARG_GUID, this.guid);
+            } else {
+                final String guid = args.getString(ARG_GUID);
+                if (guid != null) {
+                    this.guid = guid;
+                }
+            }
+            this.animationHack = args.getBoolean(ARG_ANIMATIONHACK, this.animationHack);
+        }
 
         if (savedState != null) {
             if (savedState.containsKey(ARG_VIEWSTATE)) {
@@ -210,14 +229,15 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
         outState.putBundle(ARG_VIEWSTATE, this.viewState);
     }
 
-    /** END Lifecycle */
+    /* END Lifecycle */
 
     /**
      * configure the layout
      */
     private void configLayout() {
         // select the layout
-        final int layout = getArguments().getInt(ARG_LAYOUT, DEFAULT_LAYOUT);
+        final Bundle args = this.getArguments();
+        final int layout = args != null ? args.getInt(ARG_LAYOUT, DEFAULT_LAYOUT) : DEFAULT_LAYOUT;
         switch (layout) {
         case R.layout.fragment_course_list_main:
         case R.layout.course_list_menu:
@@ -306,12 +326,29 @@ public class CourseListFragment extends AbstractListFragment implements EkkoBroa
         }
     }
 
+    // TODO: convert this into a ContentLoader
     private class UpdateCursorAsyncTask extends AsyncTask<Void, Void, Cursor> {
+        @SuppressWarnings("unchecked")
+        private final Pair<String, Class<?>>[] JOINS =
+                (Pair<String, Class<?>>[]) new Pair<?, ?>[] {Pair.create((String) null, Permission.class)};
+        private final String[] PROJECTION =
+                new String[] {Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_COURSE_ID,
+                        Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE,
+                        Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_BANNER_RESOURCE,
+                        Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_ENROLLMENT_TYPE,
+                        Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE,
+                        Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_ENROLLED,
+                };
+        private final String SQL_WHERE =
+                Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ? AND " +
+                        Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_VISIBLE + " = 1";
+        private final String SQL_ORDERBY =
+                Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE";
+
         @Override
         protected Cursor doInBackground(final Void... params) {
-            return CourseListFragment.this.dao.getCursor(Course.class, Contract.Course.COLUMN_NAME_ACCESSIBLE + " = ?",
-                                                         new String[] {"1"},
-                                                         Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE");
+            return CourseListFragment.this.dao.getCursor(Course.class, JOINS, PROJECTION, SQL_WHERE,
+                                                         new String[] {CourseListFragment.this.guid}, SQL_ORDERBY);
         }
 
         @Override

@@ -2,8 +2,8 @@ package org.ekkoproject.android.player.sync;
 
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -11,13 +11,15 @@ import android.support.v4.util.LongSparseArray;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
+import org.ccci.gto.android.common.app.ThreadedIntentService;
 import org.ccci.gto.android.common.db.AbstractDao.Transaction;
+import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
-import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
+import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.services.ManifestManager;
 
 import java.util.HashMap;
@@ -26,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class EkkoSyncService extends IntentService {
+import me.thekey.android.TheKey;
+
+public class EkkoSyncService extends ThreadedIntentService {
     // actions this service can broadcast
     public static final String ACTION_UPDATE_COURSES = "org.ekkoproject.android.player.sync.EkkoSyncService.UPDATE_COURSES";
 
@@ -39,6 +43,7 @@ public class EkkoSyncService extends IntentService {
     private EkkoDao dao;
     private EkkoHubApi ekkoApi;
     private ManifestManager manifestManager;
+    private TheKey thekey;
 
     public EkkoSyncService() {
         super("ekko_sync_service");
@@ -65,6 +70,7 @@ public class EkkoSyncService extends IntentService {
         this.dao = EkkoDao.getInstance(this);
         this.ekkoApi = new EkkoHubApi(this);
         this.manifestManager = ManifestManager.getInstance(this);
+        this.thekey = new TheKeyImpl(this, THEKEY_CLIENTID);
     }
 
     @Override
@@ -130,12 +136,8 @@ public class EkkoSyncService extends IntentService {
                         this.dao.updateOrInsert(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
                         this.dao.insertResources(course);
 
-                        // schedule a manifest sync?
-                        final Course old = existing.get(course.getId());
-                        if (old == null || course.getVersion() > old.getManifestVersion()) {
-                            EkkoSyncService.syncManifest(this, course.getId());
-                        }
-                        existing.put(course.getId(), course);
+                        // schedule a manifest sync
+                        EkkoSyncService.syncManifest(this, course.getId());
 
                         // update the permission for this course
                         final Permission permission = course.getPermission();
@@ -200,6 +202,19 @@ public class EkkoSyncService extends IntentService {
     }
 
     private void syncManifest(final long courseId) {
-        this.manifestManager.downloadManifest(courseId);
+        final Course course = this.dao.find(Course.class, courseId);
+        if (course != null) {
+            // is there a newer manifest available?
+            if (course.getVersion() > course.getManifestVersion()) {
+                // make sure we can actually access the manifest before attempting to download it
+                final String guid;
+                final Permission permission;
+                if ((guid = this.thekey.getGuid()) != null &&
+                        (permission = this.dao.find(Permission.class, guid, course.getId())) != null &&
+                        permission.isContentVisible()) {
+                    this.manifestManager.downloadManifest(courseId);
+                }
+            }
+        }
     }
 }

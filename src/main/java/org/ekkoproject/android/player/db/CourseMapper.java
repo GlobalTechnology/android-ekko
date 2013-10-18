@@ -22,8 +22,6 @@ public final class CourseMapper extends AbstractMapper<Course> {
             values.put(field, course.getId());
         } else if (Contract.Course.COLUMN_NAME_VERSION.equals(field)) {
             values.put(field, course.getVersion());
-        } else if (Contract.Course.COLUMN_NAME_ACCESSIBLE.equals(field)) {
-            values.put(field, course.isAccessible() ? 1 : 0);
         } else if (Contract.Course.COLUMN_NAME_TITLE.equals(field)) {
             values.put(field, course.getTitle());
         } else if (Contract.Course.COLUMN_NAME_BANNER_RESOURCE.equals(field)) {
@@ -52,7 +50,6 @@ public final class CourseMapper extends AbstractMapper<Course> {
     public Course toObject(final Cursor c) {
         final Course course = super.toObject(c);
         course.setVersion(this.getInt(c, Contract.Course.COLUMN_NAME_VERSION));
-        course.setAccessible(this.getBool(c, Contract.Course.COLUMN_NAME_ACCESSIBLE, true));
         course.setTitle(this.getString(c, Contract.Course.COLUMN_NAME_TITLE));
         course.setBanner(this.getString(c, Contract.Course.COLUMN_NAME_BANNER_RESOURCE));
         course.setEnrollmentType(this.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN));
