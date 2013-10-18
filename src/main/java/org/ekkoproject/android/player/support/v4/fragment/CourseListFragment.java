@@ -9,36 +9,26 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.content.Loader;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.SimpleCursorAdapter.ViewBinder;
 
 import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
 import org.ccci.gto.android.common.support.v4.fragment.AbstractListFragment;
 import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.services.ResourceManager;
+import org.ekkoproject.android.player.support.v4.adapter.CourseListCursorAdapter;
 import org.ekkoproject.android.player.support.v4.content.CourseListCursorLoader;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
-import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
-import org.ekkoproject.android.player.view.ResourceImageView;
-
-import java.lang.ref.WeakReference;
 
 public class CourseListFragment extends AbstractListFragment {
     private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
@@ -241,23 +231,8 @@ public class CourseListFragment extends AbstractListFragment {
         }
     }
 
-    private static final String[] FROM =
-            new String[] {Contract.Course.COLUMN_NAME_TITLE, Contract.Course.COLUMN_NAME_BANNER_RESOURCE,
-                    Contract.Course.COLUMN_NAME_COURSE_ID, Contract.Course.COLUMN_NAME_COURSE_ID};
-    private static final int[] TO = new int[] {R.id.title, R.id.banner, R.id.progress, R.id.progress};
-
-    @SuppressWarnings("deprecation")
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setupListAdapter() {
-        // create CursorAdapter
-        final SimpleCursorAdapter adapter;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            adapter = new SimpleCursorAdapter(getActivity(), this.itemLayout, null, FROM, TO, 0);
-        } else {
-            adapter = new SimpleCursorAdapter(getActivity(), this.itemLayout, null, FROM, TO);
-        }
-        adapter.setViewBinder(new CourseViewBinder());
-        this.setListAdapter(adapter);
+        this.setListAdapter(new CourseListCursorAdapter(getActivity(), this.itemLayout));
     }
 
     private void cleanupListAdapter() {
@@ -313,88 +288,6 @@ public class CourseListFragment extends AbstractListFragment {
                     }
                     break;
             }
-        }
-    }
-
-    private class UpdateProgressBarAsyncTask extends AsyncTask<Long, Void, Pair<Integer, Integer>> {
-        private final WeakReference<ProgressBar> progressBar;
-
-        protected UpdateProgressBarAsyncTask(final ProgressBar progressBar) {
-            progressBar.setTag(R.id.progress_bar_update_task, new WeakReference<AsyncTask<?, ?, ?>>(this));
-            this.progressBar = new WeakReference<ProgressBar>(progressBar);
-        }
-
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public AsyncTask<Long, Void, Pair<Integer, Integer>> execute(final long courseId) {
-            final Long[] params = new Long[] { courseId };
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                return this.executeOnExecutor(THREAD_POOL_EXECUTOR, params);
-            } else {
-                return this.execute(params);
-            }
-        }
-
-        @Override
-        protected Pair<Integer, Integer> doInBackground(final Long... params) {
-            if (params.length > 0 && this.checkProgressBar()) {
-                return CourseListFragment.this.progressManager.getCourseProgress(params[0]);
-            }
-
-            // default to no progress
-            return Pair.create(0, 1);
-        }
-
-        @Override
-        protected void onPostExecute(final Pair<Integer, Integer> progress) {
-            super.onPostExecute(progress);
-            if (this.checkProgressBar()) {
-                final ProgressBar progressBar = this.progressBar.get();
-                if (progressBar != null) {
-                    progressBar.setMax(progress.second);
-                    progressBar.setProgress(progress.first);
-                }
-            }
-        }
-
-        private boolean checkProgressBar() {
-            final ProgressBar progressBar = this.progressBar.get();
-            if (progressBar != null) {
-                final Object ref = progressBar.getTag(R.id.progress_bar_update_task);
-                if (ref instanceof WeakReference) {
-                    final Object task = ((WeakReference<?>) ref).get();
-                    return this == task;
-                }
-            }
-            return false;
-        }
-    }
-
-    private class CourseViewBinder implements ViewBinder {
-        @Override
-        public boolean setViewValue(final View view, final Cursor c, final int columnIndex) {
-            switch (view.getId()) {
-            case R.id.banner:
-                if (view instanceof ResourceImageView) {
-                    ((ResourceImageView) view).setResource(
-                            c.getLong(c.getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)),
-                            c.getString(columnIndex));
-                } else if (view instanceof ImageView) {
-                    ((ImageView) view).setImageDrawable(null);
-                    new LoadImageResourceAsyncTask(CourseListFragment.this.resourceManager, (ImageView) view,
-                            c.getLong(c.getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)),
-                            c.getString(columnIndex)).execute();
-                }
-                return true;
-            case R.id.progress:
-                if (view instanceof ProgressBar) {
-                    ((ProgressBar) view).setProgress(0);
-                    new UpdateProgressBarAsyncTask((ProgressBar) view).execute(c.getLong(c
-                            .getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)));
-                }
-                return true;
-            }
-
-            return false;
         }
     }
 

@@ -7,7 +7,10 @@
     <!-- Course strings -->
     <string name="course_completion_message_default">Congratulations! You finished %1$s.</string>
     <string name="course_list">Course List</string>
-    
+    <string name="course_enroll">Enroll</string>
+    <string name="course_unenroll">Unenroll</string>
+    <string name="course_hide">Hide</string>
+
     <!-- ActionBar strings -->
     <string name="action_refresh">Refresh</string>
     <string name="action_login">Logout</string>

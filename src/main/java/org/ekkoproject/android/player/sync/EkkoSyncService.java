@@ -38,7 +38,8 @@ public class EkkoSyncService extends ThreadedIntentService {
     public static final String EXTRA_SYNCTYPE = "org.ekkoproject.android.player.sync.EkkoSyncService.SYNCTYPE";
 
     public static final int SYNCTYPE_COURSES = 1;
-    public static final int SYNCTYPE_MANIFEST = 2;
+    public static final int SYNCTYPE_COURSE = 2;
+    public static final int SYNCTYPE_MANIFEST = 3;
 
     private EkkoDao dao;
     private EkkoHubApi ekkoApi;
@@ -55,6 +56,13 @@ public class EkkoSyncService extends ThreadedIntentService {
 
     public static void syncCourses(final Context context) {
         context.startService(new Intent(context, EkkoSyncService.class).putExtra(EXTRA_SYNCTYPE, SYNCTYPE_COURSES));
+    }
+
+    public static void syncCourse(final Context context, final long courseId) {
+        final Intent intent = new Intent(context, EkkoSyncService.class);
+        intent.putExtra(EXTRA_SYNCTYPE, SYNCTYPE_COURSE);
+        intent.putExtra(EXTRA_COURSEID, courseId);
+        context.startService(intent);
     }
 
     public static void syncManifest(final Context context, final long courseId) {
@@ -81,9 +89,12 @@ public class EkkoSyncService extends ThreadedIntentService {
             case SYNCTYPE_COURSES:
                 this.syncCourses();
                 break;
-            case SYNCTYPE_MANIFEST:
-                this.syncManifest(intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE));
-                break;
+                case SYNCTYPE_COURSE:
+                    this.syncCourse(intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE));
+                    break;
+                case SYNCTYPE_MANIFEST:
+                    this.syncManifest(intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE));
+                    break;
             }
         } catch (final ApiSocketException e) {
             EkkoHubApi.broadcastConnectionError(this);
@@ -183,6 +194,18 @@ public class EkkoSyncService extends ThreadedIntentService {
             } finally {
                 tx.endTransaction();
             }
+        }
+    }
+
+    private void syncCourse(final long courseId) throws ApiSocketException, InvalidSessionApiException {
+        final Course course = this.ekkoApi.getCourse(courseId);
+        if (course != null) {
+            this.processCourse(course, true);
+            broadcastCoursesUpdate(this);
+        } else {
+            // we didn't get a course back, so remove permissions for the current user
+            final String guid = this.thekey.getGuid();
+            this.dao.delete(new Permission(courseId, guid));
         }
     }
 

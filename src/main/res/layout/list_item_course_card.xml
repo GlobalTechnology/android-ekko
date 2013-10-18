@@ -41,6 +41,13 @@
             android:id="@+id/progress"
             style="@style/Widget.Ekko.CourseList.Card.ProgressBar"
             android:layout_gravity="center_vertical" />
+
+        <ImageView
+            android:id="@+id/action_menu"
+            android:src="@drawable/abc_ic_menu_moreoverflow_normal_holo_light"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
     <FrameLayout
