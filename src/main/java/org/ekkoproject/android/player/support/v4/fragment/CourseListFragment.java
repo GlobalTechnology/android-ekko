@@ -181,13 +181,6 @@ public class CourseListFragment extends AbstractListFragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        this.saveViewState();
-        this.cleanupListAdapter();
-    }
-
-    @Override
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onDestroyView() {
@@ -205,6 +198,8 @@ public class CourseListFragment extends AbstractListFragment {
         this.animationHackImage = null;
 
         super.onDestroyView();
+        this.saveViewState();
+        this.cleanupListAdapter();
         this.clearViews();
     }
 
