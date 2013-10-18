@@ -70,6 +70,17 @@ public class EkkoDao extends AbstractDao {
     }
 
     @Override
+    protected String getJoin(final Class<?> base, final String type, final Class<?> join) {
+        if(Course.class.equals(base)) {
+            if(Access.class.equals(join)) {
+                return buildJoin(Access.class, type, Contract.Access.SQL_JOIN_COURSE);
+            }
+        }
+
+        return super.getJoin(base, type, join);
+    }
+
+    @Override
     protected String[] getFullProjection(final Class<?> clazz) {
         if (Course.class.equals(clazz)) {
             return Contract.Course.PROJECTION_ALL;
