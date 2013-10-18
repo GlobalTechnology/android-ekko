@@ -5,7 +5,6 @@ import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.util.Xml;
@@ -37,16 +36,23 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
 
     private static final String PREFFILE_EKKOHUB = "ekkoHubApi";
 
-    public EkkoHubApi(final Context context) {
-        this(context, context.getString(R.string.ekkoSmxUri));
+    private static final Object instanceLock = new Object();
+    private static EkkoHubApi instance = null;
+
+    private EkkoHubApi(final Context context) {
+        super(context, new TheKeyImpl(context, THEKEY_CLIENTID), PREFFILE_EKKOHUB, R.string.ekkoSmxUri);
     }
 
-    public EkkoHubApi(final Context context, final String hubUri) {
-        this(context, Uri.parse(hubUri.endsWith("/") ? hubUri : hubUri + "/"));
-    }
+    public static EkkoHubApi getInstance(final Context context) {
+        if (instance == null) {
+            synchronized (instanceLock) {
+                if (instance == null) {
+                    instance = new EkkoHubApi(context.getApplicationContext());
+                }
+            }
+        }
 
-    public EkkoHubApi(final Context context, final Uri hubUri) {
-        super(context, new TheKeyImpl(context, THEKEY_CLIENTID), PREFFILE_EKKOHUB, hubUri);
+        return instance;
     }
 
     public static void broadcastConnectionError(final Context context) {
