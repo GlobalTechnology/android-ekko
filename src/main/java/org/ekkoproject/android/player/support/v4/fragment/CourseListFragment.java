@@ -265,7 +265,7 @@ public class CourseListFragment extends AbstractListFragment {
     }
 
     private void startLoaders() {
-        this.getLoaderManager().initLoader(LOADER_COURSES, null, new CursorLoaderCallbacks()).forceLoad();
+        this.getLoaderManager().initLoader(LOADER_COURSES, null, new CursorLoaderCallbacks()).startLoading();
     }
 
     private void findViews() {
