@@ -33,9 +33,7 @@ public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
                     Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_ENROLLMENT_TYPE,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_ENROLLED,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE,};
-    private static final String SQL_WHERE =
-            Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ? AND " +
-                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_VISIBLE + " = 1";
+    private static final String SQL_WHERE = Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ?";
     private static final String SQL_ORDERBY =
             Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE";
 

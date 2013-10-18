@@ -128,25 +128,11 @@ public class EkkoSyncService extends ThreadedIntentService {
                 final Transaction tx = this.dao.beginTransaction();
                 try {
                     for (final Course course : courses.getCourses()) {
-                        // update sync date
-                        course.setLastSynced();
+                        this.processCourse(course, true);
 
-                        // update/insert course & resources
-                        this.dao.deleteResources(course);
-                        this.dao.updateOrInsert(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
-                        this.dao.insertResources(course);
-
-                        // schedule a manifest sync
-                        EkkoSyncService.syncManifest(this, course.getId());
-
-                        // update the permission for this course
+                        // record as visible if we have permissions
                         final Permission permission = course.getPermission();
                         if (permission != null) {
-                            permission.setVisible(true);
-                            this.dao.updateOrInsert(permission, new String[] {Contract.Permission.COLUMN_ADMIN,
-                                    Contract.Permission.COLUMN_ENROLLED, Contract.Permission.COLUMN_PENDING,
-                                    Contract.Permission.COLUMN_CONTENT_VISIBLE, Contract.Permission.COLUMN_VISIBLE});
-
                             // track this course as visible
                             final String guid = permission.getGuid();
                             if (!visible.containsKey(guid)) {
@@ -178,19 +164,18 @@ public class EkkoSyncService extends ThreadedIntentService {
         }
 
         if(!error) {
-            // mark any courses not returned as invisible
+            // delete any permissions not returned
             final Transaction tx = this.dao.beginTransaction();
             try {
                 for (final Map.Entry<String, Set<Long>> entry : visible.entrySet()) {
                     final String guid = entry.getKey();
                     final Set<Long> ids = entry.getValue();
 
-                    final List<Permission> known = this.dao.get(Permission.class, Contract.Permission.COLUMN_GUID + " = ? AND " +
-                            Contract.Permission.COLUMN_VISIBLE + " = 1", new String[] {guid});
+                    final List<Permission> known = this.dao
+                            .get(Permission.class, Contract.Permission.COLUMN_GUID + " = ?", new String[] {guid});
                     for (final Permission permission : known) {
                         if (!ids.contains(permission.getCourseId())) {
-                            permission.setVisible(false);
-                            this.dao.update(permission, new String[] {Contract.Permission.COLUMN_VISIBLE});
+                            this.dao.delete(permission);
                         }
                     }
                 }
@@ -215,6 +200,37 @@ public class EkkoSyncService extends ThreadedIntentService {
                     this.manifestManager.downloadManifest(courseId);
                 }
             }
+        }
+    }
+
+    private void processCourse(final Course course, final boolean containsResources) {
+        final Transaction tx = this.dao.beginTransaction();
+        try {
+            // update sync date
+            course.setLastSynced();
+
+            // update/insert course & resources
+            if (containsResources) {
+                this.dao.deleteResources(course);
+            }
+            this.dao.updateOrInsert(course, Contract.Course.PROJECTION_UPDATE_EKKOHUB);
+            if (containsResources) {
+                this.dao.insertResources(course);
+            }
+
+            // schedule a manifest sync
+            EkkoSyncService.syncManifest(this, course.getId());
+
+            // update the permissions for this course
+            final Permission permission = course.getPermission();
+            if (permission != null) {
+                this.dao.updateOrInsert(permission, new String[] {Contract.Permission.COLUMN_ADMIN,
+                        Contract.Permission.COLUMN_ENROLLED, Contract.Permission.COLUMN_PENDING,
+                        Contract.Permission.COLUMN_CONTENT_VISIBLE});
+            }
+            tx.setTransactionSuccessful();
+        } finally {
+            tx.endTransaction();
         }
     }
 }

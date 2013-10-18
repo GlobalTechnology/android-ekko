@@ -19,11 +19,9 @@ public final class Contract {
         public static final String COLUMN_ENROLLED = "enrolled";
         public static final String COLUMN_PENDING = "pending";
         public static final String COLUMN_CONTENT_VISIBLE = "contentVisible";
-        public static final String COLUMN_VISIBLE = "visible";
 
         protected static final String[] PROJECTION_ALL =
-                {COLUMN_COURSE_ID, COLUMN_GUID, COLUMN_ADMIN, COLUMN_ENROLLED, COLUMN_PENDING, COLUMN_CONTENT_VISIBLE,
-                        COLUMN_VISIBLE};
+                {COLUMN_COURSE_ID, COLUMN_GUID, COLUMN_ADMIN, COLUMN_ENROLLED, COLUMN_PENDING, COLUMN_CONTENT_VISIBLE};
 
         private static final String SQL_COLUMN_GUID = COLUMN_GUID + " TEXT";
         private static final String SQL_COLUMN_COURSE_ID = COLUMN_COURSE_ID + " TEXT";
@@ -31,7 +29,6 @@ public final class Contract {
         private static final String SQL_COLUMN_ENROLLED = COLUMN_ENROLLED + " INTEGER";
         private static final String SQL_COLUMN_PENDING = COLUMN_PENDING + " INTEGER";
         private static final String SQL_COLUMN_CONTENT_VISIBLE = COLUMN_CONTENT_VISIBLE + " INTEGER";
-        private static final String SQL_COLUMN_VISIBLE = COLUMN_VISIBLE + " INTEGER";
         private static final String SQL_PRIMARY_KEY = "PRIMARY KEY(" + COLUMN_GUID + "," + COLUMN_COURSE_ID + ")";
 
         public static final String SQL_PREFIX = TABLE_NAME + ".";
@@ -43,7 +40,7 @@ public final class Contract {
 
         protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
                 .join(",", SQL_COLUMN_GUID, SQL_COLUMN_COURSE_ID, SQL_COLUMN_ADMIN, SQL_COLUMN_ENROLLED,
-                      SQL_COLUMN_PENDING, SQL_COLUMN_CONTENT_VISIBLE, SQL_COLUMN_VISIBLE, SQL_PRIMARY_KEY) + ")";
+                      SQL_COLUMN_PENDING, SQL_COLUMN_CONTENT_VISIBLE, SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
