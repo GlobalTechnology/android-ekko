@@ -9,8 +9,8 @@ public final class Contract {
     private static abstract class Base implements BaseColumns {
     }
 
-    public static final class Access extends Base {
-        protected static final String TABLE_NAME = "courseAccess";
+    public static final class Permission extends Base {
+        protected static final String TABLE_NAME = "permission";
         public static final String COLUMN_GUID = "guid";
         protected static final String COLUMN_COURSE_ID = _ID;
         public static final String COLUMN_ADMIN = "admin";

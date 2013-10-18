@@ -15,7 +15,7 @@ import org.ccci.gto.android.common.db.AbstractDao.Transaction;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
-import org.ekkoproject.android.player.model.Access;
+import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.services.ManifestManager;
@@ -137,20 +137,20 @@ public class EkkoSyncService extends IntentService {
                         }
                         existing.put(course.getId(), course);
 
-                        // update the access for this course
-                        final Access access = course.getAccess();
-                        if (access != null) {
-                            access.setVisible(true);
-                            this.dao.updateOrInsert(access, new String[] {Contract.Access.COLUMN_ADMIN,
-                                    Contract.Access.COLUMN_ENROLLED, Contract.Access.COLUMN_PENDING,
-                                    Contract.Access.COLUMN_CONTENT_VISIBLE, Contract.Access.COLUMN_VISIBLE});
+                        // update the permission for this course
+                        final Permission permission = course.getPermission();
+                        if (permission != null) {
+                            permission.setVisible(true);
+                            this.dao.updateOrInsert(permission, new String[] {Contract.Permission.COLUMN_ADMIN,
+                                    Contract.Permission.COLUMN_ENROLLED, Contract.Permission.COLUMN_PENDING,
+                                    Contract.Permission.COLUMN_CONTENT_VISIBLE, Contract.Permission.COLUMN_VISIBLE});
 
                             // track this course as visible
-                            final String guid = access.getGuid();
+                            final String guid = permission.getGuid();
                             if (!visible.containsKey(guid)) {
                                 visible.put(guid, new HashSet<Long>());
                             }
-                            visible.get(guid).add(access.getCourseId());
+                            visible.get(guid).add(permission.getCourseId());
                         }
                     }
                     tx.setTransactionSuccessful();
@@ -183,12 +183,12 @@ public class EkkoSyncService extends IntentService {
                     final String guid = entry.getKey();
                     final Set<Long> ids = entry.getValue();
 
-                    final List<Access> known = this.dao.get(Access.class, Contract.Access.COLUMN_GUID + " = ? AND " +
-                            Contract.Access.COLUMN_VISIBLE + " = 1", new String[] {guid});
-                    for (final Access access : known) {
-                        if (!ids.contains(access.getCourseId())) {
-                            access.setVisible(false);
-                            this.dao.update(access, new String[] {Contract.Access.COLUMN_VISIBLE});
+                    final List<Permission> known = this.dao.get(Permission.class, Contract.Permission.COLUMN_GUID + " = ? AND " +
+                            Contract.Permission.COLUMN_VISIBLE + " = 1", new String[] {guid});
+                    for (final Permission permission : known) {
+                        if (!ids.contains(permission.getCourseId())) {
+                            permission.setVisible(false);
+                            this.dao.update(permission, new String[] {Contract.Permission.COLUMN_VISIBLE});
                         }
                     }
                 }

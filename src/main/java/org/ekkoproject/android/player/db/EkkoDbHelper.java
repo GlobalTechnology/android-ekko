@@ -22,7 +22,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(final SQLiteDatabase db) {
-        db.execSQL(Contract.Access.SQL_CREATE_TABLE);
+        db.execSQL(Contract.Permission.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedResource.SQL_CREATE_TABLE);
@@ -77,7 +77,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
             if (newVersion <= 7) {
                 break;
             }
-            db.execSQL(Contract.Access.SQL_CREATE_TABLE);
+            db.execSQL(Contract.Permission.SQL_CREATE_TABLE);
             case 8:
                 if (newVersion <= 8) {
                     break;
@@ -102,7 +102,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.CachedResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.SQL_DELETE_TABLE);
-        db.execSQL(Contract.Access.SQL_DELETE_TABLE);
+        db.execSQL(Contract.Permission.SQL_DELETE_TABLE);
         this.onCreate(db);
     }
 }

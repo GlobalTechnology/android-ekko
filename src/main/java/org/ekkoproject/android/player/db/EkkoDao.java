@@ -7,7 +7,7 @@ import android.util.Pair;
 import org.appdev.entity.Resource;
 import org.ccci.gto.android.common.db.AbstractDao;
 import org.ccci.gto.android.common.db.Mapper;
-import org.ekkoproject.android.player.model.Access;
+import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.model.Answer;
 import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class EkkoDao extends AbstractDao {
     // model mapping objects
-    private static final Mapper<Access> ACCESS_MAPPER = new AccessMapper();
+    private static final Mapper<Permission> ACCESS_MAPPER = new PermissionMapper();
     private static final Mapper<Course> COURSE_MAPPER = new CourseMapper();
     private static final Mapper<Resource> RESOURCE_MAPPER = new ResourceMapper();
     private static final Mapper<CachedResource> CACHED_RESOURCE_MAPPER = new CachedResourceMapper();
@@ -52,8 +52,8 @@ public class EkkoDao extends AbstractDao {
     protected String getTable(final Class<?> clazz) {
         if (Course.class.equals(clazz)) {
             return Contract.Course.TABLE_NAME;
-        } else if (Access.class.equals(clazz)) {
-            return Contract.Access.TABLE_NAME;
+        } else if (Permission.class.equals(clazz)) {
+            return Contract.Permission.TABLE_NAME;
         } else if (Resource.class.equals(clazz)) {
             return Contract.Course.Resource.TABLE_NAME;
         } else if (Answer.class.equals(clazz)) {
@@ -72,8 +72,8 @@ public class EkkoDao extends AbstractDao {
     @Override
     protected String getJoin(final Class<?> base, final String type, final Class<?> join) {
         if(Course.class.equals(base)) {
-            if(Access.class.equals(join)) {
-                return buildJoin(Access.class, type, Contract.Access.SQL_JOIN_COURSE);
+            if(Permission.class.equals(join)) {
+                return buildJoin(Permission.class, type, Contract.Permission.SQL_JOIN_COURSE);
             }
         }
 
@@ -84,8 +84,8 @@ public class EkkoDao extends AbstractDao {
     protected String[] getFullProjection(final Class<?> clazz) {
         if (Course.class.equals(clazz)) {
             return Contract.Course.PROJECTION_ALL;
-        } else if (Access.class.equals(clazz)) {
-            return Contract.Access.PROJECTION_ALL;
+        } else if (Permission.class.equals(clazz)) {
+            return Contract.Permission.PROJECTION_ALL;
         } else if (Resource.class.equals(clazz)) {
             return Contract.Course.Resource.PROJECTION_ALL;
         } else if (CachedResource.class.equals(clazz)) {
@@ -105,9 +105,9 @@ public class EkkoDao extends AbstractDao {
     protected Pair<String, String[]> getPrimaryKeyWhere(final Object obj) {
         if (obj instanceof Course) {
             return this.getPrimaryKeyWhere(Course.class, ((Course) obj).getId());
-        } else if (obj instanceof Access) {
-            final Access access = (Access) obj;
-            return this.getPrimaryKeyWhere(Access.class, access.getGuid(), access.getCourseId());
+        } else if (obj instanceof Permission) {
+            final Permission permission = (Permission) obj;
+            return this.getPrimaryKeyWhere(Permission.class, permission.getGuid(), permission.getCourseId());
         } else if (obj instanceof Answer) {
             final Answer answer = (Answer) obj;
             return this.getPrimaryKeyWhere(Answer.class, answer.getCourseId(), answer.getQuestionId(),
@@ -135,11 +135,11 @@ public class EkkoDao extends AbstractDao {
                 throw new IllegalArgumentException("invalid key for " + clazz);
             }
             where = Contract.Course.SQL_WHERE_PRIMARY_KEY;
-        } else if (Access.class.equals(clazz)) {
+        } else if (Permission.class.equals(clazz)) {
             if (key.length != 2) {
                 throw new IllegalArgumentException("invalid key for " + clazz);
             }
-            where = Contract.Access.SQL_WHERE_PRIMARY_KEY;
+            where = Contract.Permission.SQL_WHERE_PRIMARY_KEY;
         } else if (Answer.class.equals(clazz)) {
             if (key.length != 3) {
                 throw new IllegalArgumentException("invalid key for " + clazz);
@@ -177,7 +177,7 @@ public class EkkoDao extends AbstractDao {
     protected <T> Mapper<T> getMapper(final Class<T> clazz) {
         if (Course.class.equals(clazz)) {
             return (Mapper<T>) COURSE_MAPPER;
-        } else if (Access.class.equals(clazz)) {
+        } else if (Permission.class.equals(clazz)) {
             return (Mapper<T>) ACCESS_MAPPER;
         } else if (Resource.class.equals(clazz)) {
             return (Mapper<T>) RESOURCE_MAPPER;

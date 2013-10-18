@@ -28,7 +28,7 @@ public class Course {
     private String enrollmentType;
     private boolean publicCourse = false;
 
-    private Access access;
+    private Permission permission;
 
     private final HashMap<String, Resource> resources = new HashMap<String, Resource>();
 
@@ -112,8 +112,8 @@ public class Course {
         }
     }
 
-    public Access getAccess() {
-        return this.access;
+    public Permission getPermission() {
+        return this.permission;
     }
 
     public boolean isAccessible() {
@@ -174,6 +174,8 @@ public class Course {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
 
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
+        this.enrollmentType = parser.getAttributeValue(null, XML.ATTR_COURSE_ENROLLMENT_TYPE);
+        this.publicCourse = StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_COURSE_PUBLIC), false);
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -196,20 +198,17 @@ public class Course {
                     continue;
                 }
             } else if (XML.NS_HUB.equals(ns)) {
-                if (XML.ELEMENT_ACCESS.equals(name)) {
-                    this.enrollmentType = parser.getAttributeValue(null, XML.ATTR_ACCESS_ENROLLMENT_TYPE);
-                    this.publicCourse =
-                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_PUBLIC), false);
-
-                    this.access = new Access(this.id, parser.getAttributeValue(null, XML.ATTR_ACCESS_GUID));
-                    this.access.setAdmin(
-                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_ADMIN), false));
-                    this.access.setEnrolled(
-                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_ENROLLED), false));
-                    this.access.setPending(
-                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_PENDING), false));
-                    this.access.setContentVisible(
-                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_ACCESS_CONTENT_VISIBLE), false));
+                if (XML.ELEMENT_PERMISSION.equals(name)) {
+                    this.permission = new Permission(this.id, parser.getAttributeValue(null, XML.ATTR_PERMISSION_GUID));
+                    this.permission.setAdmin(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_PERMISSION_ADMIN), false));
+                    this.permission.setEnrolled(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_PERMISSION_ENROLLED), false));
+                    this.permission.setPending(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_PERMISSION_PENDING), false));
+                    this.permission.setContentVisible(
+                            StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_PERMISSION_CONTENT_VISIBLE),
+                                               false));
                 }
             }
 

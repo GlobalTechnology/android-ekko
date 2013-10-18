@@ -1,6 +1,6 @@
 package org.ekkoproject.android.player.model;
 
-public class Access {
+public class Permission {
     private final long courseId;
     private final String guid;
 
@@ -10,7 +10,7 @@ public class Access {
     private boolean contentVisible = false;
     private boolean visible = false;
 
-    public Access(final long courseId, final String guid) {
+    public Permission(final long courseId, final String guid) {
         this.courseId = courseId;
         this.guid = guid;
     }
