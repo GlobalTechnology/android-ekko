@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.db;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_UNKNOWN;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -27,6 +28,10 @@ public final class CourseMapper extends AbstractMapper<Course> {
             values.put(field, course.getTitle());
         } else if (Contract.Course.COLUMN_NAME_BANNER_RESOURCE.equals(field)) {
             values.put(field, course.getBanner());
+        } else if (Contract.Course.COLUMN_ENROLLMENT_TYPE.equals(field)) {
+            values.put(field, course.getEnrollmentType());
+        } else if (Contract.Course.COLUMN_PUBLIC.equals(field)) {
+            values.put(field, course.isPublicCourse() ? 1 : 0);
         } else if (Contract.Course.COLUMN_NAME_MANIFEST_FILE.equals(field)) {
             values.put(field, course.getManifestFile());
         } else if (Contract.Course.COLUMN_NAME_MANIFEST_VERSION.equals(field)) {
@@ -50,6 +55,8 @@ public final class CourseMapper extends AbstractMapper<Course> {
         course.setAccessible(this.getBool(c, Contract.Course.COLUMN_NAME_ACCESSIBLE, true));
         course.setTitle(this.getString(c, Contract.Course.COLUMN_NAME_TITLE));
         course.setBanner(this.getString(c, Contract.Course.COLUMN_NAME_BANNER_RESOURCE));
+        course.setEnrollmentType(this.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN));
+        course.setPublicCourse(this.getBool(c, Contract.Course.COLUMN_PUBLIC, false));
         course.setManifestFile(this.getString(c, Contract.Course.COLUMN_NAME_MANIFEST_FILE));
         course.setManifestVersion(this.getInt(c, Contract.Course.COLUMN_NAME_MANIFEST_VERSION));
         course.setLastSynced(this.getLong(c, Contract.Course.COLUMN_NAME_LAST_SYNCED));

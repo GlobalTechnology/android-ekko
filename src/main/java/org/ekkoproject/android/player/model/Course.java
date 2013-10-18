@@ -16,6 +16,11 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class Course {
+    public static final int ENROLLMENT_TYPE_UNKNOWN = 0;
+    public static final int ENROLLMENT_TYPE_DISABLED = 1;
+    public static final int ENROLLMENT_TYPE_OPEN = 2;
+    public static final int ENROLLMENT_TYPE_APPROVAL = 3;
+
     private final long id;
     private int version = 0;
 
@@ -25,7 +30,7 @@ public class Course {
     private String title;
     private String banner;
 
-    private String enrollmentType;
+    private int enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
     private boolean publicCourse = false;
 
     private Permission permission;
@@ -112,6 +117,34 @@ public class Course {
         }
     }
 
+    public boolean isPublicCourse() {
+        return this.publicCourse;
+    }
+
+    public void setPublicCourse(final boolean publicCourse) {
+        this.publicCourse = publicCourse;
+    }
+
+    public int getEnrollmentType() {
+        return this.enrollmentType;
+    }
+
+    public void setEnrollmentType(final int type) {
+        this.enrollmentType = type;
+    }
+
+    public void setEnrollmentType(final String type) {
+        if ("disabled".equals(type)) {
+            this.enrollmentType = ENROLLMENT_TYPE_DISABLED;
+        } else if ("open".equals(type)) {
+            this.enrollmentType = ENROLLMENT_TYPE_OPEN;
+        } else if ("approval".equals(type)) {
+            this.enrollmentType = ENROLLMENT_TYPE_APPROVAL;
+        } else {
+            this.enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
+        }
+    }
+
     public Permission getPermission() {
         return this.permission;
     }
@@ -174,7 +207,7 @@ public class Course {
         parser.require(XmlPullParser.START_TAG, XML.NS_HUB, XML.ELEMENT_COURSE);
 
         this.version = StringUtils.toInt(parser.getAttributeValue(null, XML.ATTR_COURSE_VERSION), 0);
-        this.enrollmentType = parser.getAttributeValue(null, XML.ATTR_COURSE_ENROLLMENT_TYPE);
+        this.setEnrollmentType(parser.getAttributeValue(null, XML.ATTR_COURSE_ENROLLMENT_TYPE));
         this.publicCourse = StringUtils.toBool(parser.getAttributeValue(null, XML.ATTR_COURSE_PUBLIC), false);
 
         while (parser.next() != XmlPullParser.END_TAG) {

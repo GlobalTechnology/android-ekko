@@ -2,6 +2,8 @@ package org.ekkoproject.android.player.db;
 
 import android.provider.BaseColumns;
 
+import org.ccci.gto.android.common.util.StringUtils;
+
 public final class Contract {
     private Contract() {
     }
@@ -52,16 +54,20 @@ public final class Contract {
         protected static final String COLUMN_NAME_VERSION = "version";
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_BANNER_RESOURCE = "bannerResource";
+        protected static final String COLUMN_PUBLIC = "public";
+        public static final String COLUMN_ENROLLMENT_TYPE = "enrollmentType";
         public static final String COLUMN_NAME_MANIFEST_FILE = "manifestFile";
         public static final String COLUMN_NAME_MANIFEST_VERSION = "manifestVersion";
         public static final String COLUMN_NAME_ACCESSIBLE = "accessible";
         protected static final String COLUMN_NAME_LAST_SYNCED = "lastSynced";
 
-        protected static final String[] PROJECTION_ALL = {COLUMN_NAME_COURSE_ID, COLUMN_NAME_VERSION, COLUMN_NAME_TITLE,
-                COLUMN_NAME_BANNER_RESOURCE, COLUMN_NAME_MANIFEST_FILE, COLUMN_NAME_MANIFEST_VERSION,
-                COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED};
-        public static final String[] PROJECTION_UPDATE_EKKOHUB = {COLUMN_NAME_VERSION, COLUMN_NAME_TITLE,
-                COLUMN_NAME_BANNER_RESOURCE, COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED};
+        protected static final String[] PROJECTION_ALL =
+                {COLUMN_NAME_COURSE_ID, COLUMN_NAME_VERSION, COLUMN_NAME_TITLE, COLUMN_NAME_BANNER_RESOURCE,
+                        COLUMN_PUBLIC, COLUMN_ENROLLMENT_TYPE, COLUMN_NAME_MANIFEST_FILE, COLUMN_NAME_MANIFEST_VERSION,
+                        COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED};
+        public static final String[] PROJECTION_UPDATE_EKKOHUB =
+                {COLUMN_NAME_VERSION, COLUMN_NAME_TITLE, COLUMN_NAME_BANNER_RESOURCE, COLUMN_PUBLIC,
+                        COLUMN_ENROLLMENT_TYPE, COLUMN_NAME_ACCESSIBLE, COLUMN_NAME_LAST_SYNCED};
 
         public static final String SQL_PREFIX = TABLE_NAME + ".";
 
@@ -69,6 +75,8 @@ public final class Contract {
         private static final String SQL_COLUMN_VERSION = COLUMN_NAME_VERSION + " INTEGER";
         private static final String SQL_COLUMN_TITLE = COLUMN_NAME_TITLE + " TEXT";
         private static final String SQL_COLUMN_BANNER_RESOURCE = COLUMN_NAME_BANNER_RESOURCE + " TEXT";
+        private static final String SQL_COLUMN_PUBLIC = COLUMN_PUBLIC + " INTEGER";
+        private static final String SQL_COLUMN_ENROLLMENT_TYPE = COLUMN_ENROLLMENT_TYPE + " INTEGER";
         private static final String SQL_COLUMN_MANIFEST_FILE = COLUMN_NAME_MANIFEST_FILE + " TEXT";
         private static final String SQL_COLUMN_MANIFEST_VERSION = COLUMN_NAME_MANIFEST_VERSION + " INTEGER";
         private static final String SQL_COLUMN_ACCESSIBLE = COLUMN_NAME_ACCESSIBLE + " INTEGER";
@@ -77,11 +85,11 @@ public final class Contract {
 
         protected static final String SQL_WHERE_PRIMARY_KEY = COLUMN_NAME_COURSE_ID + " = ?";
 
-        protected static final String SQL_CREATE_TABLE =
-                "CREATE TABLE " + TABLE_NAME + " (" + SQL_COLUMN_COURSE_ID + "," + SQL_COLUMN_VERSION + "," +
-                        SQL_COLUMN_TITLE + "," + SQL_COLUMN_BANNER_RESOURCE + "," + SQL_COLUMN_MANIFEST_FILE + "," +
-                        SQL_COLUMN_MANIFEST_VERSION + "," + SQL_COLUMN_ACCESSIBLE + "," + SQL_COLUMN_LAST_SYNCED + "," +
-                        SQL_PRIMARY_KEY + ")";
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_COURSE_ID, SQL_COLUMN_VERSION, SQL_COLUMN_TITLE, SQL_COLUMN_BANNER_RESOURCE,
+                      SQL_COLUMN_PUBLIC, SQL_COLUMN_ENROLLMENT_TYPE, SQL_COLUMN_MANIFEST_FILE,
+                      SQL_COLUMN_MANIFEST_VERSION, SQL_COLUMN_ACCESSIBLE, SQL_COLUMN_LAST_SYNCED, SQL_PRIMARY_KEY) +
+                ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
         /* V7 updates */
@@ -91,6 +99,17 @@ public final class Contract {
         @Deprecated
         protected static final String SQL_V7_DEFAULT_ACCESSIBLE = "UPDATE " + TABLE_NAME + " SET "
                 + COLUMN_NAME_ACCESSIBLE + " = 1";
+
+        /* V9 updates */
+        @Deprecated
+        protected static final String SQL_V9_ALTER_PUBLIC =
+                "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + SQL_COLUMN_PUBLIC;
+        @Deprecated
+        protected static final String SQL_V9_ALTER_ENROLLMENT_TYPE =
+                "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + SQL_COLUMN_ENROLLMENT_TYPE;
+        @Deprecated
+        protected static final String SQL_V9_DEFAULT_PUBLIC_ENROLLMENT_TYPE =
+                "UPDATE " + TABLE_NAME + " SET " + COLUMN_PUBLIC + " = 0, " + COLUMN_ENROLLMENT_TYPE + " = 0";
 
         private Course() {
         }
