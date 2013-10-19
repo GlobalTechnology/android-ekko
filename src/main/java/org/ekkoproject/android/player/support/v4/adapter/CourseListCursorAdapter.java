@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.support.v4.adapter;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_APPROVAL;
+import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_DISABLED;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_OPEN;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_UNKNOWN;
 
@@ -77,33 +78,59 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     popup.setOnMenuItemClickListener(listener);
                     popup.inflate(R.menu.popup_course_card);
 
+                    // determine menu item states
+                    boolean enroll;
+                    boolean unenroll;
+                    boolean pending;
+                    if (holder.enrolled) {
+                        unenroll = true;
+                        enroll = pending = false;
+                    } else if (holder.pending) {
+                        pending = true;
+                        enroll = unenroll = false;
+                    } else {
+                        enroll = true;
+                        pending = unenroll = false;
+                    }
+                    switch (holder.enrollmentType) {
+                        case ENROLLMENT_TYPE_OPEN:
+                            if (pending) {
+                                pending = unenroll = false;
+                                enroll = true;
+                            }
+                        case ENROLLMENT_TYPE_APPROVAL:
+                            break;
+                        case ENROLLMENT_TYPE_DISABLED:
+                        default:
+                            enroll = unenroll = pending = false;
+                    }
+
                     // toggle menu items
                     final Menu menu = popup.getMenu();
-                    final MenuItem enroll = menu.findItem(R.id.enroll);
-                    final MenuItem unenroll = menu.findItem(R.id.unenroll);
+                    if (!enroll) {
+                        final MenuItem item = menu.findItem(R.id.enroll);
+                        if (item != null) {
+                            item.setVisible(false).setEnabled(false);
+                        }
+                    }
+                    if (!pending) {
+                        final MenuItem item = menu.findItem(R.id.pending);
+                        if (item != null) {
+                            item.setVisible(false).setEnabled(false);
+                        }
+                    }
+                    if (!unenroll) {
+                        final MenuItem item = menu.findItem(R.id.unenroll);
+                        if (item != null) {
+                            item.setVisible(false).setEnabled(false);
+                        }
+                    }
                     final MenuItem hide = menu.findItem(R.id.hide);
-                    if (!(holder.enrollmentType == ENROLLMENT_TYPE_OPEN ||
-                            holder.enrollmentType == ENROLLMENT_TYPE_APPROVAL)) {
-                        if (enroll != null) {
-                            enroll.setVisible(false).setEnabled(false);
-                        }
-                        if (unenroll != null) {
-                            unenroll.setVisible(false).setEnabled(false);
-                        }
-                    }
-                    if (holder.enrolled) {
-                        if (enroll != null) {
-                            enroll.setVisible(false).setEnabled(false);
-                        }
-                    } else {
-                        if (unenroll != null) {
-                            unenroll.setVisible(false).setEnabled(false);
-                        }
-                    }
                     if (hide != null) {
                         hide.setEnabled(false);
                     }
 
+                    // show PopupMenu
                     popup.show();
                 }
             });
@@ -123,6 +150,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         // update holder values
         holder.courseId = CursorUtils.getLong(c, Contract.Course.COLUMN_NAME_COURSE_ID, INVALID_COURSE);
         holder.enrolled = CursorUtils.getBool(c, Contract.Permission.COLUMN_ENROLLED, false);
+        holder.pending = CursorUtils.getBool(c, Contract.Permission.COLUMN_PENDING, false);
         holder.enrollmentType = CursorUtils.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN);
 
         // actually bind the view
@@ -134,8 +162,9 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private final View actionMenu;
 
         private long courseId;
-        private boolean enrolled;
-        private int enrollmentType;
+        private boolean enrolled = false;
+        private boolean pending = false;
+        private int enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
 
         private CourseViewHolder(final View root) {
             this.root = root;
