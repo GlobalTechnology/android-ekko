@@ -24,8 +24,6 @@ import android.widget.ListView;
 import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
 import org.ccci.gto.android.common.support.v4.fragment.AbstractListFragment;
 import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.services.ProgressManager;
-import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.adapter.CourseListCursorAdapter;
 import org.ekkoproject.android.player.support.v4.content.CourseListCursorLoader;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
@@ -46,9 +44,6 @@ public class CourseListFragment extends AbstractListFragment {
     private Bitmap animationHackImage = null;
     private boolean needsRestore = false;
     private Bundle viewState = new Bundle();
-
-    private ProgressManager progressManager = null;
-    private ResourceManager resourceManager = null;
 
     private ListView listView = null;
 
@@ -74,13 +69,6 @@ public class CourseListFragment extends AbstractListFragment {
     }
 
     /* BEGIN Lifecycle */
-
-    @Override
-    public void onAttach(final Activity activity) {
-        super.onAttach(activity);
-        this.progressManager = ProgressManager.getInstance(activity);
-        this.resourceManager = ResourceManager.getInstance(activity);
-    }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Override
