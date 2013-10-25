@@ -5,12 +5,16 @@ import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_APPROV
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_DISABLED;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_OPEN;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_UNKNOWN;
+import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.ENROLL;
+import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.UNENROLL;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.widget.PopupMenu;
 import android.util.Pair;
@@ -21,8 +25,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import org.ccci.gto.android.common.api.ApiSocketException;
-import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.util.CursorUtils;
 import org.ccci.gto.android.common.util.ViewUtils;
 import org.ekkoproject.android.player.R;
@@ -30,7 +32,8 @@ import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.services.ResourceManager;
-import org.ekkoproject.android.player.sync.EkkoSyncService;
+import org.ekkoproject.android.player.support.v4.fragment.NotEnrolledDialogFragment;
+import org.ekkoproject.android.player.tasks.EnrollmentRunnable;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
 import org.slf4j.Logger;
@@ -46,17 +49,17 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     Contract.Course.COLUMN_NAME_COURSE_ID};
     private static final int[] TO = new int[] {R.id.title, R.id.banner, R.id.progress};
 
-    private final Context mContext;
+    private final FragmentActivity mActivity;
     private final EkkoHubApi api;
     private final ResourceManager resourceManager;
     private final ProgressManager progressManager;
 
-    public CourseListCursorAdapter(final Context context, final int layout) {
-        super(context, layout, null, FROM, TO, 0);
-        mContext = context;
-        this.api = EkkoHubApi.getInstance(context);
-        this.resourceManager = ResourceManager.getInstance(context);
-        this.progressManager = ProgressManager.getInstance(context);
+    public CourseListCursorAdapter(final FragmentActivity activity, final int layout) {
+        super(activity, layout, null, FROM, TO, 0);
+        mActivity = activity;
+        this.api = EkkoHubApi.getInstance(activity);
+        this.resourceManager = ResourceManager.getInstance(activity);
+        this.progressManager = ProgressManager.getInstance(activity);
         this.setViewBinder(new CourseViewBinder());
     }
 
@@ -69,13 +72,11 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
 
     private void initCallbacks(final CourseViewHolder holder) {
         if (holder.actionMenu != null) {
-            final CoursePopupMenuClickListener listener = new CoursePopupMenuClickListener(mContext, holder);
-
             holder.actionMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    final PopupMenu popup = new PopupMenu(mContext, holder.actionMenu);
-                    popup.setOnMenuItemClickListener(listener);
+                    final PopupMenu popup = new PopupMenu(mActivity, holder.actionMenu);
+                    popup.setOnMenuItemClickListener(new CoursePopupMenuClickListener(mActivity, holder));
                     popup.inflate(R.menu.popup_course_card);
 
                     // determine menu item states
@@ -135,10 +136,26 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                 }
             });
         }
+
+        if (holder.root != null) {
+            holder.root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    // Create and show the login dialog only if it is not currently displayed
+                    final FragmentManager fm = mActivity.getSupportFragmentManager();
+                    fm.popBackStack("enrollDialog", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    NotEnrolledDialogFragment.newInstance(holder.courseId)
+                            .show(fm.beginTransaction().addToBackStack("enrollDialog"), "enrollDialog");
+                }
+            });
+
+            // disable the click listener for now
+            holder.root.setClickable(false);
+        }
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor c) {
+    public void bindView(final View view, final Context context, final Cursor c) {
         // short-circuit if we don't have a cursor or holder
         final Object holderTmp;
         if (c == null || (holderTmp = view.getTag(R.id.view_holder)) == null ||
@@ -150,8 +167,14 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         // update holder values
         holder.courseId = CursorUtils.getLong(c, Contract.Course.COLUMN_NAME_COURSE_ID, INVALID_COURSE);
         holder.enrolled = CursorUtils.getBool(c, Contract.Permission.COLUMN_ENROLLED, false);
+        holder.contentVisible = CursorUtils.getBool(c, Contract.Permission.COLUMN_CONTENT_VISIBLE, false);
         holder.pending = CursorUtils.getBool(c, Contract.Permission.COLUMN_PENDING, false);
         holder.enrollmentType = CursorUtils.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN);
+
+        // enable/disable not enrolled popup based on whether the content is visible
+        if (holder.root != null) {
+            holder.root.setClickable(!holder.contentVisible);
+        }
 
         // actually bind the view
         super.bindView(view, context, c);
@@ -164,6 +187,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private long courseId;
         private boolean enrolled = false;
         private boolean pending = false;
+        private boolean contentVisible = false;
         private int enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
 
         private CourseViewHolder(final View root) {
@@ -201,28 +225,10 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             final int id = item.getItemId();
             switch(id) {
                 case R.id.enroll:
+                    this.api.async(new EnrollmentRunnable(this.mContext, ENROLL, holder.courseId));
+                    return true;
                 case R.id.unenroll:
-                    this.api.async(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                switch(id) {
-                                    case R.id.enroll:
-                                        api.enroll(holder.courseId);
-                                        break;
-                                    case R.id.unenroll:
-                                        api.unenroll(holder.courseId);
-                                        break;
-                                }
-
-                                // sync the course now that we enrolled/unenrolled
-                                EkkoSyncService.syncCourse(mContext, holder.courseId);
-                            } catch (final ApiSocketException e) {
-                            } catch (final InvalidSessionApiException e) {
-                            }
-                        }
-                    });
-
+                    this.api.async(new EnrollmentRunnable(this.mContext, UNENROLL, holder.courseId));
                     return true;
             }
 
