@@ -5,7 +5,6 @@ import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -137,13 +136,9 @@ public class CourseListFragment extends AbstractListFragment {
 
     @Override
     public void onListItemClick(final ListView l, final View v, final int position, final long id) {
-        // find the parent object (can be a fragment or activity)
-        Object parent = getParentFragment();
-        if (parent == null) {
-            parent = getActivity();
-        }
-        if (parent instanceof Listener) {
-            ((Listener) parent).onSelectCourse(this, id);
+        final Listener listener = this.getListener(Listener.class);
+        if(listener != null) {
+            listener.onSelectCourse(this, id);
         }
     }
 
