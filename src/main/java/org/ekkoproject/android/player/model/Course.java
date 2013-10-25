@@ -29,6 +29,7 @@ public class Course {
 
     private String title;
     private String banner;
+    private String description;
 
     private int enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
     private boolean publicCourse = false;
@@ -53,6 +54,14 @@ public class Course {
 
     public void setTitle(final String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     public int getVersion() {
@@ -213,6 +222,7 @@ public class Course {
                     if (meta != null) {
                         this.title = meta.getTitle();
                         this.banner = meta.getBanner();
+                        this.description = meta.getDescription();
                     }
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {

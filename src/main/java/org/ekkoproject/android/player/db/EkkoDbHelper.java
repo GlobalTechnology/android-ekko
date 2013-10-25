@@ -13,8 +13,9 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 7: 6/28/2013
      * 8: 10/16/2013
      * 9: 10/18/2013
+     * 10: 10/25/2013
      */
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
     public static final String DATABASE_NAME = "Ekko.db";
 
     public EkkoDbHelper(final Context context) {
@@ -88,6 +89,11 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 db.execSQL(Contract.Course.SQL_V9_DEFAULT_PUBLIC_ENROLLMENT_TYPE);
             case 9:
                 if (newVersion <= 9) {
+                    break;
+                }
+                db.execSQL(Contract.Course.SQL_V10_ALTER_DESCRIPTION);
+            case 10:
+                if (newVersion <= 10) {
                     break;
                 }
                 break;

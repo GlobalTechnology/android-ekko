@@ -26,6 +26,8 @@ public final class CourseMapper extends AbstractMapper<Course> {
             values.put(field, course.getTitle());
         } else if (Contract.Course.COLUMN_NAME_BANNER_RESOURCE.equals(field)) {
             values.put(field, course.getBanner());
+        } else if (Contract.Course.COLUMN_DESCRIPTION.equals(field)) {
+            values.put(field, course.getDescription());
         } else if (Contract.Course.COLUMN_ENROLLMENT_TYPE.equals(field)) {
             values.put(field, course.getEnrollmentType());
         } else if (Contract.Course.COLUMN_PUBLIC.equals(field)) {
@@ -52,6 +54,7 @@ public final class CourseMapper extends AbstractMapper<Course> {
         course.setVersion(this.getInt(c, Contract.Course.COLUMN_NAME_VERSION));
         course.setTitle(this.getString(c, Contract.Course.COLUMN_NAME_TITLE));
         course.setBanner(this.getString(c, Contract.Course.COLUMN_NAME_BANNER_RESOURCE));
+        course.setDescription(this.getString(c, Contract.Course.COLUMN_DESCRIPTION));
         course.setEnrollmentType(this.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN));
         course.setPublicCourse(this.getBool(c, Contract.Course.COLUMN_PUBLIC, false));
         course.setManifestFile(this.getString(c, Contract.Course.COLUMN_NAME_MANIFEST_FILE));

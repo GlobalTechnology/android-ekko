@@ -11,6 +11,7 @@ import java.io.IOException;
 public class Meta {
     private String title;
     private String banner;
+    private String description;
 
     public String getTitle() {
         return this.title;
@@ -18,6 +19,10 @@ public class Meta {
 
     public String getBanner() {
         return this.banner;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public static Meta fromXml(final XmlPullParser parser, final int schemaVersion)
@@ -49,6 +54,11 @@ public class Meta {
                 } else if (Constants.XML.ELEMENT_META_BANNER.equals(name)) {
                     this.banner = parser.getAttributeValue(null, Constants.XML.ATTR_RESOURCE);
                     ParserUtils.skip(parser);
+                    continue;
+                } else if (Constants.XML.ELEMENT_META_DESCRIPTION.equals(name)) {
+                    this.description = XmlUtils.safeNextText(parser);
+                    parser.require(XmlPullParser.END_TAG, Constants.XML.NS_EKKO,
+                                   Constants.XML.ELEMENT_META_DESCRIPTION);
                     continue;
                 }
             }
