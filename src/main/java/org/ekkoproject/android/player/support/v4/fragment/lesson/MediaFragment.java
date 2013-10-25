@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
 import static org.appdev.entity.Resource.PROVIDER_NONE;
+import static org.appdev.entity.Resource.PROVIDER_UNKNOWN;
 import static org.appdev.entity.Resource.PROVIDER_VIMEO;
 import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
@@ -126,6 +127,7 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
                             break;
                         case PROVIDER_VIMEO:
                         case PROVIDER_YOUTUBE:
+                            case PROVIDER_UNKNOWN:
                             final Intent intent = providerIntent(resource);
                             if (intent != null) {
                                 startActivity(intent);
