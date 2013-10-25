@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.activity;
 
+import static org.ccci.gto.android.common.util.ThreadUtils.isUiThread;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
@@ -105,6 +106,9 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     @Override
     public void onLoginSuccess(final LoginDialogFragment dialog, final String guid) {
         EkkoSyncService.syncCourses(this);
+
+        // reset the fragment back stack
+        this.resetFragmentBackStack(guid);
     }
 
     @Override
@@ -184,10 +188,28 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     }
 
     private void initFragments() {
-        // attach the course list fragment
-        final String guid = this.thekey.getGuid();
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, CourseListFragment
-                .newInstance(guid != null ? guid : GUID_GUEST, R.layout.fragment_course_list_main)).commit();
+        // show the course list
+        this.showCourseList(this.thekey.getGuid());
+    }
+
+    private void resetFragmentBackStack(final String guid) {
+        assert isUiThread() : "the fragment back stack should only be reset on the ui thread";
+
+        // clear the back stack in the fragment manager
+        final FragmentManager fm = this.getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            // pop the base back stack entry
+            fm.popBackStack(fm.getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+        // show the server list as the base fragment
+        this.showCourseList(guid);
+    }
+
+    private void showCourseList(final String guid) {
+        final CourseListFragment fragment =
+                CourseListFragment.newInstance(guid != null ? guid : GUID_GUEST, R.layout.fragment_course_list_main);
+        this.getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
     }
 
     private void openCourse(final long courseId) {
