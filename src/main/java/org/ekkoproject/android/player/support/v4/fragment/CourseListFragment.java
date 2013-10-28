@@ -22,6 +22,7 @@ import android.widget.ListView;
 
 import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
 import org.ccci.gto.android.common.support.v4.fragment.AbstractListFragment;
+import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.support.v4.adapter.CourseListCursorAdapter;
 import org.ekkoproject.android.player.support.v4.content.CourseListCursorLoader;
@@ -136,9 +137,9 @@ public class CourseListFragment extends AbstractListFragment {
 
     @Override
     public void onListItemClick(final ListView l, final View v, final int position, final long id) {
-        final Listener listener = this.getListener(Listener.class);
+        final OnNavigationListener listener = this.getListener(OnNavigationListener.class);
         if(listener != null) {
-            listener.onSelectCourse(this, id);
+            listener.onSelectCourse(id);
         }
     }
 
@@ -215,7 +216,9 @@ public class CourseListFragment extends AbstractListFragment {
     }
 
     private void setupListAdapter() {
-        this.setListAdapter(new CourseListCursorAdapter(getActivity(), this.itemLayout));
+        final CourseListCursorAdapter adapter = new CourseListCursorAdapter(getActivity(), this.itemLayout);
+        adapter.setOnNavigationListener(this.getListener(OnNavigationListener.class));
+        this.setListAdapter(adapter);
     }
 
     private void cleanupListAdapter() {
@@ -272,9 +275,5 @@ public class CourseListFragment extends AbstractListFragment {
                     break;
             }
         }
-    }
-
-    public interface Listener {
-        void onSelectCourse(CourseListFragment fragment, long courseId);
     }
 }

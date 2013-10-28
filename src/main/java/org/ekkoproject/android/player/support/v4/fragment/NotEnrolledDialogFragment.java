@@ -9,17 +9,18 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.Loader;
 import android.text.Html;
 
 import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
+import org.ccci.gto.android.common.support.v4.fragment.AbstractDialogFragment;
+import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.support.v4.content.CourseLoader;
 import org.ekkoproject.android.player.tasks.EnrollmentRunnable;
 
-public class NotEnrolledDialogFragment extends DialogFragment {
+public class NotEnrolledDialogFragment extends AbstractDialogFragment {
     private static final int LOADER_COURSE = 1;
 
     private EkkoHubApi api;
@@ -62,12 +63,14 @@ public class NotEnrolledDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Enroll in course?").setMessage("(no description)")
                 .setPositiveButton("Enroll", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
-                        api.async(new EnrollmentRunnable(getActivity(), ENROLL, courseId));
+                        final EnrollmentRunnable task = new EnrollmentRunnable(getActivity(), ENROLL, courseId);
+                        task.setOnNavigationListener(getListener(OnNavigationListener.class));
+                        api.async(task);
                     }
                 }).setNegativeButton("Cancel", null);
         return builder.create();

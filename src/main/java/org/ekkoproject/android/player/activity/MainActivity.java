@@ -24,6 +24,7 @@ import android.widget.ListView;
 
 import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
+import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.support.v4.fragment.CourseFragment;
 import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
@@ -31,8 +32,7 @@ import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 import me.thekey.android.TheKey;
 
-public class MainActivity extends ActionBarActivity implements LoginDialogFragment.Listener,
-        CourseListFragment.Listener {
+public class MainActivity extends ActionBarActivity implements LoginDialogFragment.Listener, OnNavigationListener {
     private DrawerLayout drawerLayout = null;
     private ListView drawerView = null;
     private ActionBarDrawerToggle drawerToggle = null;
@@ -117,8 +117,13 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     }
 
     @Override
-    public void onSelectCourse(final CourseListFragment fragment, final long courseId) {
-        openCourse(courseId);
+    public void onSelectCourse(final long courseId) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                openCourse(courseId);
+            }
+        });
     }
 
     // TODO: come up with a sane way of managing navigation items

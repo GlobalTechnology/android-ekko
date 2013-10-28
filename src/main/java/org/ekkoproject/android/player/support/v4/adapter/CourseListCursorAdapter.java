@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 
 import org.ccci.gto.android.common.util.CursorUtils;
 import org.ccci.gto.android.common.util.ViewUtils;
+import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
@@ -54,6 +55,8 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
     private final ResourceManager resourceManager;
     private final ProgressManager progressManager;
 
+    private OnNavigationListener mOnNavigationListener = null;
+
     public CourseListCursorAdapter(final FragmentActivity activity, final int layout) {
         super(activity, layout, null, FROM, TO, 0);
         mActivity = activity;
@@ -61,6 +64,10 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         this.resourceManager = ResourceManager.getInstance(activity);
         this.progressManager = ProgressManager.getInstance(activity);
         this.setViewBinder(new CourseViewBinder());
+    }
+
+    public void setOnNavigationListener(final OnNavigationListener listener) {
+        this.mOnNavigationListener = listener;
     }
 
     @Override
@@ -76,7 +83,9 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                 @Override
                 public void onClick(final View v) {
                     final PopupMenu popup = new PopupMenu(mActivity, holder.actionMenu);
-                    popup.setOnMenuItemClickListener(new CoursePopupMenuClickListener(mActivity, holder));
+                    final CoursePopupMenuClickListener listener = new CoursePopupMenuClickListener(mActivity, holder);
+                    listener.setOnNavigationListener(mOnNavigationListener);
+                    popup.setOnMenuItemClickListener(listener);
                     popup.inflate(R.menu.popup_course_card);
 
                     // determine menu item states
@@ -214,10 +223,16 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private final EkkoHubApi api;
         private final CourseViewHolder holder;
 
+        private OnNavigationListener mOnNavigationListener = null;
+
         private CoursePopupMenuClickListener(final Context context, final CourseViewHolder holder) {
             mContext = context;
             this.api = EkkoHubApi.getInstance(context);
             this.holder = holder;
+        }
+
+        public void setOnNavigationListener(final OnNavigationListener listener) {
+            this.mOnNavigationListener = listener;
         }
 
         @Override
@@ -225,7 +240,9 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             final int id = item.getItemId();
             switch(id) {
                 case R.id.enroll:
-                    this.api.async(new EnrollmentRunnable(this.mContext, ENROLL, holder.courseId));
+                    final EnrollmentRunnable task = new EnrollmentRunnable(this.mContext, ENROLL, holder.courseId);
+                    task.setOnNavigationListener(mOnNavigationListener);
+                    this.api.async(task);
                     return true;
                 case R.id.unenroll:
                     this.api.async(new EnrollmentRunnable(this.mContext, UNENROLL, holder.courseId));
