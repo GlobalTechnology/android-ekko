@@ -166,7 +166,6 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
             final int index = this.contentPager.getCurrentItem() - 1;
             this.contentPager.setCurrentItem(index, false);
         }
-        return;
     }
 
     @Override
@@ -175,7 +174,6 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
             final int index = this.contentPager.getCurrentItem() + 1;
             this.contentPager.setCurrentItem(index, false);
         }
-        return;
     }
 
     @Override
