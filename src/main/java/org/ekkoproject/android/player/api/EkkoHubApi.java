@@ -41,6 +41,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
 
     private EkkoHubApi(final Context context) {
         super(context, new TheKeyImpl(context, THEKEY_CLIENTID), PREFFILE_EKKOHUB, R.string.ekkoSmxUri);
+        this.setIncludeAppVersion(true);
     }
 
     public static EkkoHubApi getInstance(final Context context) {
