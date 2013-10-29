@@ -16,11 +16,13 @@ import org.ekkoproject.android.player.model.Permission;
 public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
     private final EkkoDao dao;
     private final String guid;
+    private final boolean all;
 
-    public CourseListCursorLoader(final Context context, final String guid) {
+    public CourseListCursorLoader(final Context context, final String guid, final boolean all) {
         super(context, new IntentFilter(ACTION_UPDATE_COURSES));
         this.dao = EkkoDao.getInstance(context);
         this.guid = guid != null ? guid.toUpperCase() : "";
+        this.all = all;
     }
 
     @SuppressWarnings("unchecked")
@@ -34,13 +36,17 @@ public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_ENROLLED,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_PENDING,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE,};
-    private static final String SQL_WHERE = Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ?";
     private static final String SQL_ORDERBY =
             Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE";
+    private static final String SQL_WHERE_ALL =
+            Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ?";
+    private static final String SQL_WHERE_MY =
+            Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ? AND " +
+                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE + " = 1";
 
     @Override
     protected Cursor getCursor() {
-        return this.dao
-                .getCursor(Course.class, SQL_JOINS, PROJECTION, SQL_WHERE, new String[] {this.guid}, SQL_ORDERBY);
+        return this.dao.getCursor(Course.class, SQL_JOINS, PROJECTION, all ? SQL_WHERE_ALL : SQL_WHERE_MY,
+                                  new String[] {this.guid}, SQL_ORDERBY);
     }
 }

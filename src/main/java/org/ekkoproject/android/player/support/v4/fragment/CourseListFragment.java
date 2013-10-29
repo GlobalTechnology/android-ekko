@@ -257,7 +257,7 @@ public class CourseListFragment extends AbstractListFragment {
         public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
             switch (id) {
                 case LOADER_COURSES:
-                    return new CourseListCursorLoader(getActivity(), guid);
+                    return new CourseListCursorLoader(getActivity(), guid, true);
                 default:
                     return null;
             }
