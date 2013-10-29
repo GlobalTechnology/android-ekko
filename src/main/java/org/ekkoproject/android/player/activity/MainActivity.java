@@ -14,15 +14,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.internal.view.menu.MenuBuilder;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.ccci.gto.android.common.adapter.MenuListAdapter;
 import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
 import org.ekkoproject.android.player.OnNavigationListener;
@@ -125,19 +125,15 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         });
     }
 
-    // TODO: come up with a sane way of managing navigation items
-    private boolean onNavigationDrawerItemSelected(final int position) {
+    private void onNavigationDrawerMenuItemSelected(final MenuItem item) {
         if (this.drawerLayout != null && this.drawerView != null) {
-            this.drawerView.setItemChecked(position, true);
             this.drawerLayout.closeDrawer(this.drawerView);
         }
 
-        switch (position) {
-        case 0:
-            this.showLoginDialog();
-            return true;
-        default:
-            return true;
+        switch (item.getItemId()) {
+            case R.id.login:
+                this.showLoginDialog();
+                break;
         }
     }
 
@@ -235,10 +231,19 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
 
     private void setupNavigationDrawer() {
         if (this.drawerView != null) {
-            // TODO: come up with a sane way of managing navigation items
-            this.drawerView.setAdapter(new ArrayAdapter<String>(this, R.layout.activity_main_drawer_item,
-                    new String[] { "Logout" }));
-            this.drawerView.setOnItemClickListener(new DrawerOnItemClickListener());
+            final MenuListAdapter adapter =
+                    new MenuListAdapter(this, R.layout.activity_main_drawer_item, new MenuBuilder(this));
+            adapter.setTitleResourceId(R.id.label);
+            this.getMenuInflater().inflate(R.menu.navigation_drawer_main, adapter.getMenu());
+            adapter.synchronizeMenu();
+            this.drawerView.setAdapter(adapter);
+            this.drawerView.setOnItemClickListener(new MenuListAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(final AdapterView<?> parent, final View view, final int position,
+                                        final MenuItem item) {
+                    onNavigationDrawerMenuItemSelected(item);
+                }
+            });
         }
 
         if (this.drawerLayout != null) {
@@ -256,13 +261,6 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
                     .newInstance(THEKEY_CLIENTID)
                     .show(fm.beginTransaction().addToBackStack("loginDialog"),
                           "loginDialog");
-        }
-    }
-
-    private class DrawerOnItemClickListener implements OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            MainActivity.this.onNavigationDrawerItemSelected(position);
         }
     }
 }
