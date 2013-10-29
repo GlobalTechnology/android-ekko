@@ -12,6 +12,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,7 +54,18 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         this.findViews();
         this.setupActionBar();
         this.setupNavigationDrawer();
-        this.initFragments();
+
+        if(savedInstanceState == null) {
+            this.initFragments();
+
+            // display the login dialog if we don't have a valid GUID
+            if (this.thekey.getGuid() == null) {
+                this.showLoginDialog();
+            } else {
+                // trigger a sync
+                EkkoSyncService.syncCourses(this);
+            }
+        }
     }
 
     @Override
@@ -61,19 +73,6 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         super.onPostCreate(savedInstanceState);
         if (this.drawerToggle != null) {
             this.drawerToggle.syncState();
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // display the login dialog if we don't have a valid GUID
-        if (this.thekey.getGuid() == null) {
-            this.showLoginDialog();
-        } else {
-            // trigger a sync
-            EkkoSyncService.syncCourses(this);
         }
     }
 
@@ -235,8 +234,9 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     }
 
     private void setupActionBar() {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        final ActionBar ab = this.getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeButtonEnabled(true);
     }
 
     private void setupNavigationDrawer() {
