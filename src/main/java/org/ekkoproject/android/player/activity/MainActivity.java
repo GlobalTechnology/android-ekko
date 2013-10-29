@@ -218,14 +218,8 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
 
     private void openCourse(final long courseId) {
         // attach the course list fragment
-        getSupportFragmentManager()
-                .beginTransaction()
-                // .setCustomAnimations(R.anim.slide_right_in,
-                // R.anim.slide_left_out, R.anim.slide_left_in,
-                // R.anim.slide_right_out)
-                .replace(R.id.frame_content,
-                        CourseFragment.newInstance(R.layout.fragment_course_drawer_wrapper, courseId, false))
-                .addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, CourseFragment
+                .newInstance(R.layout.fragment_course_drawer_wrapper, courseId)).addToBackStack(null).commit();
 
         // update the DrawerLayout ActionBar toggle
         if (this.drawerToggle != null) {

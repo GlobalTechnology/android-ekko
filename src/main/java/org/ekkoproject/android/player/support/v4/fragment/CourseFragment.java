@@ -2,11 +2,8 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.ARG_LAYOUT;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
-import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import android.annotation.TargetApi;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -33,12 +30,9 @@ import java.util.List;
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
         AbstractContentFragment.OnNavigateListener, CourseContentDrawerFragment.Listener,
         ViewPager.OnPageChangeListener {
-    private static final String ARG_ANIMATIONHACK = CourseFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private static final String ARG_CONTENT_PAGER_STATE = CourseFragment.class.getName() + ".ARG_CONTENT_PAGER_STATE";
 
     private int layout = R.layout.fragment_course;
-    private boolean animationHack = false;
-    private Bitmap animationHackImage = null;
     private String contentId = null;
 
     private DrawerLayout drawerLayout = null;
@@ -47,19 +41,14 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     private Parcelable contentPagerState = null;
 
     public static CourseFragment newInstance(final long courseId) {
-        return newInstance(courseId, false);
+        return newInstance(R.layout.fragment_course, courseId);
     }
 
-    public static CourseFragment newInstance(final long courseId, final boolean animationHack) {
-        return newInstance(R.layout.fragment_course, courseId, animationHack);
-    }
-
-    public static CourseFragment newInstance(final int layout, final long courseId, final boolean animationHack) {
+    public static CourseFragment newInstance(final int layout, final long courseId) {
         final CourseFragment fragment = new CourseFragment();
 
         // handle arguments
         final Bundle args = buildArgs(courseId);
-        args.putBoolean(ARG_ANIMATIONHACK, animationHack);
         args.putInt(ARG_LAYOUT, layout);
         fragment.setArguments(args);
 
@@ -77,7 +66,6 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         // load arguments
         final Bundle args = getArguments();
         this.layout = args.getInt(ARG_LAYOUT, R.layout.fragment_course);
-        this.animationHack = getArguments().getBoolean(ARG_ANIMATIONHACK, this.animationHack);
 
         // restore saved state
         if (savedState != null) {
@@ -213,33 +201,9 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     }
 
     @Override
-    public void onPause() {
-        if (this.animationHack) {
-            final View view = getView();
-            if (view != null) {
-                this.animationHackImage = getBitmapFromView(view);
-            }
-        }
-        super.onPause();
-    }
-
-    @Override
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onDestroyView() {
-        if (this.animationHack && this.animationHackImage != null) {
-            final View view = getView();
-            if (view != null) {
-                final BitmapDrawable background = new BitmapDrawable(getResources(), this.animationHackImage);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    view.setBackground(background);
-                } else {
-                    view.setBackgroundDrawable(background);
-                }
-            }
-        }
-        this.animationHackImage = null;
-
         // save pager state
         if (this.contentPager != null && this.contentPagerInitialized) {
             this.contentPagerState = this.contentPager.onSaveInstanceState();
