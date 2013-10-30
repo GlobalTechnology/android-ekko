@@ -2,12 +2,9 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
-import static org.ekkoproject.android.player.util.ViewUtils.getBitmapFromView;
 
 import android.annotation.TargetApi;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -29,7 +26,6 @@ import org.ekkoproject.android.player.support.v4.content.CourseListCursorLoader;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 public class CourseListFragment extends AbstractListFragment {
-    private static final String ARG_ANIMATIONHACK = CourseListFragment.class.getName() + ".ARG_ANIMATIONHACK";
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
     private static final String ARG_GUID = CourseListFragment.class.getName() + ".ARG_GUID";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
@@ -40,8 +36,6 @@ public class CourseListFragment extends AbstractListFragment {
     private String guid = GUID_GUEST;
     private int layout = DEFAULT_LAYOUT;
     private int itemLayout = R.layout.course_list_item_simple;
-    private boolean animationHack = false;
-    private Bitmap animationHackImage = null;
     private boolean needsRestore = false;
     private Bundle viewState = new Bundle();
 
@@ -52,17 +46,12 @@ public class CourseListFragment extends AbstractListFragment {
     }
 
     public static CourseListFragment newInstance(final String guid, final int layout) {
-        return newInstance(guid, layout, false);
-    }
-
-    public static CourseListFragment newInstance(final String guid, final int layout, final boolean animationHack) {
         final CourseListFragment fragment = new CourseListFragment();
 
         // handle arguments
         final Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT, layout);
         args.putString(ARG_GUID, guid);
-        args.putBoolean(ARG_ANIMATIONHACK, animationHack);
         fragment.setArguments(args);
 
         return fragment;
@@ -88,7 +77,6 @@ public class CourseListFragment extends AbstractListFragment {
                     this.guid = guid;
                 }
             }
-            this.animationHack = args.getBoolean(ARG_ANIMATIONHACK, this.animationHack);
         }
 
         if (savedState != null) {
@@ -144,33 +132,8 @@ public class CourseListFragment extends AbstractListFragment {
     }
 
     @Override
-    public void onPause() {
-        if (this.animationHack) {
-            final View view = getView();
-            if (view != null) {
-                this.animationHackImage = getBitmapFromView(view);
-            }
-        }
-        super.onPause();
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onDestroyView() {
-        if (this.animationHack && this.animationHackImage != null) {
-            final View view = getView();
-            if (view != null) {
-                final BitmapDrawable background = new BitmapDrawable(getResources(), this.animationHackImage);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    view.setBackground(background);
-                } else {
-                    view.setBackgroundDrawable(background);
-                }
-            }
-        }
-        this.animationHackImage = null;
-
         super.onDestroyView();
         this.saveViewState();
         this.cleanupListAdapter();
