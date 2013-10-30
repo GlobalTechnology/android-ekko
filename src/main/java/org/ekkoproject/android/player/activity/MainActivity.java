@@ -96,9 +96,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
             finish();
         } else if (fm.getBackStackEntryCount() == 0) {
             // enable the drawer indicator
-            if (this.drawerToggle != null) {
-                this.drawerToggle.setDrawerIndicatorEnabled(true);
-            }
+            this.setDrawerIndicatorEnabled(true);
         }
     }
 
@@ -210,6 +208,9 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
             // pop the base back stack entry
             fm.popBackStack(fm.getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+
+        // enable the drawer indicator
+        this.setDrawerIndicatorEnabled(true);
     }
 
     private void showCourseList(final String guid, final boolean showAll) {
@@ -224,9 +225,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
                 .newInstance(R.layout.fragment_course_drawer_wrapper, courseId)).addToBackStack(null).commit();
 
         // update the DrawerLayout ActionBar toggle
-        if (this.drawerToggle != null) {
-            this.drawerToggle.setDrawerIndicatorEnabled(false);
-        }
+        this.setDrawerIndicatorEnabled(false);
     }
 
     private void setupActionBar() {
@@ -267,6 +266,12 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
                     .newInstance(THEKEY_CLIENTID)
                     .show(fm.beginTransaction().addToBackStack("loginDialog"),
                           "loginDialog");
+        }
+    }
+
+    private void setDrawerIndicatorEnabled(final boolean enable) {
+        if (this.drawerToggle != null) {
+            this.drawerToggle.setDrawerIndicatorEnabled(enable);
         }
     }
 }
