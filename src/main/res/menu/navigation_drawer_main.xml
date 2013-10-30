@@ -2,9 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/allCourses"
+        android:icon="@drawable/ic_action_all_courses_light"
         android:title="@string/courses_list_all"/>
     <item
         android:id="@+id/myCourses"
+        android:icon="@drawable/ic_action_my_courses_light"
         android:title="@string/courses_list_my"/>
     <item
         android:id="@+id/login"
@@ -12,5 +14,6 @@
         android:title="@string/action_login"/>
     <item
         android:id="@+id/logout"
+        android:icon="@drawable/ic_action_logout_light"
         android:title="@string/action_logout"/>
 </menu>

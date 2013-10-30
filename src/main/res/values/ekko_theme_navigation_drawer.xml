@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Navigation Drawer -->
+    <style name="Widget.Ekko.NavigationDrawer" parent="@style/Widget.Ekko.ListView">
+        <item name="android:divider">#D8D8D8</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:layout_width">240dp</item>
+        <item name="android:background">#FAFAFA</item>
+    </style>
+
+    <style name="Widget.Ekko.NavigationDrawer.Item">
+        <item name="android:textAppearance">@style/TextAppearance.Ekko.NavigationDrawer.Item</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="TextAppearance.Ekko.NavigationDrawer.Item" parent="TextAppearance.Ekko">
+        <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-light</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#505050</item>
+    </style>
+
+    <style name="Widget.Ekko.NavigationDrawer.Course" parent="Widget.Ekko.NavigationDrawer">
+        <item name="android:layout_width">320dp</item>
+    </style>
+
+    <style name="Widget.Ekko.NavigationDrawer.Course.Item" parent="Widget.Ekko.NavigationDrawer.Item">
+        <item name="android:textAppearance">@style/TextAppearance.Ekko.NavigationDrawer.Course.Item</item>
+    </style>
+
+    <style name="TextAppearance.Ekko.NavigationDrawer.Course.Item" parent="TextAppearance.Ekko.NavigationDrawer.Item"/>
+</resources>

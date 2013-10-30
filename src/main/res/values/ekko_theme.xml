@@ -42,33 +42,6 @@
 
     <style name="Widget.Ekko.ListView" parent="@android:style/Widget.ListView" />
 
-    <!-- Navigation Drawer -->
-    <style name="Widget.Ekko.NavigationDrawer" parent="@style/Widget.Ekko.ListView">
-        <item name="android:divider">#D8D8D8</item>
-        <item name="android:dividerHeight">1dp</item>
-        <item name="android:layout_width">240dp</item>
-        <item name="android:background">#FAFAFA</item>
-    </style>
-
-    <style name="TextAppearance.Ekko.NavigationDrawer.Item" parent="TextAppearance.Ekko">
-        <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-light</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">#505050</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:paddingTop">20dp</item>
-        <item name="android:paddingStart" tools:targetApi="jelly_bean_mr1">16dp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingBottom">20dp</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="Widget.Ekko.NavigationDrawer.Course" parent="Widget.Ekko.NavigationDrawer">
-        <item name="android:layout_width">320dp</item>
-    </style>
-
-    <style name="TextAppearance.Ekko.NavigationDrawer.Course.Item" parent="TextAppearance.Ekko.NavigationDrawer.Item"></style>
-
     <!-- Lesson design -->
     <style name="Widget.Ekko.Course.Lesson.Text" parent="Base">
         <item name="android:background">@color/ekko_lightgrey</item>
