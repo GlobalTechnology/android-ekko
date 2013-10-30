@@ -139,6 +139,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
                 this.showCourseList(this.thekey.getGuid(), true);
                 break;
             case R.id.login:
+            case R.id.logout:
                 this.showLoginDialog();
                 break;
         }
@@ -147,27 +148,28 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            // handle drawer navigation toggle
-            if (this.drawerLayout != null && this.drawerToggle != null) {
-                if (this.drawerToggle.isDrawerIndicatorEnabled()) {
-                    if (this.drawerLayout.isDrawerVisible(GravityCompat.START)) {
-                        this.drawerLayout.closeDrawer(GravityCompat.START);
-                    } else {
-                        this.drawerLayout.openDrawer(GravityCompat.START);
+            case android.R.id.home:
+                // handle drawer navigation toggle
+                if (this.drawerLayout != null && this.drawerToggle != null) {
+                    if (this.drawerToggle.isDrawerIndicatorEnabled()) {
+                        if (this.drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                            this.drawerLayout.closeDrawer(GravityCompat.START);
+                        } else {
+                            this.drawerLayout.openDrawer(GravityCompat.START);
+                        }
+                        return true;
                     }
-                    return true;
                 }
-            }
 
-            // trigger the back function
-            this.onBackPressed();
-            return true;
-        case R.id.login:
-            this.showLoginDialog();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+                // trigger the back function
+                this.onBackPressed();
+                return true;
+            case R.id.login:
+            case R.id.logout:
+                this.showLoginDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
