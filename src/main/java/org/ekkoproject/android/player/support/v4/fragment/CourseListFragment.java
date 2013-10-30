@@ -8,7 +8,9 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +31,7 @@ public class CourseListFragment extends AbstractListFragment {
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
     private static final String ARG_GUID = CourseListFragment.class.getName() + ".ARG_GUID";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
+    private static final String ARG_SHOWALL = CourseListFragment.class.getName() + ".ARG_SHOWALL";
     private static final String ARG_LISTVIEWSTATE = CourseListFragment.class.getName() + ".ARG_LISTVIEWSTATE";
 
     private static final int LOADER_COURSES = 1;
@@ -36,22 +39,20 @@ public class CourseListFragment extends AbstractListFragment {
     private String guid = GUID_GUEST;
     private int layout = DEFAULT_LAYOUT;
     private int itemLayout = R.layout.course_list_item_simple;
+    private boolean showAll = true;
     private boolean needsRestore = false;
     private Bundle viewState = new Bundle();
 
     private ListView listView = null;
 
-    public static CourseListFragment newInstance(final String guid) {
-        return newInstance(guid, DEFAULT_LAYOUT);
-    }
-
-    public static CourseListFragment newInstance(final String guid, final int layout) {
+    public static CourseListFragment newInstance(final String guid, final int layout, final boolean showAll) {
         final CourseListFragment fragment = new CourseListFragment();
 
         // handle arguments
         final Bundle args = new Bundle();
         args.putInt(ARG_LAYOUT, layout);
         args.putString(ARG_GUID, guid);
+        args.putBoolean(ARG_SHOWALL, showAll);
         fragment.setArguments(args);
 
         return fragment;
@@ -77,6 +78,7 @@ public class CourseListFragment extends AbstractListFragment {
                     this.guid = guid;
                 }
             }
+            this.showAll = args.getBoolean(ARG_SHOWALL, this.showAll);
         }
 
         if (savedState != null) {
@@ -90,6 +92,14 @@ public class CourseListFragment extends AbstractListFragment {
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_course_list, menu);
+
+        // update the title/icon
+        // XXX: this is a hack, but the best way of dynamically managing it I could think of with current API's
+        final FragmentActivity activity = this.getActivity();
+        if (activity instanceof ActionBarActivity) {
+            ((ActionBarActivity) activity).getSupportActionBar()
+                    .setTitle(this.showAll ? R.string.courses_list_all : R.string.courses_list_my);
+        }
     }
 
     @Override
@@ -220,7 +230,7 @@ public class CourseListFragment extends AbstractListFragment {
         public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
             switch (id) {
                 case LOADER_COURSES:
-                    return new CourseListCursorLoader(getActivity(), guid, true);
+                    return new CourseListCursorLoader(getActivity(), guid, showAll);
                 default:
                     return null;
             }

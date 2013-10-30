@@ -10,6 +10,8 @@
     <string name="course_enroll">Enroll</string>
     <string name="course_unenroll">Unenroll</string>
     <string name="course_hide">Hide</string>
+    <string name="courses_list_all">All Courses</string>
+    <string name="courses_list_my">My Courses</string>
 
     <!-- ActionBar strings -->
     <string name="action_refresh">Refresh</string>

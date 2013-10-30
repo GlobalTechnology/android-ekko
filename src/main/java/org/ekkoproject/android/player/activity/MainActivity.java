@@ -107,7 +107,8 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         EkkoSyncService.syncCourses(this);
 
         // reset the fragment back stack
-        this.resetFragmentBackStack(guid);
+        this.clearFragmentBackStack();
+        this.showCourseList(guid, false);
     }
 
     @Override
@@ -131,6 +132,14 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         }
 
         switch (item.getItemId()) {
+            case R.id.myCourses:
+                this.clearFragmentBackStack();
+                this.showCourseList(this.thekey.getGuid(), false);
+                break;
+            case R.id.allCourses:
+                this.clearFragmentBackStack();
+                this.showCourseList(this.thekey.getGuid(), true);
+                break;
             case R.id.login:
                 this.showLoginDialog();
                 break;
@@ -189,11 +198,11 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
 
     private void initFragments() {
         // show the course list
-        this.showCourseList(this.thekey.getGuid());
+        this.showCourseList(this.thekey.getGuid(), false);
     }
 
-    private void resetFragmentBackStack(final String guid) {
-        assert isUiThread() : "the fragment back stack should only be reset on the ui thread";
+    private void clearFragmentBackStack() {
+        assert isUiThread() : "the fragment back stack should only be cleared on the ui thread";
 
         // clear the back stack in the fragment manager
         final FragmentManager fm = this.getSupportFragmentManager();
@@ -201,14 +210,11 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
             // pop the base back stack entry
             fm.popBackStack(fm.getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-
-        // show the server list as the base fragment
-        this.showCourseList(guid);
     }
 
-    private void showCourseList(final String guid) {
-        final CourseListFragment fragment =
-                CourseListFragment.newInstance(guid != null ? guid : GUID_GUEST, R.layout.fragment_course_list_main);
+    private void showCourseList(final String guid, final boolean showAll) {
+        final CourseListFragment fragment = CourseListFragment.newInstance(guid != null ? guid : GUID_GUEST,
+                                                                           R.layout.fragment_course_list_main, showAll);
         this.getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
     }
 
