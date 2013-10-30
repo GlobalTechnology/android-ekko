@@ -33,16 +33,19 @@ public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
                     Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE,
                     Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_BANNER_RESOURCE,
                     Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_ENROLLMENT_TYPE,
+                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_ENROLLED,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_PENDING,
-                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE,};
+                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE,
+                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_HIDDEN,};
     private static final String SQL_ORDERBY =
             Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE + " COLLATE NOCASE";
     private static final String SQL_WHERE_ALL =
             Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ?";
     private static final String SQL_WHERE_MY =
             Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID + " = ? AND " +
-                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE + " = 1";
+                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE + " = 1 AND " +
+                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_HIDDEN + " = 0";
 
     @Override
     protected Cursor getCursor() {

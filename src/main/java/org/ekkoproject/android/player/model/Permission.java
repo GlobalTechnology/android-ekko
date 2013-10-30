@@ -8,7 +8,8 @@ public class Permission {
     private boolean enrolled = false;
     private boolean pending = false;
     private boolean contentVisible = false;
-    private boolean visible = false;
+
+    private boolean hidden = false;
 
     public Permission(final long courseId, final String guid) {
         this.courseId = courseId;
@@ -55,11 +56,11 @@ public class Permission {
         this.contentVisible = contentVisible;
     }
 
-    public boolean isVisible() {
-        return this.visible;
+    public boolean isHidden() {
+        return this.hidden;
     }
 
-    public void setVisible(final boolean visible) {
-        this.visible = visible;
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
     }
 }

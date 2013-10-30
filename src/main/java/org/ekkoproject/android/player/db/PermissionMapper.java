@@ -29,6 +29,8 @@ public class PermissionMapper extends AbstractMapper<Permission> {
             values.put(field, permission.isPending() ? 1 : 0);
         } else if (Contract.Permission.COLUMN_CONTENT_VISIBLE.equals(field)) {
             values.put(field, permission.isContentVisible() ? 1 : 0);
+        } else if (Contract.Permission.COLUMN_HIDDEN.equals(field)) {
+            values.put(field, permission.isHidden() ? 1 : 0);
         } else {
             super.mapField(values, field, permission);
         }
@@ -47,6 +49,7 @@ public class PermissionMapper extends AbstractMapper<Permission> {
         permission.setEnrolled(this.getBool(c, Contract.Permission.COLUMN_ENROLLED, false));
         permission.setPending(this.getBool(c, Contract.Permission.COLUMN_PENDING, false));
         permission.setContentVisible(this.getBool(c, Contract.Permission.COLUMN_CONTENT_VISIBLE, false));
+        permission.setHidden(this.getBool(c, Contract.Permission.COLUMN_HIDDEN, false));
         return permission;
     }
 }

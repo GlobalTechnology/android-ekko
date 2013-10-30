@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/enroll"
-        android:title="@string/course_enroll"/>
-    <item
-        android:id="@+id/pending"
-        android:title="Pending"
-        android:enabled="false"/>
-    <item
-        android:id="@+id/unenroll"
-        android:title="@string/course_unenroll"/>
-    <item
-        android:id="@+id/hide"
-        android:title="@string/course_hide"/>
+    <group android:id="@+id/enrollment">
+        <item
+            android:id="@+id/enroll"
+            android:title="@string/course_enroll"/>
+        <item
+            android:id="@+id/pending"
+            android:title="Pending"
+            android:enabled="false"/>
+        <item
+            android:id="@+id/unenroll"
+            android:title="@string/course_unenroll"/>
+    </group>
+    <group android:id="@+id/visibility">
+        <item
+            android:id="@+id/show"
+            android:title="@string/course_show"/>
+        <item
+            android:id="@+id/hide"
+            android:title="@string/course_hide"/>
+    </group>
 </menu>

@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.support.v4.adapter;
 
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_APPROVAL;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_DISABLED;
@@ -31,27 +32,26 @@ import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
+import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.model.EnrollmentState;
+import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.NotEnrolledDialogFragment;
+import org.ekkoproject.android.player.sync.EkkoSyncService;
 import org.ekkoproject.android.player.tasks.EnrollmentRunnable;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 
 public class CourseListCursorAdapter extends SimpleCursorAdapter {
-    private static final Logger LOG = LoggerFactory.getLogger(CourseListCursorAdapter.class);
-
     private static final String[] FROM =
             new String[] {Contract.Course.COLUMN_NAME_TITLE, Contract.Course.COLUMN_NAME_BANNER_RESOURCE,
                     Contract.Course.COLUMN_NAME_COURSE_ID};
     private static final int[] TO = new int[] {R.id.title, R.id.banner, R.id.progress};
 
     private final FragmentActivity mActivity;
-    private final EkkoHubApi api;
     private final ResourceManager resourceManager;
     private final ProgressManager progressManager;
 
@@ -60,7 +60,6 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
     public CourseListCursorAdapter(final FragmentActivity activity, final int layout) {
         super(activity, layout, null, FROM, TO, 0);
         mActivity = activity;
-        this.api = EkkoHubApi.getInstance(activity);
         this.resourceManager = ResourceManager.getInstance(activity);
         this.progressManager = ProgressManager.getInstance(activity);
         this.setViewBinder(new CourseViewBinder());
@@ -87,57 +86,59 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     listener.setOnNavigationListener(mOnNavigationListener);
                     popup.setOnMenuItemClickListener(listener);
                     popup.inflate(R.menu.popup_course_card);
-
-                    // determine menu item states
-                    boolean enroll;
-                    boolean unenroll;
-                    boolean pending;
-                    if (holder.enrolled) {
-                        unenroll = true;
-                        enroll = pending = false;
-                    } else if (holder.pending) {
-                        pending = true;
-                        enroll = unenroll = false;
-                    } else {
-                        enroll = true;
-                        pending = unenroll = false;
-                    }
-                    switch (holder.enrollmentType) {
-                        case ENROLLMENT_TYPE_OPEN:
-                            if (pending) {
-                                pending = unenroll = false;
-                                enroll = true;
-                            }
-                        case ENROLLMENT_TYPE_APPROVAL:
-                            break;
-                        case ENROLLMENT_TYPE_DISABLED:
-                        default:
-                            enroll = unenroll = pending = false;
-                    }
-
-                    // toggle menu items
                     final Menu menu = popup.getMenu();
-                    if (!enroll) {
-                        final MenuItem item = menu.findItem(R.id.enroll);
+
+                    // toggle enrollment MenuItem visibility
+                    {
+                        // calculate enrollment state
+                        EnrollmentState state = EnrollmentState.DISABLED;
+                        if (holder.enrolled) {
+                            state = EnrollmentState.ENROLLED;
+                        } else if (holder.pending) {
+                            state = EnrollmentState.PENDING;
+                        } else {
+                            state = EnrollmentState.UNENROLLED;
+                        }
+                        switch (holder.enrollmentType) {
+                            case ENROLLMENT_TYPE_OPEN:
+                                if (state == EnrollmentState.PENDING) {
+                                    state = EnrollmentState.UNENROLLED;
+                                }
+                            case ENROLLMENT_TYPE_APPROVAL:
+                                break;
+                            case ENROLLMENT_TYPE_DISABLED:
+                            default:
+                                state = EnrollmentState.DISABLED;
+                        }
+
+                        // toggle MenuItem visibility
+                        menu.setGroupVisible(R.id.enrollment, false);
+                        final MenuItem item;
+                        switch (state) {
+                            case UNENROLLED:
+                                item = menu.findItem(R.id.enroll);
+                                break;
+                            case PENDING:
+                                item = menu.findItem(R.id.pending);
+                                break;
+                            case ENROLLED:
+                                item = menu.findItem(R.id.unenroll);
+                                break;
+                            default:
+                                item = null;
+                        }
                         if (item != null) {
-                            item.setVisible(false).setEnabled(false);
+                            item.setVisible(true);
                         }
                     }
-                    if (!pending) {
-                        final MenuItem item = menu.findItem(R.id.pending);
+
+                    // toggle My Courses show/hide MenuItem visibility
+                    menu.setGroupVisible(R.id.visibility, false);
+                    if (holder.contentVisible) {
+                        final MenuItem item = menu.findItem(holder.hidden ? R.id.show : R.id.hide);
                         if (item != null) {
-                            item.setVisible(false).setEnabled(false);
+                            item.setVisible(true);
                         }
-                    }
-                    if (!unenroll) {
-                        final MenuItem item = menu.findItem(R.id.unenroll);
-                        if (item != null) {
-                            item.setVisible(false).setEnabled(false);
-                        }
-                    }
-                    final MenuItem hide = menu.findItem(R.id.hide);
-                    if (hide != null) {
-                        hide.setEnabled(false);
                     }
 
                     // show PopupMenu
@@ -174,10 +175,12 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         final CourseViewHolder holder = (CourseViewHolder) holderTmp;
 
         // update holder values
+        holder.guid = CursorUtils.getString(c, Contract.Permission.COLUMN_GUID, GUID_GUEST);
         holder.courseId = CursorUtils.getLong(c, Contract.Course.COLUMN_NAME_COURSE_ID, INVALID_COURSE);
         holder.enrolled = CursorUtils.getBool(c, Contract.Permission.COLUMN_ENROLLED, false);
         holder.contentVisible = CursorUtils.getBool(c, Contract.Permission.COLUMN_CONTENT_VISIBLE, false);
         holder.pending = CursorUtils.getBool(c, Contract.Permission.COLUMN_PENDING, false);
+        holder.hidden = CursorUtils.getBool(c, Contract.Permission.COLUMN_HIDDEN, false);
         holder.enrollmentType = CursorUtils.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN);
 
         // enable/disable not enrolled popup based on whether the content is visible
@@ -194,9 +197,11 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private final View actionMenu;
 
         private long courseId;
+        private String guid;
         private boolean enrolled = false;
         private boolean pending = false;
         private boolean contentVisible = false;
+        private boolean hidden = false;
         private int enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
 
         private CourseViewHolder(final View root) {
@@ -221,6 +226,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
     private static class CoursePopupMenuClickListener implements PopupMenu.OnMenuItemClickListener {
         private final Context mContext;
         private final EkkoHubApi api;
+        private final EkkoDao dao;
         private final CourseViewHolder holder;
 
         private OnNavigationListener mOnNavigationListener = null;
@@ -228,6 +234,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private CoursePopupMenuClickListener(final Context context, final CourseViewHolder holder) {
             mContext = context;
             this.api = EkkoHubApi.getInstance(context);
+            this.dao = EkkoDao.getInstance(context);
             this.holder = holder;
         }
 
@@ -246,6 +253,20 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     return true;
                 case R.id.unenroll:
                     this.api.async(new EnrollmentRunnable(this.mContext, UNENROLL, holder.courseId));
+                    return true;
+                case R.id.show:
+                case R.id.hide:
+                    final Permission permission = new Permission(holder.courseId, holder.guid);
+                    permission.setHidden(id == R.id.hide);
+                    this.dao.async(new Runnable() {
+                        @Override
+                        public void run() {
+                            dao.update(permission, new String[] {Contract.Permission.COLUMN_HIDDEN});
+
+                            //XXX: this is a quick hack, we should move the course/manifest update broadcasts to a common service
+                            EkkoSyncService.broadcastCoursesUpdate(mContext);
+                        }
+                    });
                     return true;
             }
 
