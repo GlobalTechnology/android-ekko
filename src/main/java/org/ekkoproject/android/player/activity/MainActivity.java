@@ -34,13 +34,15 @@ import org.ekkoproject.android.player.sync.EkkoSyncService;
 import me.thekey.android.TheKey;
 
 public class MainActivity extends ActionBarActivity implements LoginDialogFragment.Listener, OnNavigationListener {
+    private static final String STATE_DRAWER_INDICATOR = MainActivity.class + ".STATE_DRAWER_INDICATOR";
+
     private DrawerLayout drawerLayout = null;
     private ListView drawerView = null;
     private ActionBarDrawerToggle drawerToggle = null;
 
     private TheKey thekey;
 
-    public static final Intent newIntent(final Context context) {
+    public static Intent newIntent(final Context context) {
         return new Intent(context, MainActivity.class);
     }
 
@@ -69,18 +71,21 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     }
 
     @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedState) {
+        super.onPostCreate(savedState);
         if (this.drawerToggle != null) {
             this.drawerToggle.syncState();
+
+            if (savedState != null) {
+                this.drawerToggle.setDrawerIndicatorEnabled(savedState.getBoolean(STATE_DRAWER_INDICATOR, true));
+            }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         // update the title/icon
-        // XXX: this is a hack, but the best way of dynamically managing it I
-        // could think of with current API's
+        // XXX: this is a hack, but the best way of dynamically managing it I could think of with current API's
         this.getSupportActionBar().setTitle("");
 
         // add menu items
@@ -178,6 +183,15 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         super.onConfigurationChanged(newConfig);
         if (this.drawerToggle != null) {
             this.drawerToggle.onConfigurationChanged(newConfig);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (this.drawerToggle != null) {
+            outState.putBoolean(STATE_DRAWER_INDICATOR, this.drawerToggle.isDrawerIndicatorEnabled());
         }
     }
 
