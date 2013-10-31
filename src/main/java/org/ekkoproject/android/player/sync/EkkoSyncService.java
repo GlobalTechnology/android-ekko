@@ -121,7 +121,7 @@ public class EkkoSyncService extends ThreadedIntentService {
      */
     private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
         // load all existing courses
-        final LongSparseArray<Course> existing = new LongSparseArray<Course>();
+        final LongSparseArray<Course> existing = new LongSparseArray<>();
         for (final Course course : this.dao.getCourses(null, null, null, false)) {
             if (course != null) {
                 existing.put(course.getId(), course);
@@ -132,7 +132,7 @@ public class EkkoSyncService extends ThreadedIntentService {
         boolean hasMore = true;
         int start = 0;
         int limit = 50;
-        final Map<String, Set<Long>> visible = new HashMap<String, Set<Long>>();
+        final Map<String, Set<Long>> visible = new HashMap<>();
         while (hasMore) {
             final CourseList courses = this.ekkoApi.getCourseList(start, limit);
             if (courses != null) {

@@ -7,11 +7,11 @@ import android.util.Pair;
 import org.appdev.entity.Resource;
 import org.ccci.gto.android.common.db.AbstractDao;
 import org.ccci.gto.android.common.db.Mapper;
-import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.model.Answer;
 import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.model.Progress;
 
 import java.util.ArrayList;
@@ -29,14 +29,14 @@ public class EkkoDao extends AbstractDao {
     private static final Mapper<Progress> PROGRESS_MAPPER = new ProgressMapper();
     private static final Mapper<Answer> ANSWER_MAPPER = new AnswerMapper();
 
-    private static Object instanceLock = new Object();
+    private static final Object instanceLock = new Object();
     private static EkkoDao instance = null;
 
     private EkkoDao(final Context context) {
         super(new EkkoDbHelper(context.getApplicationContext()));
     }
 
-    public static final EkkoDao getInstance(final Context context) {
+    public static EkkoDao getInstance(final Context context) {
         if (instance == null) {
             synchronized (instanceLock) {
                 if (instance == null) {
@@ -221,7 +221,7 @@ public class EkkoDao extends AbstractDao {
             course.setResources(null);
 
             // load the resources
-            final HashMap<String, List<Resource>> childResources = new HashMap<String, List<Resource>>();
+            final HashMap<String, List<Resource>> childResources = new HashMap<>();
             for (final Resource resource : this.get(Resource.class,
                                                     Contract.Course.Resource.COLUMN_NAME_COURSE_ID + " = ?",
                                                     new String[] {Long.toString(course.getId())})) {
