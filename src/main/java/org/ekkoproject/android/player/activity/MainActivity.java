@@ -255,6 +255,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
             final MenuListAdapter adapter =
                     new MenuListAdapter(this, R.layout.activity_main_drawer_item, new MenuBuilder(this));
             adapter.setTitleResourceId(R.id.label);
+            adapter.setIconResourceId(R.id.icon);
             this.getMenuInflater().inflate(R.menu.navigation_drawer_main, adapter.getMenu());
             adapter.synchronizeMenu();
             this.drawerView.setAdapter(adapter);
