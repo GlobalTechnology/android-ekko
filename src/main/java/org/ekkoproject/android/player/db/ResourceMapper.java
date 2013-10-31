@@ -16,27 +16,37 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
 
     @Override
     protected void mapField(final ContentValues values, final String field, final Resource resource) {
-        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.Course.Resource.COLUMN_NAME_COURSE_ID.equals(field)) {
-            values.put(field, resource.getCourseId());
-        } else if (Contract.Course.Resource.COLUMN_NAME_RESOURCE_ID.equals(field)) {
-            values.put(field, resource.getId());
-        } else if (Contract.Course.Resource.COLUMN_NAME_TYPE.equals(field)) {
-            values.put(field, resource.getResourceType());
-        } else if (Contract.Course.Resource.COLUMN_NAME_MIMETYPE.equals(field)) {
-            values.put(field, resource.getResourceMimeType());
-        } else if (Contract.Course.Resource.COLUMN_NAME_SHA1.equals(field)) {
-            values.put(field, resource.getResourceSha1());
-        } else if (Contract.Course.Resource.COLUMN_NAME_SIZE.equals(field)) {
-            values.put(field, resource.getResourceSize());
-        } else if (Contract.Course.Resource.COLUMN_NAME_PROVIDER.equals(field)) {
-            values.put(field, resource.getProviderName());
-        } else if (Contract.Course.Resource.COLUMN_NAME_URI.equals(field)) {
-            values.put(field, resource.getUri());
-        } else if(Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE.equals(field)) {
-            values.put(field, resource.getParentId());
-        } else {
-            super.mapField(values, field, resource);
+        switch (field) {
+            case Contract.Course.Resource.COLUMN_NAME_COURSE_ID:
+                values.put(field, resource.getCourseId());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_RESOURCE_ID:
+                values.put(field, resource.getId());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_TYPE:
+                values.put(field, resource.getResourceType());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_MIMETYPE:
+                values.put(field, resource.getResourceMimeType());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_SHA1:
+                values.put(field, resource.getResourceSha1());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_SIZE:
+                values.put(field, resource.getResourceSize());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_PROVIDER:
+                values.put(field, resource.getProviderName());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_URI:
+                values.put(field, resource.getUri());
+                break;
+            case Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE:
+                values.put(field, resource.getParentId());
+                break;
+            default:
+                super.mapField(values, field, resource);
+                break;
         }
     }
 

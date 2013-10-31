@@ -16,15 +16,19 @@ public class ProgressMapper extends AbstractMapper<Progress> {
 
     @Override
     protected void mapField(final ContentValues values, final String field, final Progress progress) {
-        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.Progress.COLUMN_COURSE_ID.equals(field)) {
-            values.put(field, progress.getCourseId());
-        } else if (Contract.Progress.COLUMN_CONTENT_ID.equals(field)) {
-            values.put(field, progress.getContentId());
-        } else if (Contract.Progress.COLUMN_COMPLETED.equals(field)) {
-            values.put(field, progress.getCompleted());
-        } else {
-            super.mapField(values, field, progress);
+        switch (field) {
+            case Contract.Progress.COLUMN_COURSE_ID:
+                values.put(field, progress.getCourseId());
+                break;
+            case Contract.Progress.COLUMN_CONTENT_ID:
+                values.put(field, progress.getContentId());
+                break;
+            case Contract.Progress.COLUMN_COMPLETED:
+                values.put(field, progress.getCompleted());
+                break;
+            default:
+                super.mapField(values, field, progress);
+                break;
         }
     }
 

@@ -16,23 +16,31 @@ public class PermissionMapper extends AbstractMapper<Permission> {
 
     @Override
     protected void mapField(final ContentValues values, final String field, final Permission permission) {
-        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.Permission.COLUMN_COURSE_ID.equals(field)) {
-            values.put(field, permission.getCourseId());
-        } else if (Contract.Permission.COLUMN_GUID.equals(field)) {
-            values.put(field, permission.getGuid());
-        } else if (Contract.Permission.COLUMN_ADMIN.equals(field)) {
-            values.put(field, permission.isAdmin() ? 1 : 0);
-        } else if (Contract.Permission.COLUMN_ENROLLED.equals(field)) {
-            values.put(field, permission.isEnrolled() ? 1 : 0);
-        } else if (Contract.Permission.COLUMN_PENDING.equals(field)) {
-            values.put(field, permission.isPending() ? 1 : 0);
-        } else if (Contract.Permission.COLUMN_CONTENT_VISIBLE.equals(field)) {
-            values.put(field, permission.isContentVisible() ? 1 : 0);
-        } else if (Contract.Permission.COLUMN_HIDDEN.equals(field)) {
-            values.put(field, permission.isHidden() ? 1 : 0);
-        } else {
-            super.mapField(values, field, permission);
+        switch (field) {
+            case Contract.Permission.COLUMN_COURSE_ID:
+                values.put(field, permission.getCourseId());
+                break;
+            case Contract.Permission.COLUMN_GUID:
+                values.put(field, permission.getGuid());
+                break;
+            case Contract.Permission.COLUMN_ADMIN:
+                values.put(field, permission.isAdmin() ? 1 : 0);
+                break;
+            case Contract.Permission.COLUMN_ENROLLED:
+                values.put(field, permission.isEnrolled() ? 1 : 0);
+                break;
+            case Contract.Permission.COLUMN_PENDING:
+                values.put(field, permission.isPending() ? 1 : 0);
+                break;
+            case Contract.Permission.COLUMN_CONTENT_VISIBLE:
+                values.put(field, permission.isContentVisible() ? 1 : 0);
+                break;
+            case Contract.Permission.COLUMN_HIDDEN:
+                values.put(field, permission.isHidden() ? 1 : 0);
+                break;
+            default:
+                super.mapField(values, field, permission);
+                break;
         }
     }
 

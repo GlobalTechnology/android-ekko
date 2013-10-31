@@ -16,23 +16,31 @@ public class CachedUriResourceMapper extends AbstractMapper<CachedUriResource> {
 
     @Override
     protected void mapField(final ContentValues values, final String field, final CachedUriResource resource) {
-        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.CachedUriResource.COLUMN_COURSE_ID.equals(field)) {
-            values.put(field, resource.getCourseId());
-        } else if (Contract.CachedUriResource.COLUMN_URI.equals(field)) {
-            values.put(field, resource.getUri());
-        } else if (Contract.CachedUriResource.COLUMN_SIZE.equals(field)) {
-            values.put(field, resource.getSize());
-        } else if (Contract.CachedUriResource.COLUMN_PATH.equals(field)) {
-            values.put(field, resource.getPath());
-        } else if (Contract.CachedUriResource.COLUMN_EXPIRES.equals(field)) {
-            values.put(field, resource.getExpires());
-        } else if (Contract.CachedUriResource.COLUMN_LAST_ACCESSED.equals(field)) {
-            values.put(field, resource.getLastAccessed());
-        } else if (Contract.CachedUriResource.COLUMN_LAST_MODIFIED.equals(field)) {
-            values.put(field, resource.getLastAccessed());
-        } else {
-            super.mapField(values, field, resource);
+        switch (field) {
+            case Contract.CachedUriResource.COLUMN_COURSE_ID:
+                values.put(field, resource.getCourseId());
+                break;
+            case Contract.CachedUriResource.COLUMN_URI:
+                values.put(field, resource.getUri());
+                break;
+            case Contract.CachedUriResource.COLUMN_SIZE:
+                values.put(field, resource.getSize());
+                break;
+            case Contract.CachedUriResource.COLUMN_PATH:
+                values.put(field, resource.getPath());
+                break;
+            case Contract.CachedUriResource.COLUMN_EXPIRES:
+                values.put(field, resource.getExpires());
+                break;
+            case Contract.CachedUriResource.COLUMN_LAST_ACCESSED:
+                values.put(field, resource.getLastAccessed());
+                break;
+            case Contract.CachedUriResource.COLUMN_LAST_MODIFIED:
+                values.put(field, resource.getLastAccessed());
+                break;
+            default:
+                super.mapField(values, field, resource);
+                break;
         }
     }
 

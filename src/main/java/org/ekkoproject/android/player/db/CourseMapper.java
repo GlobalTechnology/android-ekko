@@ -17,29 +17,40 @@ public final class CourseMapper extends AbstractMapper<Course> {
 
     @Override
     protected void mapField(final ContentValues values, final String field, final Course course) {
-        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.Course.COLUMN_NAME_COURSE_ID.equals(field)) {
-            values.put(field, course.getId());
-        } else if (Contract.Course.COLUMN_NAME_VERSION.equals(field)) {
-            values.put(field, course.getVersion());
-        } else if (Contract.Course.COLUMN_NAME_TITLE.equals(field)) {
-            values.put(field, course.getTitle());
-        } else if (Contract.Course.COLUMN_NAME_BANNER_RESOURCE.equals(field)) {
-            values.put(field, course.getBanner());
-        } else if (Contract.Course.COLUMN_DESCRIPTION.equals(field)) {
-            values.put(field, course.getDescription());
-        } else if (Contract.Course.COLUMN_ENROLLMENT_TYPE.equals(field)) {
-            values.put(field, course.getEnrollmentType());
-        } else if (Contract.Course.COLUMN_PUBLIC.equals(field)) {
-            values.put(field, course.isPublicCourse() ? 1 : 0);
-        } else if (Contract.Course.COLUMN_NAME_MANIFEST_FILE.equals(field)) {
-            values.put(field, course.getManifestFile());
-        } else if (Contract.Course.COLUMN_NAME_MANIFEST_VERSION.equals(field)) {
-            values.put(field, course.getManifestVersion());
-        } else if (Contract.Course.COLUMN_NAME_LAST_SYNCED.equals(field)) {
-            values.put(field, course.getLastSynced());
-        } else {
-            super.mapField(values, field, course);
+        switch (field) {
+            case Contract.Course.COLUMN_NAME_COURSE_ID:
+                values.put(field, course.getId());
+                break;
+            case Contract.Course.COLUMN_NAME_VERSION:
+                values.put(field, course.getVersion());
+                break;
+            case Contract.Course.COLUMN_NAME_TITLE:
+                values.put(field, course.getTitle());
+                break;
+            case Contract.Course.COLUMN_NAME_BANNER_RESOURCE:
+                values.put(field, course.getBanner());
+                break;
+            case Contract.Course.COLUMN_DESCRIPTION:
+                values.put(field, course.getDescription());
+                break;
+            case Contract.Course.COLUMN_ENROLLMENT_TYPE:
+                values.put(field, course.getEnrollmentType());
+                break;
+            case Contract.Course.COLUMN_PUBLIC:
+                values.put(field, course.isPublicCourse() ? 1 : 0);
+                break;
+            case Contract.Course.COLUMN_NAME_MANIFEST_FILE:
+                values.put(field, course.getManifestFile());
+                break;
+            case Contract.Course.COLUMN_NAME_MANIFEST_VERSION:
+                values.put(field, course.getManifestVersion());
+                break;
+            case Contract.Course.COLUMN_NAME_LAST_SYNCED:
+                values.put(field, course.getLastSynced());
+                break;
+            default:
+                super.mapField(values, field, course);
+                break;
         }
     }
 

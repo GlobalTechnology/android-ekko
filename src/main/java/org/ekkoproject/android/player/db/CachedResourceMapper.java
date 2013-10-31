@@ -16,19 +16,25 @@ public class CachedResourceMapper extends AbstractMapper<CachedResource> {
 
     @Override
     protected void mapField(final ContentValues values, final String field, final CachedResource resource) {
-        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.CachedResource.COLUMN_NAME_COURSE_ID.equals(field)) {
-            values.put(field, resource.getCourseId());
-        } else if (Contract.CachedResource.COLUMN_NAME_SHA1.equals(field)) {
-            values.put(field, resource.getSha1());
-        } else if (Contract.CachedResource.COLUMN_NAME_SIZE.equals(field)) {
-            values.put(field, resource.getSize());
-        } else if (Contract.CachedResource.COLUMN_NAME_PATH.equals(field)) {
-            values.put(field, resource.getPath());
-        } else if (Contract.CachedResource.COLUMN_NAME_LAST_ACCESSED.equals(field)) {
-            values.put(field, resource.getLastAccessed());
-        } else {
-            super.mapField(values, field, resource);
+        switch (field) {
+            case Contract.CachedResource.COLUMN_NAME_COURSE_ID:
+                values.put(field, resource.getCourseId());
+                break;
+            case Contract.CachedResource.COLUMN_NAME_SHA1:
+                values.put(field, resource.getSha1());
+                break;
+            case Contract.CachedResource.COLUMN_NAME_SIZE:
+                values.put(field, resource.getSize());
+                break;
+            case Contract.CachedResource.COLUMN_NAME_PATH:
+                values.put(field, resource.getPath());
+                break;
+            case Contract.CachedResource.COLUMN_NAME_LAST_ACCESSED:
+                values.put(field, resource.getLastAccessed());
+                break;
+            default:
+                super.mapField(values, field, resource);
+                break;
         }
     }
 

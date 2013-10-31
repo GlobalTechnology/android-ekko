@@ -16,17 +16,22 @@ public class AnswerMapper extends AbstractMapper<Answer> {
 
     @Override
     protected void mapField(final ContentValues values, final String field, final Answer answer) {
-        // XXX: I really want to use a switch for readability, but String switch support requires java 1.7
-        if (Contract.Answer.COLUMN_COURSE_ID.equals(field)) {
-            values.put(field, answer.getCourseId());
-        } else if (Contract.Answer.COLUMN_QUESTION_ID.equals(field)) {
-            values.put(field, answer.getQuestionId());
-        } else if (Contract.Answer.COLUMN_ANSWER_ID.equals(field)) {
-            values.put(field, answer.getAnswerId());
-        } else if (Contract.Answer.COLUMN_ANSWERED.equals(field)) {
-            values.put(field, answer.getAnswered());
-        } else {
-            super.mapField(values, field, answer);
+        switch (field) {
+            case Contract.Answer.COLUMN_COURSE_ID:
+                values.put(field, answer.getCourseId());
+                break;
+            case Contract.Answer.COLUMN_QUESTION_ID:
+                values.put(field, answer.getQuestionId());
+                break;
+            case Contract.Answer.COLUMN_ANSWER_ID:
+                values.put(field, answer.getAnswerId());
+                break;
+            case Contract.Answer.COLUMN_ANSWERED:
+                values.put(field, answer.getAnswered());
+                break;
+            default:
+                super.mapField(values, field, answer);
+                break;
         }
     }
 
