@@ -4,10 +4,14 @@ import static org.appdev.entity.Resource.PROVIDER_UNKNOWN;
 import static org.appdev.entity.Resource.PROVIDER_VIMEO;
 import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
+
 import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.R;
 
 import java.util.List;
 import java.util.Locale;
@@ -15,13 +19,19 @@ import java.util.Locale;
 public final class ResourceUtils {
     private static final Uri URI_VIMEO_BASE = Uri.parse("http://player.vimeo.com/video");
 
-    public static Intent providerIntent(final Resource resource) {
+    public static Intent providerIntent(final Activity activity, final Resource resource) {
         if (resource != null) {
             final Uri uri = Uri.parse(resource.getUri());
             switch (resource.getProvider()) {
                 case PROVIDER_VIMEO:
                     return new Intent(Intent.ACTION_VIEW, convertToVimeoPlayerUri(uri));
                 case PROVIDER_YOUTUBE:
+                    final String videoId = youtubeExtractVideoId(uri);
+                    if (videoId != null) {
+                        return YouTubeStandalonePlayer.createVideoIntent(activity,
+                                                                         activity.getString(R.string.youTubeApiKey),
+                                                                         videoId, 0, true, false);
+                    }
                 case PROVIDER_UNKNOWN:
                     return new Intent(Intent.ACTION_VIEW, uri);
             }

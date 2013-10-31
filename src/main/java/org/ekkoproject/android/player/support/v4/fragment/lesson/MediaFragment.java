@@ -7,6 +7,16 @@ import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import org.appdev.entity.Resource;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
@@ -18,16 +28,6 @@ import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
-
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 public class MediaFragment extends AbstractManifestAwareFragment implements View.OnClickListener {
     private static final String ARG_MEDIAID = MediaFragment.class.getName() + ".ARG_MEDIAID";
@@ -107,48 +107,46 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
     @Override
     public void onClick(final View v) {
         switch (v.getId()) {
-        case R.id.openButton:
-            if (this.media != null) {
-                if (this.media.isVideo()) {
-                    // get the target resource
-                    Resource resource = null;
-                    final Manifest manifest = this.getManifest();
-                    if (manifest != null) {
-                        resource = manifest.getResource(this.media.getResource());
-                    }
+            case R.id.openButton:
+                if (this.media != null) {
+                    if (this.media.isVideo()) {
+                        // get the target resource
+                        final Manifest manifest = this.getManifest();
+                        final Resource resource =
+                                manifest != null ? manifest.getResource(this.media.getResource()) : null;
 
-                    // mark the media as viewed
-                    this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
+                        // mark the media as viewed
+                        this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
 
-                    // check to see if the resource is a provider resource
-                    if (resource != null && resource.isUri()) {
-                        switch (resource.getProvider()) {
-                        case PROVIDER_NONE:
-                            break;
-                        case PROVIDER_VIMEO:
-                        case PROVIDER_YOUTUBE:
-                            case PROVIDER_UNKNOWN:
-                            final Intent intent = providerIntent(resource);
-                            if (intent != null) {
-                                startActivity(intent);
-                                return;
+                        // check to see if the resource is a provider resource
+                        if (resource != null && resource.isUri()) {
+                            switch (resource.getProvider()) {
+                                case PROVIDER_NONE:
+                                    break;
+                                case PROVIDER_YOUTUBE:
+                                case PROVIDER_VIMEO:
+                                case PROVIDER_UNKNOWN:
+                                    final Intent intent = providerIntent(getActivity(), resource);
+                                    if (intent != null) {
+                                        startActivity(intent);
+                                        return;
+                                    }
+                                default:
+                                    return;
                             }
-                        default:
-                            return;
                         }
+
+                        startActivity(MediaVideoActivity
+                                              .newIntent(getActivity(), this.getCourseId(), this.media.getResource()));
+                    } else if (this.media.isImage()) {
+                        // mark the media as viewed
+                        this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
+
+                        startActivity(MediaImageActivity
+                                              .newIntent(getActivity(), this.getCourseId(), this.media.getResource()));
                     }
-
-                    startActivity(MediaVideoActivity.newIntent(getActivity(), this.getCourseId(),
-                            this.media.getResource()));
-                } else if (this.media.isImage()) {
-                    // mark the media as viewed
-                    this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
-
-                    startActivity(MediaImageActivity.newIntent(getActivity(), this.getCourseId(),
-                            this.media.getResource()));
                 }
-            }
-            break;
+                break;
         }
     }
 
