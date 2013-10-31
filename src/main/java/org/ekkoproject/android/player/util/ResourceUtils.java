@@ -41,48 +41,62 @@ public final class ResourceUtils {
 
     private static Uri convertToVimeoPlayerUri(final Uri orig) {
         try {
-            final String scheme = orig.getScheme().toLowerCase(Locale.US);
-            if (scheme.equals("http") || scheme.equals("https")) {
-                final String host = orig.getHost().toLowerCase(Locale.US);
-                if (host.equals("vimeo.com") || host.equals("www.vimeo.com")) {
-                    final String path = orig.getEncodedPath();
-                    return URI_VIMEO_BASE.buildUpon()
-                            .appendEncodedPath(path.startsWith("/") ? path.substring(1) : path).build();
-                }
+            switch (orig.getScheme().toLowerCase(Locale.US)) {
+                case "http":
+                case "https":
+                    switch (orig.getHost().toLowerCase(Locale.US)) {
+                        case "vimeo.com":
+                        case "www.vimeo.com":
+                            final String path = orig.getEncodedPath();
+                            return URI_VIMEO_BASE.buildUpon().appendEncodedPath(
+                                    path.startsWith("/") ? path.substring(1) : path).build();
+                    }
             }
-        } catch (final Exception e) {
+        } catch (final Exception ignored) {
         }
 
         return orig;
     }
 
     public static String youtubeExtractVideoId(final Uri uri) {
-        if (uri != null) {
-            final String scheme = uri.getScheme();
-            if ("http".equals(scheme) || "https".equals(scheme)) {
-                final String host = uri.getHost();
-                final List<String> path = uri.getPathSegments();
-                assert path != null;
-                if ("www.youtube.com".equals(host) || "youtube.com".equals(host) || "m.youtube.com".equals(host) ||
-                        "youtube.googleapis.com".equals(host)) {
-                    switch (path.size()) {
-                        case 1:
-                            if ("watch".equals(path.get(0)) || "ytscreeningroom".equals(path.get(0))) {
-                                return uri.getQueryParameter("v");
+        try {
+            assert uri != null;
+            assert uri.getScheme() != null;
+            assert uri.getHost() != null;
+            assert uri.getPathSegments() != null;
+
+            switch (uri.getScheme().toLowerCase(Locale.US)) {
+                case "http":
+                case "https":
+                    final List<String> path = uri.getPathSegments();
+                    switch (uri.getHost().toLowerCase(Locale.US)) {
+                        case "www.youtube.com":
+                        case "youtube.com":
+                        case "m.youtube.com":
+                        case "youtube.googleapis.com":
+                            switch (path.get(0).toLowerCase(Locale.US)) {
+                                case "watch":
+                                case "ytscreeningroom":
+                                    if (path.size() == 1) {
+                                        return uri.getQueryParameter("v");
+                                    }
+                                    break;
+                                case "embed":
+                                case "v":
+                                    if (path.size() == 2) {
+                                        return path.get(1);
+                                    }
+                                    break;
                             }
                             break;
-                        case 2:
-                            if ("embed".equals(path.get(0)) || "v".equals(path.get(0))) {
-                                return path.get(1);
+                        case "youtu.be":
+                            if (path.size() == 1) {
+                                return path.get(0);
                             }
                             break;
-                    }
-                } else if ("youtu.be".equals(host)) {
-                    if (path.size() == 1) {
-                        return path.get(0);
                     }
                 }
-            }
+        } catch (final Exception ignored) {
         }
 
         return null;
