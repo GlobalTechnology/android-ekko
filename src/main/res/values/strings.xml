@@ -7,10 +7,10 @@
     <!-- Course strings -->
     <string name="course_completion_message_default">Congratulations! You finished %1$s.</string>
     <string name="course_list">Course List</string>
-    <string name="course_enroll">Enroll</string>
-    <string name="course_unenroll">Unenroll</string>
-    <string name="course_hide">Hide</string>
-    <string name="course_show">Show</string>
+    <string name="course_enroll">Enroll in Course</string>
+    <string name="course_unenroll">Unenroll from Course</string>
+    <string name="course_hide">Hide from My Courses</string>
+    <string name="course_show">Show in My Courses</string>
     <string name="courses_list_all">All Courses</string>
     <string name="courses_list_my">My Courses</string>
 
