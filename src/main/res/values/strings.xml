@@ -19,6 +19,7 @@
     <string name="action_login">Login</string>
     <string name="action_logout">Logout</string>
     <string name="action_lessons">Lessons</string>
+    <string name="action_about">About Ekko</string>
 
     <!-- Quiz strings -->
     <string name="quiz_results">Results:</string>

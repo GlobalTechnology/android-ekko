@@ -1,5 +1,8 @@
 package org.ekkoproject.android.player;
 
+import com.thinkfree.showlicense.License;
+import com.thinkfree.showlicense.LicensedProject;
+
 public final class Constants {
     public final static long THEKEY_CLIENTID = 85613451684391165L;
 
@@ -14,6 +17,12 @@ public final class Constants {
 
     /** common intent extras */
     public static final String EXTRA_COURSEID = Constants.class.getPackage().getName() + ".EXTRA_COURSEID";
+
+    public static final LicensedProject[] LICENSED_PROJECTS = new LicensedProject[] {
+            new LicensedProject("ViewPagerIndicator", null, "http://viewpagerindicator.com/", License.APACHE2),
+            new LicensedProject("showlicense", null, "https://github.com/behumble/showlicense", License.APACHE2),
+            new LicensedProject("SLF4J", null, "http://www.slf4j.org/", License.MIT),
+    };
 
     /** XML constants */
     public final static class XML {

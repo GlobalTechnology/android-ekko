@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.activity;
 
 import static org.ccci.gto.android.common.util.ThreadUtils.isUiThread;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
+import static org.ekkoproject.android.player.Constants.LICENSED_PROJECTS;
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.content.Context;
@@ -21,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.thinkfree.showlicense.android.ShowLicense;
 
 import org.ccci.gto.android.common.adapter.MenuListAdapter;
 import org.ccci.gto.android.thekey.TheKeyImpl;
@@ -146,6 +149,9 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
             case R.id.login:
             case R.id.logout:
                 this.showLoginDialog();
+                break;
+            case R.id.about:
+                ShowLicense.createDialog(this, "Open Source Software Used", LICENSED_PROJECTS).show();
                 break;
         }
     }
