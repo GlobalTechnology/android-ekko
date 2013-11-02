@@ -175,6 +175,11 @@ public class EkkoSyncService extends ThreadedIntentService {
         }
 
         if(!error) {
+            // handle the current corner case of a user having no courses
+            if(visible.size() == 0) {
+                visible.put(this.thekey.getGuid(), new HashSet<Long>());
+            }
+
             // delete any permissions not returned
             final Transaction tx = this.dao.beginTransaction();
             try {
@@ -188,6 +193,11 @@ public class EkkoSyncService extends ThreadedIntentService {
                         if (!ids.contains(permission.getCourseId())) {
                             this.dao.delete(permission);
                         }
+                    }
+
+                    // broadcast a courses update
+                    if(known.size() > 0) {
+                        broadcastCoursesUpdate(this);
                     }
                 }
                 tx.setTransactionSuccessful();
