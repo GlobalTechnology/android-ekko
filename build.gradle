@@ -101,3 +101,20 @@ dependencies {
     testCompile 'org.robolectric:robolectric:2.1.+'
     testCompile 'com.squareup:fest-android:1.0.+'
 }
+
+apply from: 'maven_publish.gradle'
+afterEvaluate { project ->
+    artifacts {
+        archives(file("build/apk/ekko-production-release.apk")) {
+            type 'apk'
+            builtBy assembleProductionRelease
+        }
+        archives(file("build/proguard/production/release/mapping.txt")) {
+            classifier 'mapping'
+            type 'txt'
+            builtBy proguardProductionRelease
+        }
+        archives androidSourcesJar
+        archives androidJavadocsJar
+    }
+}
