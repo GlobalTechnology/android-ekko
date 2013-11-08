@@ -96,8 +96,8 @@ dependencies {
     compile group: 'com.viewpagerindicator', name: 'library', version: '2.4.2-SNAPSHOT', ext: 'aar'
     compile group: 'com.thinkfree.android', name: 'showlicense', version: '0.1', ext: 'jar'
     compile group: 'org.ccci.gto.android', name: 'gto-support', version: '0.2.0-SNAPSHOT', ext: 'jar'
-    compile group: 'me.thekey.android', name: 'thekey-api', version: '0.4.0', ext: 'jar'
-    compile group: 'me.thekey.android', name: 'thekey-lib', version: '0.4.0', ext: 'aar'
+    compile group: 'me.thekey.android',      name: 'thekey-api',                 version: '0.5.0-SNAPSHOT', ext: 'jar'
+    compile group: 'me.thekey.android',      name: 'thekey-lib',                 version: '0.5.0-SNAPSHOT', ext: 'aar'
 
     testCompile 'junit:junit:4.11'
     testCompile 'org.robolectric:robolectric:2.1.+'

@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.thekey = new TheKeyImpl(this, THEKEY_CLIENTID);
+        this.thekey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);
         this.setContentView(R.layout.activity_main);
         this.findViews();
         this.setupActionBar();

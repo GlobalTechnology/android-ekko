@@ -78,7 +78,7 @@ public class EkkoSyncService extends ThreadedIntentService {
         this.dao = EkkoDao.getInstance(this);
         this.ekkoApi = EkkoHubApi.getInstance(this);
         this.manifestManager = ManifestManager.getInstance(this);
-        this.thekey = new TheKeyImpl(this, THEKEY_CLIENTID);
+        this.thekey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);
     }
 
     @Override
