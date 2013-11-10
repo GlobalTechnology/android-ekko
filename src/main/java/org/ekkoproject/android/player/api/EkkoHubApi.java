@@ -26,6 +26,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class EkkoHubApi extends AbstractGtoSmxApi {
     private static final Logger LOG = LoggerFactory.getLogger(EkkoHubApi.class);
@@ -36,24 +38,29 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
 
     private static final String PREFFILE_EKKOHUB = "ekkoHubApi";
 
-    private static final Object instanceLock = new Object();
-    private static EkkoHubApi instance = null;
+    private static final Object LOCK_INSTANCE = new Object();
+    private static final Map<String, EkkoHubApi> instances = new HashMap<>();
 
-    private EkkoHubApi(final Context context) {
-        super(context, TheKeyImpl.getInstance(context, THEKEY_CLIENTID), PREFFILE_EKKOHUB, R.string.ekkoSmxUri);
+    private EkkoHubApi(final Context context, final String guid) {
+        super(context, TheKeyImpl.getInstance(context, THEKEY_CLIENTID), PREFFILE_EKKOHUB, R.string.ekkoSmxUri, guid);
         this.setIncludeAppVersion(true);
+        this.setAllowGuest(true);
     }
 
     public static EkkoHubApi getInstance(final Context context) {
-        if (instance == null) {
-            synchronized (instanceLock) {
-                if (instance == null) {
-                    instance = new EkkoHubApi(context.getApplicationContext());
+        return EkkoHubApi.getInstance(context, null);
+    }
+
+    public static EkkoHubApi getInstance(final Context context, final String guid) {
+        if(!instances.containsKey(guid)) {
+            synchronized (LOCK_INSTANCE) {
+                if(!instances.containsKey(guid)) {
+                    instances.put(guid, new EkkoHubApi(context.getApplicationContext(), guid));
                 }
             }
         }
 
-        return instance;
+        return instances.get(guid);
     }
 
     public static void broadcastConnectionError(final Context context) {
