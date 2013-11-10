@@ -53,8 +53,7 @@ public class EnrollmentRunnable implements Runnable {
 
             // trigger a sync of the course now that we enrolled/unenrolled
             EkkoSyncService.syncCourse(mContext, id);
-        } catch (final ApiSocketException e) {
-        } catch (final InvalidSessionApiException e) {
+        } catch (final ApiSocketException | InvalidSessionApiException ignored) {
         }
     }
 }
