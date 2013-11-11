@@ -42,7 +42,6 @@ public class EkkoSyncService extends ThreadedIntentService {
     public static final int SYNCTYPE_MANIFEST = 3;
 
     private EkkoDao dao;
-    private EkkoHubApi ekkoApi;
     private ManifestManager manifestManager;
     private TheKey thekey;
 
@@ -76,7 +75,6 @@ public class EkkoSyncService extends ThreadedIntentService {
     public void onCreate() {
         super.onCreate();
         this.dao = EkkoDao.getInstance(this);
-        this.ekkoApi = EkkoHubApi.getInstance(this);
         this.manifestManager = ManifestManager.getInstance(this);
         this.thekey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);
     }
@@ -107,7 +105,6 @@ public class EkkoSyncService extends ThreadedIntentService {
     public void onDestroy() {
         super.onDestroy();
         this.dao = null;
-        this.ekkoApi = null;
         this.manifestManager = null;
     }
 
@@ -134,7 +131,7 @@ public class EkkoSyncService extends ThreadedIntentService {
         int limit = 50;
         final Map<String, Set<Long>> visible = new HashMap<>();
         while (hasMore) {
-            final CourseList courses = this.ekkoApi.getCourseList(start, limit);
+            final CourseList courses = this.getApi(null).getCourseList(start, limit);
             if (courses != null) {
                 final Transaction tx = this.dao.beginTransaction();
                 try {
@@ -208,7 +205,7 @@ public class EkkoSyncService extends ThreadedIntentService {
     }
 
     private void syncCourse(final long courseId) throws ApiSocketException, InvalidSessionApiException {
-        final Course course = this.ekkoApi.getCourse(courseId);
+        final Course course = this.getApi(null).getCourse(courseId);
         if (course != null) {
             this.processCourse(course, true);
             broadcastCoursesUpdate(this);
@@ -234,6 +231,10 @@ public class EkkoSyncService extends ThreadedIntentService {
                 }
             }
         }
+    }
+
+    private EkkoHubApi getApi(final String guid) {
+        return EkkoHubApi.getInstance(this, guid);
     }
 
     private void processCourse(final Course course, final boolean containsResources) {
