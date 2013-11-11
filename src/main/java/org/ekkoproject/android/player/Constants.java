@@ -17,6 +17,7 @@ public final class Constants {
 
     /** common intent extras */
     public static final String EXTRA_COURSEID = Constants.class.getPackage().getName() + ".EXTRA_COURSEID";
+    public static final String EXTRA_GUID = Constants.class.getPackage().getName() + ".EXTRA_GUID";
 
     public static final LicensedProject[] LICENSED_PROJECTS = new LicensedProject[] {
             new LicensedProject("ViewPagerIndicator", null, "http://viewpagerindicator.com/", License.APACHE2),

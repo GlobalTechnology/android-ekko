@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.sync;
 
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
+import static org.ekkoproject.android.player.Constants.EXTRA_GUID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
@@ -22,10 +23,8 @@ import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.services.ManifestManager;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import me.thekey.android.TheKey;
@@ -53,13 +52,17 @@ public class EkkoSyncService extends ThreadedIntentService {
         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent().setAction(ACTION_UPDATE_COURSES));
     }
 
-    public static void syncCourses(final Context context) {
-        context.startService(new Intent(context, EkkoSyncService.class).putExtra(EXTRA_SYNCTYPE, SYNCTYPE_COURSES));
+    public static void syncCourses(final Context context, final String guid) {
+        final Intent intent = new Intent(context, EkkoSyncService.class);
+        intent.putExtra(EXTRA_SYNCTYPE, SYNCTYPE_COURSES);
+        intent.putExtra(EXTRA_GUID, guid);
+        context.startService(intent);
     }
 
-    public static void syncCourse(final Context context, final long courseId) {
+    public static void syncCourse(final Context context, final String guid, final long courseId) {
         final Intent intent = new Intent(context, EkkoSyncService.class);
         intent.putExtra(EXTRA_SYNCTYPE, SYNCTYPE_COURSE);
+        intent.putExtra(EXTRA_GUID, guid);
         intent.putExtra(EXTRA_COURSEID, courseId);
         context.startService(intent);
     }
@@ -82,16 +85,18 @@ public class EkkoSyncService extends ThreadedIntentService {
     @Override
     protected void onHandleIntent(final Intent intent) {
         final int syncType = intent.getIntExtra(EXTRA_SYNCTYPE, 0);
+        final String guid = intent.getStringExtra(EXTRA_GUID);
+        final long courseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
         try {
             switch (syncType) {
-            case SYNCTYPE_COURSES:
-                this.syncCourses();
-                break;
+                case SYNCTYPE_COURSES:
+                    this.syncCourses(guid);
+                    break;
                 case SYNCTYPE_COURSE:
-                    this.syncCourse(intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE));
+                    this.syncCourse(guid, courseId);
                     break;
                 case SYNCTYPE_MANIFEST:
-                    this.syncManifest(intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE));
+                    this.syncManifest(courseId);
                     break;
             }
         } catch (final ApiSocketException e) {
@@ -116,7 +121,7 @@ public class EkkoSyncService extends ThreadedIntentService {
      * @throws ApiSocketException
      * @throws InvalidSessionApiException
      */
-    private void syncCourses() throws ApiSocketException, InvalidSessionApiException {
+    private void syncCourses(final String guid) throws ApiSocketException, InvalidSessionApiException {
         // load all existing courses
         final LongSparseArray<Course> existing = new LongSparseArray<>();
         for (final Course course : this.dao.getCourses(null, null, null, false)) {
@@ -125,13 +130,14 @@ public class EkkoSyncService extends ThreadedIntentService {
             }
         }
 
+        final EkkoHubApi api = this.getApi(guid);
         boolean error = false;
         boolean hasMore = true;
         int start = 0;
         int limit = 50;
-        final Map<String, Set<Long>> visible = new HashMap<>();
+        final Set<Long> visible = new HashSet<>();
         while (hasMore) {
-            final CourseList courses = this.getApi(null).getCourseList(start, limit);
+            final CourseList courses = api.getCourseList(start, limit);
             if (courses != null) {
                 final Transaction tx = this.dao.beginTransaction();
                 try {
@@ -142,11 +148,7 @@ public class EkkoSyncService extends ThreadedIntentService {
                         final Permission permission = course.getPermission();
                         if (permission != null) {
                             // track this course as visible
-                            final String guid = permission.getGuid();
-                            if (!visible.containsKey(guid)) {
-                                visible.put(guid, new HashSet<Long>());
-                            }
-                            visible.get(guid).add(permission.getCourseId());
+                            visible.add(permission.getCourseId());
                         }
                     }
                     tx.setTransactionSuccessful();
@@ -172,31 +174,22 @@ public class EkkoSyncService extends ThreadedIntentService {
         }
 
         if(!error) {
-            // handle the current corner case of a user having no courses
-            if(visible.size() == 0) {
-                visible.put(this.thekey.getGuid(), new HashSet<Long>());
-            }
-
             // delete any permissions not returned
             final Transaction tx = this.dao.beginTransaction();
             try {
-                for (final Map.Entry<String, Set<Long>> entry : visible.entrySet()) {
-                    final String guid = entry.getKey();
-                    final Set<Long> ids = entry.getValue();
-
-                    final List<Permission> known = this.dao
-                            .get(Permission.class, Contract.Permission.COLUMN_GUID + " = ?", new String[] {guid});
-                    for (final Permission permission : known) {
-                        if (!ids.contains(permission.getCourseId())) {
-                            this.dao.delete(permission);
-                        }
-                    }
-
-                    // broadcast a courses update
-                    if(known.size() > 0) {
-                        broadcastCoursesUpdate(this);
+                final List<Permission> known = this.dao.get(Permission.class, Contract.Permission.COLUMN_GUID + " = ?",
+                                                            new String[] {guid});
+                for (final Permission permission : known) {
+                    if (!visible.contains(permission.getCourseId())) {
+                        this.dao.delete(permission);
                     }
                 }
+
+                // broadcast a courses update
+                if (known.size() > 0) {
+                    broadcastCoursesUpdate(this);
+                }
+
                 tx.setTransactionSuccessful();
             } finally {
                 tx.endTransaction();
@@ -204,14 +197,14 @@ public class EkkoSyncService extends ThreadedIntentService {
         }
     }
 
-    private void syncCourse(final long courseId) throws ApiSocketException, InvalidSessionApiException {
-        final Course course = this.getApi(null).getCourse(courseId);
+    private void syncCourse(final String guid, final long courseId)
+            throws ApiSocketException, InvalidSessionApiException {
+        final Course course = this.getApi(guid).getCourse(courseId);
         if (course != null) {
             this.processCourse(course, true);
             broadcastCoursesUpdate(this);
         } else {
             // we didn't get a course back, so remove permissions for the current user
-            final String guid = this.thekey.getGuid();
             this.dao.delete(new Permission(courseId, guid));
         }
     }

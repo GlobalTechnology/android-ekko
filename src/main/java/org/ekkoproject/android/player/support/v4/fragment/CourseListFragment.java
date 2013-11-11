@@ -126,7 +126,7 @@ public class CourseListFragment extends AbstractListFragment {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.refresh:
-            EkkoSyncService.syncCourses(getActivity());
+            EkkoSyncService.syncCourses(getActivity(), this.guid);
             return true;
         default:
             return super.onOptionsItemSelected(item);

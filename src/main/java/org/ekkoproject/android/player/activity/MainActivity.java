@@ -64,11 +64,12 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
             this.initFragments();
 
             // display the login dialog if we don't have a valid GUID
-            if (this.thekey.getGuid() == null) {
+            final String guid = this.thekey.getGuid();
+            if (guid == null) {
                 this.showLoginDialog();
             } else {
                 // trigger a sync
-                EkkoSyncService.syncCourses(this);
+                EkkoSyncService.syncCourses(this, guid);
             }
         }
     }
@@ -110,7 +111,7 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
 
     @Override
     public void onLoginSuccess(final LoginDialogFragment dialog, final String guid) {
-        EkkoSyncService.syncCourses(this);
+        EkkoSyncService.syncCourses(this, guid);
 
         // reset the fragment back stack
         this.clearFragmentBackStack();

@@ -17,6 +17,7 @@ public class EnrollmentRunnable implements Runnable {
     private final Context mContext;
     private final EkkoHubApi api;
     private final int type;
+    private final String guid;
     private final long id;
 
     private OnNavigationListener mOnNavigationListener = null;
@@ -24,8 +25,9 @@ public class EnrollmentRunnable implements Runnable {
     public EnrollmentRunnable(final Context context, final int type, final String guid, final long id) {
         mContext = context.getApplicationContext();
         this.api = EkkoHubApi.getInstance(context, guid);
-        this.id = id;
         this.type = type;
+        this.guid = guid;
+        this.id = id;
     }
 
     public void setOnNavigationListener(final OnNavigationListener listener) {
@@ -52,7 +54,7 @@ public class EnrollmentRunnable implements Runnable {
             }
 
             // trigger a sync of the course now that we enrolled/unenrolled
-            EkkoSyncService.syncCourse(mContext, id);
+            EkkoSyncService.syncCourse(mContext, guid, id);
         } catch (final ApiSocketException | InvalidSessionApiException ignored) {
         }
     }
