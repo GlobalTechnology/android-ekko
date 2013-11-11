@@ -67,9 +67,12 @@ public class EkkoSyncService extends ThreadedIntentService {
         context.startService(intent);
     }
 
-    public static void syncManifest(final Context context, final long courseId) {
-        context.startService(new Intent(context, EkkoSyncService.class).putExtra(EXTRA_SYNCTYPE, SYNCTYPE_MANIFEST)
-                .putExtra(EXTRA_COURSEID, courseId));
+    public static void syncManifest(final Context context, final String guid, final long courseId) {
+        final Intent intent = new Intent(context, EkkoSyncService.class);
+        intent.putExtra(EXTRA_SYNCTYPE, SYNCTYPE_MANIFEST);
+        intent.putExtra(EXTRA_GUID, guid);
+        intent.putExtra(EXTRA_COURSEID, courseId);
+        context.startService(intent);
     }
 
     /** BEGIN lifecycle */
@@ -96,7 +99,7 @@ public class EkkoSyncService extends ThreadedIntentService {
                     this.syncCourse(guid, courseId);
                     break;
                 case SYNCTYPE_MANIFEST:
-                    this.syncManifest(courseId);
+                    this.syncManifest(guid, courseId);
                     break;
             }
         } catch (final ApiSocketException e) {
@@ -142,7 +145,7 @@ public class EkkoSyncService extends ThreadedIntentService {
                 final Transaction tx = this.dao.beginTransaction();
                 try {
                     for (final Course course : courses.getCourses()) {
-                        this.processCourse(course, true);
+                        this.processCourse(guid, course, true);
 
                         // record as visible if we have permissions
                         final Permission permission = course.getPermission();
@@ -201,7 +204,7 @@ public class EkkoSyncService extends ThreadedIntentService {
             throws ApiSocketException, InvalidSessionApiException {
         final Course course = this.getApi(guid).getCourse(courseId);
         if (course != null) {
-            this.processCourse(course, true);
+            this.processCourse(guid, course, true);
             broadcastCoursesUpdate(this);
         } else {
             // we didn't get a course back, so remove permissions for the current user
@@ -209,17 +212,14 @@ public class EkkoSyncService extends ThreadedIntentService {
         }
     }
 
-    private void syncManifest(final long courseId) {
+    private void syncManifest(final String guid, final long courseId) {
         final Course course = this.dao.find(Course.class, courseId);
-        if (course != null) {
+        if (guid != null && course != null) {
             // is there a newer manifest available?
             if (course.getVersion() > course.getManifestVersion()) {
                 // make sure we can actually access the manifest before attempting to download it
-                final String guid;
-                final Permission permission;
-                if ((guid = this.thekey.getGuid()) != null &&
-                        (permission = this.dao.find(Permission.class, guid, course.getId())) != null &&
-                        permission.isContentVisible()) {
+                final Permission permission = this.dao.find(Permission.class, guid, course.getId());
+                if (permission != null && permission.isContentVisible()) {
                     this.manifestManager.downloadManifest(courseId, guid);
                 }
             }
@@ -230,7 +230,7 @@ public class EkkoSyncService extends ThreadedIntentService {
         return EkkoHubApi.getInstance(this, guid);
     }
 
-    private void processCourse(final Course course, final boolean containsResources) {
+    private void processCourse(final String guid, final Course course, final boolean containsResources) {
         final Transaction tx = this.dao.beginTransaction();
         try {
             // update sync date
@@ -245,9 +245,6 @@ public class EkkoSyncService extends ThreadedIntentService {
                 this.dao.insertResources(course);
             }
 
-            // schedule a manifest sync
-            EkkoSyncService.syncManifest(this, course.getId());
-
             // update the permissions for this course
             final Permission permission = course.getPermission();
             if (permission != null) {
@@ -259,5 +256,8 @@ public class EkkoSyncService extends ThreadedIntentService {
         } finally {
             tx.endTransaction();
         }
+
+        // schedule a manifest sync
+        EkkoSyncService.syncManifest(this, guid, course.getId());
     }
 }
