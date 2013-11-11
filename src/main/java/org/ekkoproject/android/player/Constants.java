@@ -19,6 +19,9 @@ public final class Constants {
     public static final String EXTRA_COURSEID = Constants.class.getPackage().getName() + ".EXTRA_COURSEID";
     public static final String EXTRA_GUID = Constants.class.getPackage().getName() + ".EXTRA_GUID";
 
+    /** common saved state data */
+    public static final String STATE_GUID =  Constants.class.getPackage().getName() + ".STATE_GUID";
+
     public static final LicensedProject[] LICENSED_PROJECTS = new LicensedProject[] {
             new LicensedProject("ViewPagerIndicator", null, "http://viewpagerindicator.com/", License.APACHE2),
             new LicensedProject("showlicense", null, "https://github.com/behumble/showlicense", License.APACHE2),

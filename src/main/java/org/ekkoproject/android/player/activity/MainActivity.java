@@ -3,14 +3,17 @@ package org.ekkoproject.android.player.activity;
 import static org.ccci.gto.android.common.util.ThreadUtils.isUiThread;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.LICENSED_PROJECTS;
+import static org.ekkoproject.android.player.Constants.STATE_GUID;
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -35,15 +38,31 @@ import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 import me.thekey.android.TheKey;
+import me.thekey.android.content.TheKeyBroadcastReceiver;
 
-public class MainActivity extends ActionBarActivity implements LoginDialogFragment.Listener, OnNavigationListener {
+public class MainActivity extends ActionBarActivity implements OnNavigationListener {
     private static final String STATE_DRAWER_INDICATOR = MainActivity.class + ".STATE_DRAWER_INDICATOR";
 
     private DrawerLayout drawerLayout = null;
     private ListView drawerView = null;
     private ActionBarDrawerToggle drawerToggle = null;
 
-    private TheKey thekey;
+    private String mGuid;
+    private TheKey mTheKey;
+    private final TheKeyBroadcastReceiver mTheKeyReceiver = new TheKeyBroadcastReceiver() {
+        @Override
+        protected void onLogin(final String guid) {
+            updateUser(guid);
+        }
+
+        @Override
+        protected void onLogout(final String guid, final boolean changingUser) {
+            // only update if we are not changing users, changing users will have a second onLogin broadcast
+            if (!changingUser) {
+                updateUser("GUEST");
+            }
+        }
+    };
 
     public static Intent newIntent(final Context context) {
         return new Intent(context, MainActivity.class);
@@ -52,24 +71,19 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     /* BEGIN lifecycle */
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.thekey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);
+    public void onCreate(final Bundle savedState) {
+        super.onCreate(savedState);
+        mTheKey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);
         this.setContentView(R.layout.activity_main);
         this.findViews();
         this.setupActionBar();
         this.setupNavigationDrawer();
 
-        if(savedInstanceState == null) {
-            this.initFragments();
-
-            // display the login dialog if we don't have a valid GUID
-            final String guid = this.thekey.getGuid();
-            if (guid == null) {
-                this.showLoginDialog();
-            } else {
-                // trigger a sync
-                EkkoSyncService.syncCourses(this, guid);
+        if (savedState != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                mGuid = savedState.getString(STATE_GUID, null);
+            } else if (savedState.containsKey(STATE_GUID)) {
+                mGuid = savedState.getString(STATE_GUID);
             }
         }
     }
@@ -99,6 +113,15 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mTheKeyReceiver.registerReceiver(LocalBroadcastManager.getInstance(this));
+
+        // update the current guid as necessary
+        updateUser(mTheKey.getGuid());
+    }
+
+    @Override
     public void onBackPressed() {
         final FragmentManager fm = getSupportFragmentManager();
         if (!fm.popBackStackImmediate()) {
@@ -107,20 +130,6 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
             // enable the drawer indicator
             this.setDrawerIndicatorEnabled(true);
         }
-    }
-
-    @Override
-    public void onLoginSuccess(final LoginDialogFragment dialog, final String guid) {
-        EkkoSyncService.syncCourses(this, guid);
-
-        // reset the fragment back stack
-        this.clearFragmentBackStack();
-        this.showCourseList(guid, false);
-    }
-
-    @Override
-    public void onLoginFailure(final LoginDialogFragment dialog) {
-        // XXX: do nothing for now
     }
 
     @Override
@@ -141,11 +150,11 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         switch (item.getItemId()) {
             case R.id.myCourses:
                 this.clearFragmentBackStack();
-                this.showCourseList(this.thekey.getGuid(), false);
+                this.showCourseList(mGuid, false);
                 break;
             case R.id.allCourses:
                 this.clearFragmentBackStack();
-                this.showCourseList(this.thekey.getGuid(), true);
+                this.showCourseList(mGuid, true);
                 break;
             case R.id.login:
             case R.id.logout:
@@ -194,9 +203,16 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        mTheKeyReceiver.unregisterReceiver(LocalBroadcastManager.getInstance(this));
+    }
+
+    @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        outState.putString(STATE_GUID, mGuid);
         if (this.drawerToggle != null) {
             outState.putBoolean(STATE_DRAWER_INDICATOR, this.drawerToggle.isDrawerIndicatorEnabled());
         }
@@ -217,9 +233,20 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         return null;
     }
 
-    private void initFragments() {
-        // show the course list
-        this.showCourseList(this.thekey.getGuid(), false);
+    private void updateUser(final String guid) {
+        // update the current guid
+        final String old = mGuid;
+        mGuid = guid != null ? guid : GUID_GUEST;
+
+        // did the current user change?
+        if (!mGuid.equals(old)) {
+            // trigger a fresh sync of the courses
+            EkkoSyncService.syncCourses(this, mGuid);
+
+            // reset fragments
+            this.clearFragmentBackStack();
+            this.showCourseList(mGuid, false);
+        }
     }
 
     private void clearFragmentBackStack() {
@@ -286,10 +313,8 @@ public class MainActivity extends ActionBarActivity implements LoginDialogFragme
         // Create and show the login dialog only if it is not currently displayed
         final FragmentManager fm = this.getSupportFragmentManager();
         if (fm.findFragmentByTag("loginDialog") == null) {
-            LoginDialogFragment
-                    .newInstance(THEKEY_CLIENTID)
-                    .show(fm.beginTransaction().addToBackStack("loginDialog"),
-                          "loginDialog");
+            LoginDialogFragment.newInstance(THEKEY_CLIENTID)
+                    .show(fm.beginTransaction().addToBackStack("loginDialog"), "loginDialog");
         }
     }
 
