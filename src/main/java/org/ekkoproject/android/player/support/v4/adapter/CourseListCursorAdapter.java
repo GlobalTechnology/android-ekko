@@ -30,7 +30,6 @@ import org.ccci.gto.android.common.util.CursorUtils;
 import org.ccci.gto.android.common.util.ViewUtils;
 import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.EnrollmentState;
@@ -154,7 +153,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     // Create and show the login dialog only if it is not currently displayed
                     final FragmentManager fm = mActivity.getSupportFragmentManager();
                     fm.popBackStack("enrollDialog", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    NotEnrolledDialogFragment.newInstance(holder.courseId)
+                    NotEnrolledDialogFragment.newInstance(holder.courseId, holder.guid)
                             .show(fm.beginTransaction().addToBackStack("enrollDialog"), "enrollDialog");
                 }
             });
@@ -225,7 +224,6 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
 
     private static class CoursePopupMenuClickListener implements PopupMenu.OnMenuItemClickListener {
         private final Context mContext;
-        private final EkkoHubApi api;
         private final EkkoDao dao;
         private final CourseViewHolder holder;
 
@@ -233,7 +231,6 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
 
         private CoursePopupMenuClickListener(final Context context, final CourseViewHolder holder) {
             mContext = context;
-            this.api = EkkoHubApi.getInstance(context);
             this.dao = EkkoDao.getInstance(context);
             this.holder = holder;
         }
@@ -247,12 +244,13 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             final int id = item.getItemId();
             switch(id) {
                 case R.id.enroll:
-                    final EnrollmentRunnable task = new EnrollmentRunnable(this.mContext, ENROLL, holder.courseId);
+                    final EnrollmentRunnable task =
+                            new EnrollmentRunnable(mContext, ENROLL, holder.guid, holder.courseId);
                     task.setOnNavigationListener(mOnNavigationListener);
-                    this.api.async(task);
+                    task.schedule();
                     return true;
                 case R.id.unenroll:
-                    this.api.async(new EnrollmentRunnable(this.mContext, UNENROLL, holder.courseId));
+                    new EnrollmentRunnable(mContext, UNENROLL, holder.guid, holder.courseId).schedule();
                     return true;
                 case R.id.show:
                 case R.id.hide:

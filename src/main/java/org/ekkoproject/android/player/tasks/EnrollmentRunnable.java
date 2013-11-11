@@ -21,9 +21,9 @@ public class EnrollmentRunnable implements Runnable {
 
     private OnNavigationListener mOnNavigationListener = null;
 
-    public EnrollmentRunnable(final Context mContext, final int type, final long id) {
-        this.mContext = mContext.getApplicationContext();
-        this.api = EkkoHubApi.getInstance(mContext);
+    public EnrollmentRunnable(final Context context, final int type, final String guid, final long id) {
+        mContext = context.getApplicationContext();
+        this.api = EkkoHubApi.getInstance(context, guid);
         this.id = id;
         this.type = type;
     }
@@ -55,5 +55,9 @@ public class EnrollmentRunnable implements Runnable {
             EkkoSyncService.syncCourse(mContext, id);
         } catch (final ApiSocketException | InvalidSessionApiException ignored) {
         }
+    }
+
+    public void schedule() {
+        this.api.async(this);
     }
 }

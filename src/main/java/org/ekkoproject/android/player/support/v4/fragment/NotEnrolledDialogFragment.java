@@ -1,21 +1,24 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_COURSEID;
+import static org.ekkoproject.android.player.fragment.Constants.ARG_GUID;
 import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.ENROLL;
 
-import android.app.Activity;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.Html;
 
 import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
 import org.ccci.gto.android.common.support.v4.fragment.AbstractDialogFragment;
 import org.ekkoproject.android.player.OnNavigationListener;
-import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.support.v4.content.CourseLoader;
 import org.ekkoproject.android.player.tasks.EnrollmentRunnable;
@@ -23,36 +26,37 @@ import org.ekkoproject.android.player.tasks.EnrollmentRunnable;
 public class NotEnrolledDialogFragment extends AbstractDialogFragment {
     private static final int LOADER_COURSE = 1;
 
-    private EkkoHubApi api;
-
     private long courseId = INVALID_COURSE;
+    private String guid = GUID_GUEST;
 
-    protected static Bundle buildArgs(final long courseId) {
+    protected static Bundle buildArgs(final long courseId, final String guid) {
         final Bundle args = new Bundle();
         args.putLong(ARG_COURSEID, courseId);
+        args.putString(ARG_GUID, guid);
         return args;
     }
 
-    public static NotEnrolledDialogFragment newInstance(final long courseId) {
+    public static NotEnrolledDialogFragment newInstance(final long courseId, final String guid) {
         final NotEnrolledDialogFragment fragment = new NotEnrolledDialogFragment();
-        fragment.setArguments(buildArgs(courseId));
+        fragment.setArguments(buildArgs(courseId, guid));
         return fragment;
     }
 
     /* BEGIN lifecycle */
 
     @Override
-    public void onAttach(final Activity activity) {
-        super.onAttach(activity);
-        this.api = EkkoHubApi.getInstance(activity);
-    }
-
-    @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // process arguments
-        this.courseId = getArguments().getLong(ARG_COURSEID, INVALID_COURSE);
+        final Bundle args = getArguments();
+        this.courseId = args.getLong(ARG_COURSEID, INVALID_COURSE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            this.guid = args.getString(ARG_GUID, GUID_GUEST);
+        } else {
+            this.guid = args.getString(ARG_GUID);
+        }
     }
 
     @Override
@@ -68,9 +72,9 @@ public class NotEnrolledDialogFragment extends AbstractDialogFragment {
                 .setPositiveButton("Enroll", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
-                        final EnrollmentRunnable task = new EnrollmentRunnable(getActivity(), ENROLL, courseId);
+                        final EnrollmentRunnable task = new EnrollmentRunnable(getActivity(), ENROLL, guid, courseId);
                         task.setOnNavigationListener(getListener(OnNavigationListener.class));
-                        api.async(task);
+                        task.schedule();
                     }
                 }).setNegativeButton("Cancel", null);
         return builder.create();
@@ -87,7 +91,8 @@ public class NotEnrolledDialogFragment extends AbstractDialogFragment {
     /* END lifecycle */
 
     private void startLoaders() {
-        this.getLoaderManager().initLoader(LOADER_COURSE, null, new CourseLoaderCallbacks()).startLoading();
+        final LoaderManager manager = this.getLoaderManager();
+        manager.initLoader(LOADER_COURSE, null, new CourseLoaderCallbacks()).startLoading();
     }
 
     private void updateCourse(final Course course) {
