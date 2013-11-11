@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
+import static org.ekkoproject.android.player.fragment.Constants.ARG_GUID;
 
 import android.annotation.TargetApi;
 import android.database.Cursor;
@@ -29,7 +30,6 @@ import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 public class CourseListFragment extends AbstractListFragment {
     private static final String ARG_LAYOUT = CourseListFragment.class.getName() + ".ARG_LAYOUT";
-    private static final String ARG_GUID = CourseListFragment.class.getName() + ".ARG_GUID";
     private static final String ARG_VIEWSTATE = CourseListFragment.class.getName() + ".ARG_VIEWSTATE";
     private static final String ARG_SHOWALL = CourseListFragment.class.getName() + ".ARG_SHOWALL";
     private static final String ARG_LISTVIEWSTATE = CourseListFragment.class.getName() + ".ARG_LISTVIEWSTATE";
@@ -71,7 +71,7 @@ public class CourseListFragment extends AbstractListFragment {
         final Bundle args = this.getArguments();
         if (args != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                this.guid = args.getString(ARG_GUID, this.guid);
+                this.guid = args.getString(ARG_GUID, GUID_GUEST);
             } else {
                 final String guid = args.getString(ARG_GUID);
                 if (guid != null) {
