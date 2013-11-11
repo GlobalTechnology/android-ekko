@@ -565,7 +565,7 @@ public final class ResourceManager {
         // maybe try downloading the manifest (only when we don't already have a
         // manifest)
         if (manifest == null) {
-            manifest = this.manifestManager.downloadManifest(courseId);
+            manifest = this.manifestManager.downloadManifest(courseId, null);
             if (manifest != null) {
                 final Resource resource = manifest.getResource(resourceId);
                 if (resource != null) {

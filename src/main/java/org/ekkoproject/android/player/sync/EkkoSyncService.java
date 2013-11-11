@@ -230,7 +230,7 @@ public class EkkoSyncService extends ThreadedIntentService {
                 if ((guid = this.thekey.getGuid()) != null &&
                         (permission = this.dao.find(Permission.class, guid, course.getId())) != null &&
                         permission.isContentVisible()) {
-                    this.manifestManager.downloadManifest(courseId);
+                    this.manifestManager.downloadManifest(courseId, guid);
                 }
             }
         }

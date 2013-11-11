@@ -45,7 +45,6 @@ public final class ManifestManager {
     private static ManifestManager instance = null;
 
     private final Context context;
-    private final EkkoHubApi api;
     private final EkkoDao dao;
 
     private final Map<Long, Manifest> manifests = new HashMap<Long, Manifest>();
@@ -53,11 +52,10 @@ public final class ManifestManager {
 
     private ManifestManager(final Context ctx) {
         this.context = ctx.getApplicationContext();
-        this.api = EkkoHubApi.getInstance(this.context);
         this.dao = EkkoDao.getInstance(ctx);
     }
 
-    public static final ManifestManager getInstance(final Context context) {
+    public static ManifestManager getInstance(final Context context) {
         if (instance == null) {
             instance = new ManifestManager(context);
         }
@@ -150,7 +148,7 @@ public final class ManifestManager {
 
             // manifest doesn't exist, try downloading it
             if (!(FLAG_DONT_DOWNLOAD == (flags & FLAG_DONT_DOWNLOAD))) {
-                return downloadManifest(courseId, flags);
+                return downloadManifest(courseId, null, flags);
             }
 
             return null;
@@ -172,11 +170,11 @@ public final class ManifestManager {
         }
     }
 
-    public Manifest downloadManifest(final long courseId) {
-        return this.downloadManifest(courseId, FLAG_FORCE_RELOAD);
+    public Manifest downloadManifest(final long courseId, final String guid) {
+        return this.downloadManifest(courseId, guid, FLAG_FORCE_RELOAD);
     }
 
-    public Manifest downloadManifest(final long courseId, final int flags) {
+    public Manifest downloadManifest(final long courseId, final String guid, final int flags) {
         assertNotOnUiThread();
 
         // lock this manifest for downloading
@@ -205,7 +203,7 @@ public final class ManifestManager {
             OutputStream out = null;
             try {
                 out = this.context.openFileOutput(newName, 0);
-                this.api.streamManifest(course.getId(), out);
+                EkkoHubApi.getInstance(this.context, guid).streamManifest(course.getId(), out);
             } catch (final FileNotFoundException e) {
                 // not sure why this would happen
                 return null;
