@@ -108,6 +108,9 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         // add menu items
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_course, menu);
+
+        // hide root menu items
+        menu.setGroupVisible(R.id.rootMenuItems, false);
     }
 
     @Override

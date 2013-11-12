@@ -24,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.thinkfree.showlicense.android.ShowLicense;
@@ -109,6 +110,13 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
         // add menu items
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
+
+        // toggle Login/Logout MenuItems
+        final MenuItem item = menu.findItem((mGuid == null || mGuid.equals(GUID_GUEST)) ? R.id.login : R.id.logout);
+        if (item != null) {
+            item.setVisible(true);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -233,6 +241,10 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
             // reset fragments
             this.clearFragmentBackStack();
             this.showCourseList(mGuid, false);
+
+            // reset menus
+            this.supportInvalidateOptionsMenu();
+            updateNavigationDrawerMenu();
         }
     }
 
@@ -278,7 +290,6 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
             adapter.setTitleResourceId(R.id.label);
             adapter.setIconResourceId(R.id.icon);
             this.getMenuInflater().inflate(R.menu.navigation_drawer_main, adapter.getMenu());
-            adapter.synchronizeMenu();
             this.drawerView.setAdapter(adapter);
             this.drawerView.setOnItemClickListener(new MenuListAdapter.OnItemClickListener() {
                 @Override
@@ -293,12 +304,36 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
                     onOptionsItemSelected(item);
                 }
             });
+
+            // update Nav Drawer menu
+            updateNavigationDrawerMenu();
         }
 
         if (this.drawerLayout != null) {
             this.drawerToggle = new ActionBarDrawerToggle(this, this.drawerLayout, R.drawable.ic_drawer,
                     R.string.drawer_open, R.string.drawer_close);
             this.drawerLayout.setDrawerListener(this.drawerToggle);
+        }
+    }
+
+    private void updateNavigationDrawerMenu() {
+        if (this.drawerView != null) {
+            final ListAdapter adapter = this.drawerView.getAdapter();
+            if (adapter instanceof MenuListAdapter) {
+                final Menu menu = ((MenuListAdapter) adapter).getMenu();
+
+                // update login/logout menu item state
+                final MenuItem login = menu.findItem(R.id.login);
+                final MenuItem logout = menu.findItem(R.id.logout);
+                if (login != null) {
+                    login.setVisible(mGuid == null || GUID_GUEST.equals(mGuid));
+                }
+                if (logout != null) {
+                    logout.setVisible(mGuid != null && !GUID_GUEST.equals(mGuid));
+                }
+
+                ((MenuListAdapter) adapter).synchronizeMenu();
+            }
         }
     }
 
