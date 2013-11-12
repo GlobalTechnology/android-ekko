@@ -142,30 +142,6 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
         });
     }
 
-    private void onNavigationDrawerMenuItemSelected(final MenuItem item) {
-        if (this.drawerLayout != null && this.drawerView != null) {
-            this.drawerLayout.closeDrawer(this.drawerView);
-        }
-
-        switch (item.getItemId()) {
-            case R.id.myCourses:
-                this.clearFragmentBackStack();
-                this.showCourseList(mGuid, false);
-                break;
-            case R.id.allCourses:
-                this.clearFragmentBackStack();
-                this.showCourseList(mGuid, true);
-                break;
-            case R.id.login:
-            case R.id.logout:
-                this.showLoginDialog();
-                break;
-            case R.id.about:
-                ShowLicense.createDialog(this, "Open Source Software Used", LICENSED_PROJECTS).show();
-                break;
-        }
-    }
-
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
@@ -185,9 +161,20 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
                 // trigger the back function
                 this.onBackPressed();
                 return true;
+            case R.id.myCourses:
+                clearFragmentBackStack();
+                showCourseList(mGuid, false);
+                return true;
+            case R.id.allCourses:
+                clearFragmentBackStack();
+                showCourseList(mGuid, true);
+                return true;
             case R.id.login:
             case R.id.logout:
                 this.showLoginDialog();
+                return true;
+            case R.id.about:
+                ShowLicense.createDialog(this, "Open Source Software Used", LICENSED_PROJECTS).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -297,7 +284,13 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
                 @Override
                 public void onItemClick(final AdapterView<?> parent, final View view, final int position,
                                         final MenuItem item) {
-                    onNavigationDrawerMenuItemSelected(item);
+                    // close the drawerView
+                    if (drawerLayout != null && drawerView != null) {
+                        drawerLayout.closeDrawer(drawerView);
+                    }
+
+                    // pass as an option menu selection
+                    onOptionsItemSelected(item);
                 }
             });
         }
