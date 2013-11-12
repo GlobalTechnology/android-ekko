@@ -105,14 +105,6 @@ public final class Contract {
                 ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-        /* V7 updates */
-        @Deprecated
-        protected static final String SQL_V7_ALTER_ACCESSIBLE =
-                "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + SQL_COLUMN_ACCESSIBLE;
-        @Deprecated
-        protected static final String SQL_V7_DEFAULT_ACCESSIBLE = "UPDATE " + TABLE_NAME + " SET "
-                + COLUMN_NAME_ACCESSIBLE + " = 1";
-
         /* V9 updates */
         @Deprecated
         protected static final String SQL_V9_ALTER_PUBLIC =
@@ -154,14 +146,6 @@ public final class Contract {
                     + " TEXT," + COLUMN_NAME_SIZE + " INTEGER," + COLUMN_NAME_PROVIDER + " TEXT," + COLUMN_NAME_URI
                     + " TEXT," + COLUMN_NAME_MIMETYPE + " TEXT)";
             protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
-
-            /**
-             * an index on course id's is unnecessary because the primary key
-             * covers this index
-             */
-            @Deprecated
-            protected static final String SQL_DROP_INDEX_COURSE_ID = "DROP INDEX IF EXISTS " + TABLE_NAME + "_"
-                    + COLUMN_NAME_COURSE_ID;
         }
     }
 
@@ -184,14 +168,6 @@ public final class Contract {
                 + " TEXT," + COLUMN_NAME_LAST_ACCESSED + " INTEGER, PRIMARY KEY(" + COLUMN_NAME_COURSE_ID + ", "
                 + COLUMN_NAME_SHA1 + "))";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
-
-        /**
-         * an index on course id's is unnecessary because the primary key covers
-         * this index
-         */
-        @Deprecated
-        protected static final String SQL_DROP_INDEX_COURSE_ID = "DROP INDEX IF EXISTS " + TABLE_NAME + "_"
-                + COLUMN_NAME_COURSE_ID;
     }
 
     public static final class CachedUriResource extends Base {
@@ -216,14 +192,6 @@ public final class Contract {
                         COLUMN_LAST_MODIFIED + " INTEGER," + COLUMN_LAST_ACCESSED + " INTEGER, PRIMARY KEY(" +
                         COLUMN_COURSE_ID + ", " + COLUMN_URI + "))";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
-
-        /**
-         * an index on course id's in unnecessary because the primary key covers
-         * this index
-         */
-        @Deprecated
-        protected static final String SQL_DROP_INDEX_COURSE_ID =
-                "DROP INDEX IF EXISTS " + TABLE_NAME + "_" + COLUMN_COURSE_ID;
     }
 
     public static final class Progress extends Base {
@@ -250,14 +218,6 @@ public final class Contract {
                 .join(",", SQL_COLUMN_GUID, SQL_COLUMN_COURSE_ID, SQL_COLUMN_CONTENT_ID, SQL_COLUMN_COMPLETED,
                       SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
-
-        /**
-         * an index on course id's in unnecessary because the primary key covers
-         * this index
-         */
-        @Deprecated
-        protected static final String SQL_DROP_INDEX_COURSE_ID =
-                "DROP INDEX IF EXISTS " + TABLE_NAME + "_" + COLUMN_COURSE_ID;
 
         /* V12 updates */
         @Deprecated

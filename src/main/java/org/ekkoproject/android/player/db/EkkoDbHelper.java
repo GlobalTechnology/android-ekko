@@ -13,8 +13,6 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
     /*
      * Version history
      * 
-     * 5: 6/25/2013
-     * 6: 6/25/2013
      * 7: 6/28/2013
      * 8: 10/16/2013
      * 9: 10/18/2013
@@ -47,44 +45,6 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
     @SuppressWarnings("deprecation")
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         switch (oldVersion) {
-        case 0:
-            // version too old, reset database
-            resetDatabase(db);
-            break;
-        case 1:
-            if (newVersion <= 1) {
-                break;
-            }
-            db.execSQL(Contract.CachedResource.SQL_CREATE_TABLE);
-        case 2:
-            if (newVersion <= 2) {
-                break;
-            }
-            db.execSQL(Contract.CachedUriResource.SQL_CREATE_TABLE);
-        case 3:
-            if (newVersion <= 3) {
-                break;
-            }
-            db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
-        case 4:
-            if (newVersion <= 4) {
-                break;
-            }
-            db.execSQL(Contract.Answer.SQL_CREATE_TABLE);
-        case 5:
-            if (newVersion <= 5) {
-                break;
-            }
-            db.execSQL(Contract.Course.Resource.SQL_DROP_INDEX_COURSE_ID);
-            db.execSQL(Contract.CachedResource.SQL_DROP_INDEX_COURSE_ID);
-            db.execSQL(Contract.CachedUriResource.SQL_DROP_INDEX_COURSE_ID);
-            db.execSQL(Contract.Progress.SQL_DROP_INDEX_COURSE_ID);
-        case 6:
-            if (newVersion <= 6) {
-                break;
-            }
-            db.execSQL(Contract.Course.SQL_V7_ALTER_ACCESSIBLE);
-            db.execSQL(Contract.Course.SQL_V7_DEFAULT_ACCESSIBLE);
         case 7:
             if (newVersion <= 7) {
                 break;
@@ -124,6 +84,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 break;
             default:
                 // unrecognized version, let's just reset the database
+                // XXX: this includes versions that are too old
                 this.resetDatabase(db);
         }
     }
