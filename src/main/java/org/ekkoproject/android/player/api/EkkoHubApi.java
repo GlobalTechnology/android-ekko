@@ -52,11 +52,9 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     }
 
     public static EkkoHubApi getInstance(final Context context, final String guid) {
-        if(!instances.containsKey(guid)) {
-            synchronized (LOCK_INSTANCE) {
-                if(!instances.containsKey(guid)) {
-                    instances.put(guid, new EkkoHubApi(context.getApplicationContext(), guid));
-                }
+        synchronized (LOCK_INSTANCE) {
+            if(!instances.containsKey(guid)) {
+                instances.put(guid, new EkkoHubApi(context.getApplicationContext(), guid));
             }
         }
 
