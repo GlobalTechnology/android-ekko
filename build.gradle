@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.1'
+        classpath 'com.android.tools.build:gradle:0.6.3'
         classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
 }
@@ -57,6 +57,8 @@ android {
             versionNameSuffix "-debug"
         }
         release {
+            runProguard true
+            proguardFile 'proguard.cfg'
             signingConfig signingConfigs.release
         }
     }
