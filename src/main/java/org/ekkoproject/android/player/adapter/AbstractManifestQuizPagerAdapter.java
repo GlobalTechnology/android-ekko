@@ -1,17 +1,17 @@
 package org.ekkoproject.android.player.adapter;
 
+import android.support.v4.app.FragmentManager;
+
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Quiz;
-
-import android.support.v4.app.FragmentManager;
 
 public abstract class AbstractManifestQuizPagerAdapter extends AbstractManifestPagerAdapter {
     private final String quizId;
 
     private Quiz quiz = null;
 
-    public AbstractManifestQuizPagerAdapter(final FragmentManager fm, final String quizId) {
-        super(fm);
+    public AbstractManifestQuizPagerAdapter(final FragmentManager fm, final String guid, final String quizId) {
+        super(fm, guid);
         this.quizId = quizId;
     }
 

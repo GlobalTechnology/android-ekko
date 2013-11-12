@@ -1,11 +1,5 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import java.util.Set;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.adapter.ManifestQuizContentPagerAdapter;
-import org.ekkoproject.android.player.model.Manifest;
-
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,16 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.adapter.ManifestQuizContentPagerAdapter;
+import org.ekkoproject.android.player.model.Manifest;
+
+import java.util.Set;
+
 public class QuizFragment extends AbstractContentFragment implements AbstractContentFragment.OnNavigateListener {
     private ViewPager contentPager = null;
 
     private boolean showAnswers = false;
 
-    public static QuizFragment newInstance(final long courseId, final String quizId) {
+    public static QuizFragment newInstance(final String guid, final long courseId, final String quizId) {
         final QuizFragment fragment = new QuizFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId, quizId);
+        final Bundle args = buildArgs(guid, courseId, quizId);
         fragment.setArguments(args);
 
         return fragment;
@@ -111,8 +111,8 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
 
     private void setupContentPager() {
         if (this.contentPager != null) {
-            final ManifestQuizContentPagerAdapter adapter = new ManifestQuizContentPagerAdapter(
-                    getChildFragmentManager(), this.getContentId());
+            final ManifestQuizContentPagerAdapter adapter =
+                    new ManifestQuizContentPagerAdapter(getChildFragmentManager(), getGuid(), getContentId());
             adapter.setShowAnswers(this.showAnswers);
             this.contentPager.setAdapter(adapter);
         }

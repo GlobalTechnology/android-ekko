@@ -1,15 +1,5 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.adapter.ManifestQuizQuestionOptionAdapter;
-import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.model.Question;
-import org.ekkoproject.android.player.model.Quiz;
-import org.ekkoproject.android.player.services.CourseManager;
-
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +12,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.adapter.ManifestQuizQuestionOptionAdapter;
+import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Question;
+import org.ekkoproject.android.player.model.Quiz;
+import org.ekkoproject.android.player.services.CourseManager;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public class QuestionFragment extends AbstractContentFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_QUESTIONID = QuestionFragment.class.getName() + ".ARG_QUESTIONID";
     private static final String ARG_SHOWANSWER = QuestionFragment.class.getName() + ".ARG_SHOWANSWER";
@@ -33,12 +33,12 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
     private ListView optionsView = null;
     private ManifestQuizQuestionOptionAdapter optionsViewAdapter = null;
 
-    public static QuestionFragment newInstance(final long courseId, final String quizId, final String questionId,
-            final boolean showAnswer) {
+    public static QuestionFragment newInstance(final String guid, final long courseId, final String quizId,
+                                               final String questionId, final boolean showAnswer) {
         final QuestionFragment fragment = new QuestionFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId, quizId);
+        final Bundle args = buildArgs(guid, courseId, quizId);
         args.putString(ARG_QUESTIONID, questionId);
         args.putBoolean(ARG_SHOWANSWER, showAnswer);
         fragment.setArguments(args);

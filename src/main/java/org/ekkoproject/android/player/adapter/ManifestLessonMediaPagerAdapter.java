@@ -2,24 +2,24 @@ package org.ekkoproject.android.player.adapter;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.util.Collections;
-import java.util.List;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.support.v4.fragment.lesson.MediaFragment;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import java.util.Collections;
+import java.util.List;
 
 public class ManifestLessonMediaPagerAdapter extends AbstractManifestLessonPagerAdapter {
     private static final List<Media> NO_MEDIA = Collections.emptyList();
 
     private List<Media> media = NO_MEDIA;
 
-    public ManifestLessonMediaPagerAdapter(final FragmentManager fm, final String lessonId) {
-        super(fm, lessonId);
+    public ManifestLessonMediaPagerAdapter(final FragmentManager fm, final String guid, final String lessonId) {
+        super(fm, guid, lessonId);
     }
 
     @Override
@@ -46,6 +46,6 @@ public class ManifestLessonMediaPagerAdapter extends AbstractManifestLessonPager
         final String lessonId = lesson != null ? lesson.getId() : null;
         final Media media = this.media.get(position);
         final String mediaId = media != null ? media.getId() : null;
-        return MediaFragment.newInstance(courseId, lessonId, mediaId);
+        return MediaFragment.newInstance(mGuid, courseId, lessonId, mediaId);
     }
 }

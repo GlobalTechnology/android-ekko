@@ -2,8 +2,8 @@ package org.ekkoproject.android.player.adapter;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.util.Collections;
-import java.util.List;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Lesson;
@@ -14,16 +14,16 @@ import org.ekkoproject.android.player.support.v4.fragment.CourseCompletionFragme
 import org.ekkoproject.android.player.support.v4.fragment.LessonFragment;
 import org.ekkoproject.android.player.support.v4.fragment.QuizFragment;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import java.util.Collections;
+import java.util.List;
 
 public class ManifestContentPagerAdapter extends AbstractManifestPagerAdapter {
     private static final List<CourseContent> NO_CONTENT = Collections.emptyList();
 
     private List<CourseContent> content = NO_CONTENT;
 
-    public ManifestContentPagerAdapter(final FragmentManager fm) {
-        super(fm);
+    public ManifestContentPagerAdapter(final FragmentManager fm, final String guid) {
+        super(fm, guid);
     }
 
     protected void onNewManifest(final Manifest manifest) {
@@ -45,20 +45,22 @@ public class ManifestContentPagerAdapter extends AbstractManifestPagerAdapter {
     public Fragment getItem(final int position) {
         final Manifest manifest = this.getManifest();
         final long courseId = manifest != null ? manifest.getCourseId() : INVALID_COURSE;
-        if (position >= this.content.size()) {
-            return CourseCompletionFragment.newInstance(courseId);
-        } else {
+        if (position >= 0 && position < this.content.size()) {
             final CourseContent item = this.content.get(position);
 
             final Fragment fragment;
             if (item instanceof Lesson) {
-                fragment = LessonFragment.newInstance(courseId, item.getId());
+                fragment = LessonFragment.newInstance(mGuid, courseId, item.getId());
             } else if (item instanceof Quiz) {
-                fragment = QuizFragment.newInstance(courseId, item.getId());
+                fragment = QuizFragment.newInstance(mGuid, courseId, item.getId());
             } else {
                 fragment = null;
             }
             return fragment;
+        } else if(position == this.content.size()) {
+            return CourseCompletionFragment.newInstance(mGuid, courseId);
+        } else {
+            return null;
         }
     }
 

@@ -30,7 +30,7 @@ import java.util.List;
 public class CourseFragment extends AbstractManifestAwareFragment implements LessonFragment.Listener,
         AbstractContentFragment.OnNavigateListener, CourseContentDrawerFragment.Listener,
         ViewPager.OnPageChangeListener {
-    private static final String ARG_CONTENT_PAGER_STATE = CourseFragment.class.getName() + ".ARG_CONTENT_PAGER_STATE";
+    private static final String STATE_CONTENT_PAGER = CourseFragment.class.getName() + ".STATE_CONTENT_PAGER";
 
     private int layout = R.layout.fragment_course;
     private String contentId = null;
@@ -40,15 +40,11 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     private ViewPager contentPager = null;
     private Parcelable contentPagerState = null;
 
-    public static CourseFragment newInstance(final long courseId) {
-        return newInstance(R.layout.fragment_course, courseId);
-    }
-
-    public static CourseFragment newInstance(final int layout, final long courseId) {
+    public static CourseFragment newInstance(final int layout, final String guid, final long courseId) {
         final CourseFragment fragment = new CourseFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
+        final Bundle args = buildArgs(guid, courseId);
         args.putInt(ARG_LAYOUT, layout);
         fragment.setArguments(args);
 
@@ -219,9 +215,9 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
         super.onSaveInstanceState(outState);
         outState.putString(ARG_CONTENTID, this.contentId);
         if (this.contentPager != null && this.contentPagerInitialized) {
-            outState.putParcelable(ARG_CONTENT_PAGER_STATE, this.contentPager.onSaveInstanceState());
+            outState.putParcelable(STATE_CONTENT_PAGER, this.contentPager.onSaveInstanceState());
         } else {
-            outState.putParcelable(ARG_CONTENT_PAGER_STATE, this.contentPagerState);
+            outState.putParcelable(STATE_CONTENT_PAGER, this.contentPagerState);
         }
     }
 
@@ -234,13 +230,13 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
     private void setupContentPager(final Bundle savedState) {
         if (this.contentPager != null) {
-            this.contentPager.setAdapter(new ManifestContentPagerAdapter(getChildFragmentManager()));
+            this.contentPager.setAdapter(new ManifestContentPagerAdapter(getChildFragmentManager(), getGuid()));
             this.contentPager.setOnPageChangeListener(this);
 
             // restore the content pager state
             if (savedState != null) {
                 this.contentPagerInitialized = false;
-                this.contentPagerState = savedState.getParcelable(ARG_CONTENT_PAGER_STATE);
+                this.contentPagerState = savedState.getParcelable(STATE_CONTENT_PAGER);
             }
         }
     }
@@ -258,10 +254,9 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
     private void updateNavigationDrawer() {
         if (this.drawerLayout != null) {
-            getChildFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame_drawer_right,
-                            CourseContentDrawerFragment.newInstance(this.getCourseId(), this.contentId)).commit();
+            final CourseContentDrawerFragment fragment =
+                    CourseContentDrawerFragment.newInstance(getGuid(), getCourseId(), this.contentId);
+            getChildFragmentManager().beginTransaction().replace(R.id.frame_drawer_right, fragment).commit();
         }
     }
 

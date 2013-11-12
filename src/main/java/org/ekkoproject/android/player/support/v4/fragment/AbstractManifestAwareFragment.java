@@ -1,11 +1,19 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_COURSEID;
+import static org.ekkoproject.android.player.fragment.Constants.ARG_GUID;
 import static org.ekkoproject.android.player.services.ManifestManager.FLAG_NON_BLOCKING;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.app.Activity;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 
 import org.ekkoproject.android.player.adapter.ManifestAdapter;
 import org.ekkoproject.android.player.model.Manifest;
@@ -14,25 +22,22 @@ import org.ekkoproject.android.player.services.ManifestManager;
 import org.ekkoproject.android.player.tasks.UpdateManifestAdaptersAsyncTask;
 import org.ekkoproject.android.player.tasks.UpdateManifestAsyncTask;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractManifestAwareFragment extends AbstractFragment implements
         EkkoBroadcastReceiver.ManifestUpdateListener {
     private EkkoBroadcastReceiver broadcastReceiver = null;
     private ManifestManager manifestManager = null;
 
+    private String mGuid = GUID_GUEST;
     private long courseId = INVALID_COURSE;
 
     private Manifest manifest = null;
 
-    protected static final Bundle buildArgs(final long courseId) {
+    protected static Bundle buildArgs(final String guid, final long courseId) {
         final Bundle args = new Bundle();
+        args.putString(ARG_GUID, guid != null ? guid : GUID_GUEST);
         args.putLong(ARG_COURSEID, courseId);
         return args;
     }
@@ -50,7 +55,16 @@ public abstract class AbstractManifestAwareFragment extends AbstractFragment imp
         super.onCreate(savedInstanceState);
 
         // process arguments
-        this.courseId = getArguments().getLong(ARG_COURSEID, INVALID_COURSE);
+        final Bundle args = getArguments();
+        this.courseId = args.getLong(ARG_COURSEID, INVALID_COURSE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            mGuid = args.getString(ARG_GUID, GUID_GUEST);
+        } else {
+            mGuid = args.getString(ARG_GUID);
+            if (mGuid == null) {
+                mGuid = GUID_GUEST;
+            }
+        }
     }
 
     @Override
@@ -79,6 +93,10 @@ public abstract class AbstractManifestAwareFragment extends AbstractFragment imp
 
     protected final Manifest getManifest() {
         return this.manifest;
+    }
+
+    protected final String getGuid() {
+        return mGuid;
     }
 
     protected final long getCourseId() {

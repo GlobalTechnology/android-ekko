@@ -2,24 +2,24 @@ package org.ekkoproject.android.player.adapter;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.util.Collections;
-import java.util.List;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Text;
 import org.ekkoproject.android.player.support.v4.fragment.lesson.TextFragment;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import java.util.Collections;
+import java.util.List;
 
 public class ManifestLessonTextPagerAdapter extends AbstractManifestLessonPagerAdapter {
     private static final List<Text> NO_TEXT = Collections.emptyList();
 
     private List<Text> text = NO_TEXT;
 
-    public ManifestLessonTextPagerAdapter(final FragmentManager fm, final String lessonId) {
-        super(fm, lessonId);
+    public ManifestLessonTextPagerAdapter(final FragmentManager fm, final String guid, final String lessonId) {
+        super(fm, guid, lessonId);
     }
 
     @Override
@@ -46,6 +46,6 @@ public class ManifestLessonTextPagerAdapter extends AbstractManifestLessonPagerA
         final String lessonId = lesson != null ? lesson.getId() : null;
         final Text text = this.text.get(position);
         final String textId = text != null ? text.getId() : null;
-        return TextFragment.newInstance(courseId, lessonId, textId);
+        return TextFragment.newInstance(mGuid, courseId, lessonId, textId);
     }
 }

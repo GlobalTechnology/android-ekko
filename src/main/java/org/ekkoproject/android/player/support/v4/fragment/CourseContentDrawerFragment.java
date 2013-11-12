@@ -2,15 +2,6 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
-import java.util.Set;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
-import org.ekkoproject.android.player.adapter.ManifestLessonMediaAdapter;
-import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.services.CourseManager;
-import org.ekkoproject.android.player.services.ProgressManager;
-
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +14,15 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.adapter.ManifestContentAdapter;
+import org.ekkoproject.android.player.adapter.ManifestLessonMediaAdapter;
+import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.services.CourseManager;
+import org.ekkoproject.android.player.services.ProgressManager;
+
+import java.util.Set;
+
 public class CourseContentDrawerFragment extends AbstractManifestAndProgressAwareFragment implements
         AdapterView.OnItemClickListener {
     private String contentId;
@@ -31,15 +31,11 @@ public class CourseContentDrawerFragment extends AbstractManifestAndProgressAwar
     private ProgressBar progressBar = null;
     private ListView contentListView = null;
 
-    public static CourseContentDrawerFragment newInstance() {
-        return new CourseContentDrawerFragment();
-    }
-
-    public static CourseContentDrawerFragment newInstance(final long courseId, final String contentId) {
+    public static CourseContentDrawerFragment newInstance(final String guid, final long courseId, final String contentId) {
         final CourseContentDrawerFragment fragment = new CourseContentDrawerFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
+        final Bundle args = buildArgs(guid, courseId);
         args.putString(ARG_CONTENTID, contentId);
         fragment.setArguments(args);
 

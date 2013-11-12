@@ -2,8 +2,8 @@ package org.ekkoproject.android.player.adapter;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.util.Collections;
-import java.util.List;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Question;
@@ -11,8 +11,8 @@ import org.ekkoproject.android.player.model.Quiz;
 import org.ekkoproject.android.player.support.v4.fragment.QuestionFragment;
 import org.ekkoproject.android.player.support.v4.fragment.QuizResultsFragment;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import java.util.Collections;
+import java.util.List;
 
 public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAdapter {
     private static final List<Question> NO_QUESTIONS = Collections.emptyList();
@@ -21,8 +21,8 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
 
     private boolean showAnswers = false;
 
-    public ManifestQuizContentPagerAdapter(final FragmentManager fm, final String quizId) {
-        super(fm, quizId);
+    public ManifestQuizContentPagerAdapter(final FragmentManager fm, final String guid, final String quizId) {
+        super(fm, guid, quizId);
     }
 
     /* BEGIN lifecycle */
@@ -59,12 +59,13 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
         final Quiz quiz = this.getQuiz();
         final String quizId = quiz != null ? quiz.getId() : null;
 
-        // last page (results)
-        if (this.questions.size() == position) {
-            return QuizResultsFragment.newInstance(courseId, quizId);
+        if (position >= 0 && position < this.questions.size()) {
+            final String questionId = this.questions.get(position).getId();
+            return QuestionFragment.newInstance(mGuid, courseId, quizId, questionId, this.showAnswers);
+        } else if (this.questions.size() == position) {
+            return QuizResultsFragment.newInstance(mGuid, courseId, quizId);
         } else {
-            final String questionId = this.questions.size() > position ? this.questions.get(position).getId() : null;
-            return QuestionFragment.newInstance(courseId, quizId, questionId, this.showAnswers);
+            return null;
         }
     }
 

@@ -171,11 +171,11 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
                 return true;
             case R.id.myCourses:
                 clearFragmentBackStack();
-                showCourseList(mGuid, false);
+                showCourseList(false);
                 return true;
             case R.id.allCourses:
                 clearFragmentBackStack();
-                showCourseList(mGuid, true);
+                showCourseList(true);
                 return true;
             case R.id.login:
             case R.id.logout:
@@ -240,7 +240,7 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
 
             // reset fragments
             this.clearFragmentBackStack();
-            this.showCourseList(mGuid, false);
+            this.showCourseList(false);
 
             // reset menus
             this.supportInvalidateOptionsMenu();
@@ -262,18 +262,19 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
         this.setDrawerIndicatorEnabled(true);
     }
 
-    private void showCourseList(final String guid, final boolean showAll) {
-        final CourseListFragment fragment = CourseListFragment.newInstance(guid != null ? guid : GUID_GUEST,
-                                                                           R.layout.fragment_course_list_main, showAll);
+    private void showCourseList(final boolean showAll) {
+        final CourseListFragment fragment =
+                CourseListFragment.newInstance(mGuid, R.layout.fragment_course_list_main, showAll);
         this.getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
     }
 
     private void openCourse(final long courseId) {
-        // attach the course list fragment
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, CourseFragment
-                .newInstance(R.layout.fragment_course_drawer_wrapper, courseId)).addToBackStack(null).commit();
+        final CourseFragment fragment =
+                CourseFragment.newInstance(R.layout.fragment_course_drawer_wrapper, mGuid, courseId);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).addToBackStack(null)
+                .commit();
 
-        // update the DrawerLayout ActionBar toggle
+        // disable the DrawerLayout drawer ActionBar toggle
         this.setDrawerIndicatorEnabled(false);
     }
 

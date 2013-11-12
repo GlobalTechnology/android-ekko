@@ -1,12 +1,5 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import java.util.Set;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.model.Quiz;
-import org.ekkoproject.android.player.services.ProgressManager;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Pair;
@@ -15,19 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Quiz;
+import org.ekkoproject.android.player.services.ProgressManager;
+
+import java.util.Set;
+
 public class QuizResultsFragment extends AbstractContentFragment implements View.OnClickListener {
     private TextView score = null;
 
     private View nextButton = null;
     private View restartButton = null;
 
-    public static QuizResultsFragment newInstance(final long courseId, final String quizId) {
+    public static QuizResultsFragment newInstance(final String guid, final long courseId, final String quizId) {
         final QuizResultsFragment fragment = new QuizResultsFragment();
-
-        // handle arguments
-        final Bundle args = buildArgs(courseId, quizId);
-        fragment.setArguments(args);
-
+        fragment.setArguments(buildArgs(guid, courseId, quizId));
         return fragment;
     }
 

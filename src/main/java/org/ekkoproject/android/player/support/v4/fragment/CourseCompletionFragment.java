@@ -1,11 +1,5 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import java.util.Set;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.services.ProgressManager;
-
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Pair;
@@ -14,15 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.services.ProgressManager;
+
+import java.util.Set;
+
 public class CourseCompletionFragment extends AbstractContentFragment implements View.OnClickListener {
     private TextView completionMessageView = null;
     private View courseListButton = null;
 
-    public static CourseCompletionFragment newInstance(final long courseId) {
+    public static CourseCompletionFragment newInstance(final String guid, final long courseId) {
         final CourseCompletionFragment fragment = new CourseCompletionFragment();
 
         // handle arguments
-        fragment.setArguments(buildArgs(courseId));
+        fragment.setArguments(buildArgs(guid, courseId));
 
         return fragment;
     }

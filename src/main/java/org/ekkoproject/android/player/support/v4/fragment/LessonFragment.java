@@ -2,15 +2,6 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
-import java.util.Set;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.adapter.ManifestLessonMediaPagerAdapter;
-import org.ekkoproject.android.player.adapter.ManifestLessonTextPagerAdapter;
-import org.ekkoproject.android.player.model.Lesson;
-import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.services.ProgressManager;
-
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +14,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.viewpagerindicator.PageIndicator;
+
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.adapter.ManifestLessonMediaPagerAdapter;
+import org.ekkoproject.android.player.adapter.ManifestLessonTextPagerAdapter;
+import org.ekkoproject.android.player.model.Lesson;
+import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.services.ProgressManager;
+
+import java.util.Set;
 
 public class LessonFragment extends AbstractManifestAndProgressAwareFragment implements View.OnClickListener {
     private static final String ARG_PAGERSTATE = LessonFragment.class.getName() + ".ARG_PAGERSTATE";
@@ -41,11 +41,11 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
     private boolean needsRestore = false;
     private Bundle pagerState = new Bundle();
 
-    public static LessonFragment newInstance(final long courseId, final String lessonId) {
+    public static LessonFragment newInstance(final String guid, final long courseId, final String lessonId) {
         final LessonFragment fragment = new LessonFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
+        final Bundle args = buildArgs(guid, courseId);
         args.putString(ARG_CONTENTID, lessonId);
         fragment.setArguments(args);
 
@@ -205,7 +205,8 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
     private void setupMediaPager() {
         if (this.mediaPager != null) {
             // attach the PagerAdapter
-            this.mediaPager.setAdapter(new ManifestLessonMediaPagerAdapter(getChildFragmentManager(), this.lessonId));
+            this.mediaPager.setAdapter(
+                    new ManifestLessonMediaPagerAdapter(getChildFragmentManager(), getGuid(), this.lessonId));
 
             // attach to the PageIndicator
             if (this.mediaPagerIndicator != null) {
@@ -216,7 +217,8 @@ public class LessonFragment extends AbstractManifestAndProgressAwareFragment imp
 
     private void setupTextPagerAdapter() {
         if (this.textPager != null) {
-            this.textPager.setAdapter(new ManifestLessonTextPagerAdapter(getChildFragmentManager(), this.lessonId));
+            this.textPager.setAdapter(
+                    new ManifestLessonTextPagerAdapter(getChildFragmentManager(), getGuid(), this.lessonId));
         }
     }
 

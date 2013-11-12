@@ -2,13 +2,6 @@ package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.model.Lesson;
-import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.model.Text;
-import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
-import org.ekkoproject.android.player.util.StringUtils;
-
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.Lesson;
+import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Text;
+import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
+import org.ekkoproject.android.player.util.StringUtils;
+
 public class TextFragment extends AbstractManifestAwareFragment {
     private static final String ARG_TEXTID = TextFragment.class.getName() + ".ARG_TEXTID";
 
@@ -26,11 +26,12 @@ public class TextFragment extends AbstractManifestAwareFragment {
 
     private TextView textView = null;
 
-    public static TextFragment newInstance(final long courseId, final String lessonId, final String textId) {
+    public static TextFragment newInstance(final String guid, final long courseId, final String lessonId,
+                                           final String textId) {
         final TextFragment fragment = new TextFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
+        final Bundle args = buildArgs(guid, courseId);
         args.putString(ARG_CONTENTID, lessonId);
         args.putString(ARG_TEXTID, textId);
         fragment.setArguments(args);

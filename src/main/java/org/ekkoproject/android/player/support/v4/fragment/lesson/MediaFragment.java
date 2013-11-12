@@ -41,11 +41,12 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
     private View openButton = null;
     private ImageView thumbnail = null;
 
-    public static MediaFragment newInstance(final long courseId, final String lessonId, final String mediaId) {
+    public static MediaFragment newInstance(final String guid, final long courseId, final String lessonId,
+                                            final String mediaId) {
         final MediaFragment fragment = new MediaFragment();
 
         // handle arguments
-        final Bundle args = buildArgs(courseId);
+        final Bundle args = buildArgs(guid, courseId);
         args.putString(ARG_CONTENTID, lessonId);
         args.putString(ARG_MEDIAID, mediaId);
         fragment.setArguments(args);

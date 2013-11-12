@@ -2,12 +2,6 @@ package org.ekkoproject.android.player.support.v4.fragment;
 
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 
-import java.util.Set;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.model.CourseContent;
-import org.ekkoproject.android.player.model.Manifest;
-
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +11,12 @@ import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.CourseContent;
+import org.ekkoproject.android.player.model.Manifest;
+
+import java.util.Set;
+
 public abstract class AbstractContentFragment extends AbstractManifestAndProgressAwareFragment {
     private String contentId = null;
 
@@ -25,8 +25,8 @@ public abstract class AbstractContentFragment extends AbstractManifestAndProgres
     private View nextButton = null;
     private View prevButton = null;
 
-    protected static final Bundle buildArgs(final long courseId, final String contentId) {
-        final Bundle args = buildArgs(courseId);
+    protected static Bundle buildArgs(final String guid, final long courseId, final String contentId) {
+        final Bundle args = buildArgs(guid, courseId);
         args.putString(ARG_CONTENTID, contentId);
         return args;
     }

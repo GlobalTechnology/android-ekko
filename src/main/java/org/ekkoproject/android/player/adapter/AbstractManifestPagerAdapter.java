@@ -1,15 +1,17 @@
 package org.ekkoproject.android.player.adapter;
 
-import org.ekkoproject.android.player.model.Manifest;
-
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import org.ekkoproject.android.player.model.Manifest;
+
 public abstract class AbstractManifestPagerAdapter extends FragmentStatePagerAdapter implements ManifestAdapter {
+    protected final String mGuid;
     private Manifest manifest = null;
 
-    public AbstractManifestPagerAdapter(final FragmentManager fm) {
+    public AbstractManifestPagerAdapter(final FragmentManager fm, final String guid) {
         super(fm);
+        mGuid = guid;
     }
 
     public final synchronized Manifest swapManifest(final Manifest manifest) {
