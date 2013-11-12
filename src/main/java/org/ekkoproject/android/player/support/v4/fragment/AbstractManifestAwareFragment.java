@@ -6,7 +6,6 @@ import static org.ekkoproject.android.player.fragment.Constants.ARG_COURSEID;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_GUID;
 import static org.ekkoproject.android.player.services.ManifestManager.FLAG_NON_BLOCKING;
 
-import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -46,13 +45,6 @@ public abstract class AbstractManifestAwareFragment extends AbstractCascadingUse
     /** BEGIN lifecycle */
 
     @Override
-    public void onAttach(final Activity activity) {
-        this.manifestManager = ManifestManager.getInstance(activity);
-        this.progressManager = ProgressManager.getInstance(activity);
-        super.onAttach(activity);
-    }
-
-    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -67,6 +59,9 @@ public abstract class AbstractManifestAwareFragment extends AbstractCascadingUse
                 mGuid = GUID_GUEST;
             }
         }
+
+        this.manifestManager = ManifestManager.getInstance(getActivity());
+        this.progressManager = ProgressManager.getInstance(getActivity(), mGuid);
     }
 
     @Override

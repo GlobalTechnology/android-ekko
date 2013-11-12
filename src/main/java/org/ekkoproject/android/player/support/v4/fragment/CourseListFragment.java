@@ -36,7 +36,7 @@ public class CourseListFragment extends AbstractListFragment {
 
     private static final int LOADER_COURSES = 1;
 
-    private String guid = GUID_GUEST;
+    private String mGuid = GUID_GUEST;
     private int layout = DEFAULT_LAYOUT;
     private int itemLayout = R.layout.course_list_item_simple;
     private boolean showAll = true;
@@ -71,11 +71,11 @@ public class CourseListFragment extends AbstractListFragment {
         final Bundle args = this.getArguments();
         if (args != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                this.guid = args.getString(ARG_GUID, GUID_GUEST);
+                mGuid = args.getString(ARG_GUID, GUID_GUEST);
             } else {
-                final String guid = args.getString(ARG_GUID);
-                if (guid != null) {
-                    this.guid = guid;
+                mGuid = args.getString(ARG_GUID);
+                if (mGuid == null) {
+                    mGuid = GUID_GUEST;
                 }
             }
             this.showAll = args.getBoolean(ARG_SHOWALL, this.showAll);
@@ -126,7 +126,7 @@ public class CourseListFragment extends AbstractListFragment {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.refresh:
-            EkkoSyncService.syncCourses(getActivity(), this.guid);
+            EkkoSyncService.syncCourses(getActivity(), mGuid);
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -189,7 +189,7 @@ public class CourseListFragment extends AbstractListFragment {
     }
 
     private void setupListAdapter() {
-        final CourseListCursorAdapter adapter = new CourseListCursorAdapter(getActivity(), this.itemLayout);
+        final CourseListCursorAdapter adapter = new CourseListCursorAdapter(getActivity(), mGuid, this.itemLayout);
         adapter.setOnNavigationListener(this.getListener(OnNavigationListener.class));
         this.setListAdapter(adapter);
     }
@@ -230,7 +230,7 @@ public class CourseListFragment extends AbstractListFragment {
         public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
             switch (id) {
                 case LOADER_COURSES:
-                    return new CourseListCursorLoader(getActivity(), guid, showAll);
+                    return new CourseListCursorLoader(getActivity(), mGuid, showAll);
                 default:
                     return null;
             }

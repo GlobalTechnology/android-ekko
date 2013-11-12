@@ -22,7 +22,7 @@ public class EnrollmentRunnable implements Runnable {
 
     private OnNavigationListener mOnNavigationListener = null;
 
-    public EnrollmentRunnable(final Context context, final int type, final String guid, final long id) {
+    public EnrollmentRunnable(final Context context, final String guid, final int type, final long id) {
         mContext = context.getApplicationContext();
         this.api = EkkoHubApi.getInstance(context, guid);
         this.type = type;

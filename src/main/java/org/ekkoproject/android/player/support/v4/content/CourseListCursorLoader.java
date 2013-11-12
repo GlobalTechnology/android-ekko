@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.support.v4.content;
 
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.sync.EkkoSyncService.ACTION_UPDATE_COURSES;
 
 import android.content.Context;
@@ -15,13 +16,13 @@ import org.ekkoproject.android.player.model.Permission;
 
 public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
     private final EkkoDao dao;
-    private final String guid;
+    private final String mGuid;
     private final boolean all;
 
     public CourseListCursorLoader(final Context context, final String guid, final boolean all) {
         super(context, new IntentFilter(ACTION_UPDATE_COURSES));
         this.dao = EkkoDao.getInstance(context);
-        this.guid = guid != null ? guid.toUpperCase() : "";
+        mGuid = guid != null ? guid.toUpperCase() : GUID_GUEST;
         this.all = all;
     }
 
@@ -33,7 +34,6 @@ public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
                     Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_TITLE,
                     Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_NAME_BANNER_RESOURCE,
                     Contract.Course.SQL_PREFIX + Contract.Course.COLUMN_ENROLLMENT_TYPE,
-                    Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_GUID,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_ENROLLED,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_PENDING,
                     Contract.Permission.SQL_PREFIX + Contract.Permission.COLUMN_CONTENT_VISIBLE,
@@ -50,6 +50,6 @@ public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
     @Override
     protected Cursor getCursor() {
         return this.dao.getCursor(Course.class, SQL_JOINS, PROJECTION, all ? SQL_WHERE_ALL : SQL_WHERE_MY,
-                                  new String[] {this.guid}, SQL_ORDERBY);
+                                  new String[] {mGuid}, SQL_ORDERBY);
     }
 }

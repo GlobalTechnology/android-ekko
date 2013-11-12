@@ -27,7 +27,7 @@ public class NotEnrolledDialogFragment extends AbstractDialogFragment {
     private static final int LOADER_COURSE = 1;
 
     private long courseId = INVALID_COURSE;
-    private String guid = GUID_GUEST;
+    private String mGuid = GUID_GUEST;
 
     protected static Bundle buildArgs(final long courseId, final String guid) {
         final Bundle args = new Bundle();
@@ -53,9 +53,12 @@ public class NotEnrolledDialogFragment extends AbstractDialogFragment {
         final Bundle args = getArguments();
         this.courseId = args.getLong(ARG_COURSEID, INVALID_COURSE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-            this.guid = args.getString(ARG_GUID, GUID_GUEST);
+            mGuid = args.getString(ARG_GUID, GUID_GUEST);
         } else {
-            this.guid = args.getString(ARG_GUID);
+            mGuid = args.getString(ARG_GUID);
+            if (mGuid == null) {
+                mGuid = GUID_GUEST;
+            }
         }
     }
 
@@ -72,7 +75,7 @@ public class NotEnrolledDialogFragment extends AbstractDialogFragment {
                 .setPositiveButton("Enroll", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
-                        final EnrollmentRunnable task = new EnrollmentRunnable(getActivity(), ENROLL, guid, courseId);
+                        final EnrollmentRunnable task = new EnrollmentRunnable(getActivity(), mGuid, ENROLL, courseId);
                         task.setOnNavigationListener(getListener(OnNavigationListener.class));
                         task.schedule();
                     }

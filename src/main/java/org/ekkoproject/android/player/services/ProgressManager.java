@@ -1,11 +1,10 @@
 package org.ekkoproject.android.player.services;
 
+import static org.ccci.gto.android.common.util.ThreadUtils.assertNotOnUiThread;
+import static org.ccci.gto.android.common.util.ThreadUtils.assertOnUiThread;
+import static org.ccci.gto.android.common.util.ThreadUtils.getLock;
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
-import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
-import static org.ekkoproject.android.player.util.ThreadUtils.assertOnUiThread;
-import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
-import static org.ekkoproject.android.player.util.ThreadUtils.isUiThread;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -40,31 +39,34 @@ public final class ProgressManager {
     /** broadcast actions */
     public static final String ACTION_UPDATE_PROGRESS = ProgressManager.class.getName() + ".ACTION_UPDATE_PROGRESS";
 
-    private static final Object instanceLock = new Object();
-    private static ProgressManager instance = null;
+    private static final Object LOCK_INSTANCE = new Object();
+    private static Map<String, ProgressManager> instances = new HashMap<>();
 
-    private final Context context;
+    private final Context mContext;
+    private final String mGuid;
     private final EkkoDao dao;
     private final ManifestManager manifestManager;
 
-    private final Map<Long, Object> locks = new HashMap<Long, Object>();
-    private final Map<Long, Set<String>> progress = new HashMap<Long, Set<String>>();
+    private final Map<Long, Object> locks = new HashMap<>();
+    private final Map<Long, Set<String>> progress = new HashMap<>();
 
-    private ProgressManager(final Context ctx) {
-        this.context = ctx.getApplicationContext();
-        this.manifestManager = ManifestManager.getInstance(this.context);
-        this.dao = EkkoDao.getInstance(this.context);
+    private ProgressManager(final Context context, final String guid) {
+        mContext = context;
+        mGuid = guid;
+        this.manifestManager = ManifestManager.getInstance(context);
+        this.dao = EkkoDao.getInstance(context);
     }
 
-    public static final ProgressManager getInstance(final Context context) {
-        if (instance == null) {
-            synchronized (instanceLock) {
-                if (instance == null) {
-                    instance = new ProgressManager(context);
+    public static ProgressManager getInstance(final Context context, final String guid) {
+        if (!instances.containsKey(guid)) {
+            synchronized (LOCK_INSTANCE) {
+                if (!instances.containsKey(guid)) {
+                    instances.put(guid, new ProgressManager(context.getApplicationContext(), guid));
                 }
             }
         }
-        return instance;
+
+        return instances.get(guid);
     }
 
     private static void broadcastProgressUpdate(final Context context, final long courseId) {
@@ -129,7 +131,7 @@ public final class ProgressManager {
                 }
 
                 // broadcast a progress update
-                broadcastProgressUpdate(this.context, courseId);
+                broadcastProgressUpdate(mContext, courseId);
 
                 return Collections.unmodifiableSet(progress);
 
@@ -258,7 +260,7 @@ public final class ProgressManager {
         return getLessonProgress(courseId, lesson, progress);
     }
 
-    public static final Pair<Integer, Integer> getCourseProgress(final Manifest manifest, final Set<String> progress) {
+    public static Pair<Integer, Integer> getCourseProgress(final Manifest manifest, final Set<String> progress) {
         int complete = 0;
         int total = 0;
         if (manifest != null && progress != null) {
@@ -286,8 +288,8 @@ public final class ProgressManager {
         return Pair.create(complete, total);
     }
 
-    public static final Pair<Integer, Integer> getLessonProgress(final long courseId, final Lesson lesson,
-            final Set<String> progress) {
+    public static Pair<Integer, Integer> getLessonProgress(final long courseId, final Lesson lesson,
+                                                           final Set<String> progress) {
         boolean lessonComplete = false;
         int complete = 0;
         int total = 0;
@@ -311,21 +313,15 @@ public final class ProgressManager {
             } else if (complete == total && total > 0) {
                 // lesson should be marked as complete, but isn't currently
                 // XXX: this isn't a clean implementation, but it works
-                if (instance != null) {
-                    if (isUiThread()) {
-                        instance.recordProgressAsync(courseId, lesson.getId());
-                    } else {
-                        instance.recordProgress(courseId, lesson.getId());
-                    }
-                }
+                // TODO: we need a new implementation that knows about the current user
             }
         }
 
         return Pair.create(lessonComplete ? total : complete, total);
     }
 
-    public static final Pair<Integer, Integer> getQuizProgress(final long courseId, final Quiz quiz,
-            final Set<String> progress) {
+    public static Pair<Integer, Integer> getQuizProgress(final long courseId, final Quiz quiz,
+                                                         final Set<String> progress) {
         int complete = 0;
         int total = 0;
         if (quiz != null && progress != null) {
@@ -368,7 +364,7 @@ public final class ProgressManager {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 return this.executeOnExecutor(THREAD_POOL_EXECUTOR);
             } else {
-                return this.execute(new Void[] {});
+                return super.execute();
             }
         }
 
@@ -393,7 +389,7 @@ public final class ProgressManager {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 return this.executeOnExecutor(THREAD_POOL_EXECUTOR);
             } else {
-                return this.execute(new Void[] {});
+                return super.execute();
             }
         }
 

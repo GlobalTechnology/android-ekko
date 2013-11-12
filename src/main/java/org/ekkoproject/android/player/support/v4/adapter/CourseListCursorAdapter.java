@@ -1,6 +1,5 @@
 package org.ekkoproject.android.player.support.v4.adapter;
 
-import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_APPROVAL;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_DISABLED;
@@ -51,16 +50,18 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
     private static final int[] TO = new int[] {R.id.title, R.id.banner, R.id.progress};
 
     private final FragmentActivity mActivity;
+    private final String mGuid;
     private final ResourceManager resourceManager;
     private final ProgressManager progressManager;
 
     private OnNavigationListener mOnNavigationListener = null;
 
-    public CourseListCursorAdapter(final FragmentActivity activity, final int layout) {
+    public CourseListCursorAdapter(final FragmentActivity activity, final String guid, final int layout) {
         super(activity, layout, null, FROM, TO, 0);
         mActivity = activity;
+        mGuid = guid;
         this.resourceManager = ResourceManager.getInstance(activity);
-        this.progressManager = ProgressManager.getInstance(activity);
+        this.progressManager = ProgressManager.getInstance(activity, mGuid);
         this.setViewBinder(new CourseViewBinder());
     }
 
@@ -81,7 +82,8 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                 @Override
                 public void onClick(final View v) {
                     final PopupMenu popup = new PopupMenu(mActivity, holder.actionMenu);
-                    final CoursePopupMenuClickListener listener = new CoursePopupMenuClickListener(mActivity, holder);
+                    final CoursePopupMenuClickListener listener =
+                            new CoursePopupMenuClickListener(mActivity, mGuid, holder);
                     listener.setOnNavigationListener(mOnNavigationListener);
                     popup.setOnMenuItemClickListener(listener);
                     popup.inflate(R.menu.popup_course_card);
@@ -153,8 +155,8 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     // Create and show the login dialog only if it is not currently displayed
                     final FragmentManager fm = mActivity.getSupportFragmentManager();
                     fm.popBackStack("enrollDialog", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                    NotEnrolledDialogFragment.newInstance(holder.courseId, holder.guid)
-                            .show(fm.beginTransaction().addToBackStack("enrollDialog"), "enrollDialog");
+                    NotEnrolledDialogFragment.newInstance(holder.courseId, mGuid).show(
+                            fm.beginTransaction().addToBackStack("enrollDialog"), "enrollDialog");
                 }
             });
 
@@ -174,7 +176,6 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         final CourseViewHolder holder = (CourseViewHolder) holderTmp;
 
         // update holder values
-        holder.guid = CursorUtils.getString(c, Contract.Permission.COLUMN_GUID, GUID_GUEST);
         holder.courseId = CursorUtils.getLong(c, Contract.Course.COLUMN_NAME_COURSE_ID, INVALID_COURSE);
         holder.enrolled = CursorUtils.getBool(c, Contract.Permission.COLUMN_ENROLLED, false);
         holder.contentVisible = CursorUtils.getBool(c, Contract.Permission.COLUMN_CONTENT_VISIBLE, false);
@@ -196,7 +197,6 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private final View actionMenu;
 
         private long courseId;
-        private String guid;
         private boolean enrolled = false;
         private boolean pending = false;
         private boolean contentVisible = false;
@@ -224,13 +224,15 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
 
     private static class CoursePopupMenuClickListener implements PopupMenu.OnMenuItemClickListener {
         private final Context mContext;
+        private final String mGuid;
         private final EkkoDao dao;
         private final CourseViewHolder holder;
 
         private OnNavigationListener mOnNavigationListener = null;
 
-        private CoursePopupMenuClickListener(final Context context, final CourseViewHolder holder) {
+        private CoursePopupMenuClickListener(final Context context, final String guid, final CourseViewHolder holder) {
             mContext = context;
+            mGuid = guid;
             this.dao = EkkoDao.getInstance(context);
             this.holder = holder;
         }
@@ -244,17 +246,16 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             final int id = item.getItemId();
             switch(id) {
                 case R.id.enroll:
-                    final EnrollmentRunnable task =
-                            new EnrollmentRunnable(mContext, ENROLL, holder.guid, holder.courseId);
+                    final EnrollmentRunnable task = new EnrollmentRunnable(mContext, mGuid, ENROLL, holder.courseId);
                     task.setOnNavigationListener(mOnNavigationListener);
                     task.schedule();
                     return true;
                 case R.id.unenroll:
-                    new EnrollmentRunnable(mContext, UNENROLL, holder.guid, holder.courseId).schedule();
+                    new EnrollmentRunnable(mContext, mGuid, UNENROLL, holder.courseId).schedule();
                     return true;
                 case R.id.show:
                 case R.id.hide:
-                    final Permission permission = new Permission(holder.courseId, holder.guid);
+                    final Permission permission = new Permission(holder.courseId, mGuid);
                     permission.setHidden(id == R.id.hide);
                     this.dao.async(new Runnable() {
                         @Override
@@ -306,7 +307,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
 
         protected UpdateProgressBarAsyncTask(final ProgressBar progressBar) {
             progressBar.setTag(R.id.progress_bar_update_task, new WeakReference<AsyncTask<?, ?, ?>>(this));
-            this.progressBar = new WeakReference<ProgressBar>(progressBar);
+            this.progressBar = new WeakReference<>(progressBar);
         }
 
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
