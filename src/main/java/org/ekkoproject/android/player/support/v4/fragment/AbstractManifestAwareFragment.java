@@ -19,16 +19,17 @@ import org.ekkoproject.android.player.adapter.ManifestAdapter;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.services.EkkoBroadcastReceiver;
 import org.ekkoproject.android.player.services.ManifestManager;
+import org.ekkoproject.android.player.services.ProgressManager;
 import org.ekkoproject.android.player.tasks.UpdateManifestAdaptersAsyncTask;
 import org.ekkoproject.android.player.tasks.UpdateManifestAsyncTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractManifestAwareFragment extends AbstractFragment implements
-        EkkoBroadcastReceiver.ManifestUpdateListener {
+public abstract class AbstractManifestAwareFragment extends AbstractCascadingUserVisibleHintFragment implements EkkoBroadcastReceiver.ManifestUpdateListener {
     private EkkoBroadcastReceiver broadcastReceiver = null;
     private ManifestManager manifestManager = null;
+    private ProgressManager progressManager = null;
 
     private String mGuid = GUID_GUEST;
     private long courseId = INVALID_COURSE;
@@ -47,6 +48,7 @@ public abstract class AbstractManifestAwareFragment extends AbstractFragment imp
     @Override
     public void onAttach(final Activity activity) {
         this.manifestManager = ManifestManager.getInstance(activity);
+        this.progressManager = ProgressManager.getInstance(activity);
         super.onAttach(activity);
     }
 
@@ -95,6 +97,10 @@ public abstract class AbstractManifestAwareFragment extends AbstractFragment imp
         return this.manifest;
     }
 
+    protected ProgressManager getProgressManager() {
+        return this.progressManager;
+    }
+
     protected final String getGuid() {
         return mGuid;
     }
@@ -125,17 +131,6 @@ public abstract class AbstractManifestAwareFragment extends AbstractFragment imp
             this.broadcastReceiver.unregisterReceiver();
             this.broadcastReceiver = null;
         }
-    }
-
-    protected final <T> T findView(final Class<T> clazz, final int id) {
-        final View root = getView();
-        if (root != null) {
-            final View view = root.findViewById(id);
-            if (clazz.isInstance(view)) {
-                return clazz.cast(view);
-            }
-        }
-        return null;
     }
 
     protected final void updateManifestAdapters(Manifest manifest, final View... views) {

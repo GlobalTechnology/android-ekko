@@ -1,23 +1,14 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
-import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import org.ekkoproject.android.player.services.ProgressManager;
+import org.ccci.gto.android.common.support.v4.fragment.AbstractFragment;
 
 import java.util.List;
 
-public class AbstractFragment extends Fragment implements OnUpdateVisibilityListener {
-    private ProgressManager progressManager = null;
-
+public class AbstractCascadingUserVisibleHintFragment extends AbstractFragment implements OnUpdateVisibilityListener {
     /* BEGIN lifecycle */
-
-    @Override
-    public void onAttach(final Activity activity) {
-        this.progressManager = ProgressManager.getInstance(activity);
-        super.onAttach(activity);
-    }
 
     @Override
     public void onUpdateUserVisibleHint(final boolean isVisibleToUser) {
@@ -37,19 +28,13 @@ public class AbstractFragment extends Fragment implements OnUpdateVisibilityList
 
     /* END lifecycle */
 
-    protected ProgressManager getProgressManager() {
-        return this.progressManager;
-    }
-
     @Override
     public boolean getUserVisibleHint() {
         if (super.getUserVisibleHint()) {
             final Fragment parent = this.getParentFragment();
-            if (parent != null) {
-                return parent.getUserVisibleHint();
-            }
-            return true;
+            return parent == null || parent.getUserVisibleHint();
         }
+
         return false;
     }
 
