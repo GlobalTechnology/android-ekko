@@ -3,13 +3,19 @@ package org.ekkoproject.android.player.model;
 import java.util.Date;
 
 public class Progress {
+    private final String guid;
     private final long courseId;
     private final String contentId;
     private Date completed = new Date(0);
 
-    public Progress(final long courseId, final String contentId) {
+    public Progress(final String guid, final long courseId, final String contentId) {
+        this.guid = guid;
         this.courseId = courseId;
         this.contentId = contentId;
+    }
+
+    public String getGuid() {
+        return this.guid;
     }
 
     public long getCourseId() {

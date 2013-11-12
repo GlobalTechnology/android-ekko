@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.services;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_ABORT;
 import static org.ccci.gto.android.common.util.ThreadUtils.assertNotOnUiThread;
 import static org.ccci.gto.android.common.util.ThreadUtils.assertOnUiThread;
 import static org.ccci.gto.android.common.util.ThreadUtils.getLock;
@@ -104,8 +105,9 @@ public final class ProgressManager {
 
                 // fetch a Cursor for all the regular progress in the specified course
                 c1 = this.dao.getCursor(Progress.class, new String[] {Contract.Progress.COLUMN_CONTENT_ID},
-                                        Contract.Progress.COLUMN_COURSE_ID + "=?",
-                                        new String[] {Long.toString(courseId)}, null);
+                                        Contract.Progress.COLUMN_GUID + " = ? AND " +
+                                                Contract.Progress.COLUMN_COURSE_ID + " = ?",
+                                        new String[] {mGuid, Long.toString(courseId)}, null);
                 final int column1 = c1.getColumnIndex(Contract.Progress.COLUMN_CONTENT_ID);
                 if (column1 != -1) {
                     while (c1.moveToNext()) {
@@ -165,21 +167,17 @@ public final class ProgressManager {
         }
 
         try {
-            // make sure this progress wasn't already recorded
-            final Progress existing = this.dao.find(Progress.class, courseId, contentId);
-            if (existing == null) {
-                // create a new progress entry
-                final Progress progress = new Progress(courseId, contentId);
-                progress.setCompleted();
-                this.dao.insert(progress);
+            // create a new progress entry
+            final Progress progress = new Progress(mGuid, courseId, contentId);
+            progress.setCompleted();
+            this.dao.insert(progress, CONFLICT_ABORT);
 
-                // reload progress
-                synchronized (this.progress) {
-                    this.progress.remove(courseId);
-                }
-                this.loadProgress(courseId);
+            // trigger a progress reload
+            synchronized (this.progress) {
+                this.progress.remove(courseId);
             }
-        } catch (final SQLiteException e) {
+            this.loadProgress(courseId);
+        } catch (final SQLiteException ignored) {
         }
     }
 

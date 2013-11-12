@@ -228,19 +228,27 @@ public final class Contract {
 
     public static final class Progress extends Base {
         protected static final String TABLE_NAME = "progress";
+        public static final String COLUMN_GUID = "guid";
         public static final String COLUMN_COURSE_ID = "courseId";
         public static final String COLUMN_CONTENT_ID = "contentId";
         public static final String COLUMN_COMPLETED = "completed";
 
-        protected static final String[] PROJECTION_ALL = {COLUMN_COURSE_ID, COLUMN_CONTENT_ID, COLUMN_COMPLETED};
+        protected static final String[] PROJECTION_ALL =
+                {COLUMN_GUID, COLUMN_COURSE_ID, COLUMN_CONTENT_ID, COLUMN_COMPLETED};
+
+        private static final String SQL_COLUMN_GUID = COLUMN_GUID + " TEXT";
+        private static final String SQL_COLUMN_COURSE_ID = COLUMN_COURSE_ID + " INTEGER";
+        private static final String SQL_COLUMN_CONTENT_ID = COLUMN_CONTENT_ID + " TEXT";
+        private static final String SQL_COLUMN_COMPLETED = COLUMN_COMPLETED + " INTEGER";
+        private static final String SQL_PRIMARY_KEY =
+                "PRIMARY KEY(" + COLUMN_GUID + "," + COLUMN_COURSE_ID + ", " + COLUMN_CONTENT_ID + ")";
 
         protected static final String SQL_WHERE_PRIMARY_KEY =
-                COLUMN_COURSE_ID + " = ? AND " + COLUMN_CONTENT_ID + " = ?";
+                COLUMN_GUID + " = ? AND " + COLUMN_COURSE_ID + " = ? AND " + COLUMN_CONTENT_ID + " = ?";
 
-        protected static final String SQL_CREATE_TABLE =
-                "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_COURSE_ID + " INTEGER," + COLUMN_CONTENT_ID + " TEXT," +
-                        COLUMN_COMPLETED + " INTEGER, PRIMARY KEY(" + COLUMN_COURSE_ID + ", " + COLUMN_CONTENT_ID +
-                        "))";
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_GUID, SQL_COLUMN_COURSE_ID, SQL_COLUMN_CONTENT_ID, SQL_COLUMN_COMPLETED,
+                      SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
         /**
@@ -250,6 +258,22 @@ public final class Contract {
         @Deprecated
         protected static final String SQL_DROP_INDEX_COURSE_ID =
                 "DROP INDEX IF EXISTS " + TABLE_NAME + "_" + COLUMN_COURSE_ID;
+
+        /* V12 updates */
+        @Deprecated
+        private static final String V12_TABLE_NAME = "progress_v12";
+        @Deprecated
+        protected static final String SQL_V12_RENAME_TABLE =
+                "ALTER TABLE " + TABLE_NAME + " RENAME TO " + V12_TABLE_NAME;
+        @Deprecated
+        private static final String V12_FIELDS =
+                StringUtils.join(",", COLUMN_COURSE_ID, COLUMN_CONTENT_ID, COLUMN_COMPLETED);
+        @Deprecated
+        protected static final String SQL_V12_MIGRATE_DATA =
+                "INSERT INTO " + TABLE_NAME + "(" + COLUMN_GUID + "," + V12_FIELDS + ") SELECT ?, " + V12_FIELDS +
+                        " FROM " + V12_TABLE_NAME;
+        @Deprecated
+        protected static final String SQL_V12_DELETE_TABLE = "DROP TABLE IF EXISTS " + V12_TABLE_NAME;
     }
 
     public static final class Answer extends Base {

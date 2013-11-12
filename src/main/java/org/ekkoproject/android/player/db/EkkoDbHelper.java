@@ -1,8 +1,13 @@
 package org.ekkoproject.android.player.db;
 
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import org.ccci.gto.android.thekey.TheKeyImpl;
 
 public class EkkoDbHelper extends SQLiteOpenHelper {
     /*
@@ -15,12 +20,16 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 9: 10/18/2013
      * 10: 10/25/2013
      * 11: 10/30/2013
+     * 12: 11/12/2013
      */
-    public static final int DATABASE_VERSION = 11;
+    public static final int DATABASE_VERSION = 12;
     public static final String DATABASE_NAME = "Ekko.db";
+
+    private final Context mContext;
 
     public EkkoDbHelper(final Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
@@ -101,6 +110,15 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 db.execSQL(Contract.Permission.SQL_V11_DEFAULT_HIDDEN);
             case 11:
                 if (newVersion <= 11) {
+                    break;
+                }
+                final String guid = TheKeyImpl.getInstance(mContext, THEKEY_CLIENTID).getGuid();
+                db.execSQL(Contract.Progress.SQL_V12_RENAME_TABLE);
+                db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
+                db.execSQL(Contract.Progress.SQL_V12_MIGRATE_DATA, new Object[] {guid != null ? guid : GUID_GUEST});
+                db.execSQL(Contract.Progress.SQL_V12_DELETE_TABLE);
+            case 12:
+                if (newVersion <= 12) {
                     break;
                 }
                 break;

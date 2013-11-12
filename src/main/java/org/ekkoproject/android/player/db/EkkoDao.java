@@ -113,7 +113,7 @@ public class EkkoDao extends AbstractDao {
             return this.getPrimaryKeyWhere(Answer.class, answer.getCourseId(), answer.getQuestionId(),
                                            answer.getAnswerId());
         } else if (obj instanceof Progress) {
-            return this.getPrimaryKeyWhere(Progress.class, ((Progress) obj).getCourseId(),
+            return this.getPrimaryKeyWhere(Progress.class, ((Progress) obj).getGuid(), ((Progress) obj).getCourseId(),
                                            ((Progress) obj).getContentId());
         } else if (obj instanceof CachedResource) {
             return this.getPrimaryKeyWhere(CachedResource.class, ((CachedResource) obj).getCourseId(),
@@ -146,7 +146,7 @@ public class EkkoDao extends AbstractDao {
             }
             where = Contract.Answer.SQL_WHERE_PRIMARY_KEY;
         } else if (Progress.class.equals(clazz)) {
-            if (key.length != 2) {
+            if (key.length != 3) {
                 throw new IllegalArgumentException("invalid key for " + clazz);
             }
             where = Contract.Progress.SQL_WHERE_PRIMARY_KEY;
