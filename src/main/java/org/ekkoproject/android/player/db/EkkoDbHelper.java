@@ -19,8 +19,9 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 10: 10/25/2013
      * 11: 10/30/2013
      * 12: 11/12/2013
+     * 13: 11/13/2013
      */
-    public static final int DATABASE_VERSION = 12;
+    public static final int DATABASE_VERSION = 13;
     public static final String DATABASE_NAME = "Ekko.db";
 
     private final Context mContext;
@@ -44,6 +45,8 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
     @Override
     @SuppressWarnings("deprecation")
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+        final String guid = TheKeyImpl.getInstance(mContext, THEKEY_CLIENTID).getGuid();
+
         switch (oldVersion) {
         case 7:
             if (newVersion <= 7) {
@@ -72,13 +75,20 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 if (newVersion <= 11) {
                     break;
                 }
-                final String guid = TheKeyImpl.getInstance(mContext, THEKEY_CLIENTID).getGuid();
                 db.execSQL(Contract.Progress.SQL_V12_RENAME_TABLE);
                 db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
                 db.execSQL(Contract.Progress.SQL_V12_MIGRATE_DATA, new Object[] {guid != null ? guid : GUID_GUEST});
                 db.execSQL(Contract.Progress.SQL_V12_DELETE_TABLE);
             case 12:
                 if (newVersion <= 12) {
+                    break;
+                }
+                db.execSQL(Contract.Answer.SQL_V13_RENAME_TABLE);
+                db.execSQL(Contract.Answer.SQL_CREATE_TABLE);
+                db.execSQL(Contract.Answer.SQL_V13_MIGRATE_DATA, new Object[] {guid != null ? guid : GUID_GUEST});
+                db.execSQL(Contract.Answer.SQL_V13_DELETE_TABLE);
+            case 13:
+                if (newVersion <= 13) {
                     break;
                 }
                 break;

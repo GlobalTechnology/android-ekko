@@ -3,15 +3,21 @@ package org.ekkoproject.android.player.model;
 import java.util.Date;
 
 public class Answer {
+    private final String guid;
     private final long courseId;
     private final String questionId;
     private final String answerId;
     private Date answered = new Date(0);
 
-    public Answer(final long courseId, final String questionId, final String answerId) {
+    public Answer(final String guid, final long courseId, final String questionId, final String answerId) {
+        this.guid = guid;
         this.courseId = courseId;
         this.questionId = questionId;
         this.answerId = answerId;
+    }
+
+    public String getGuid() {
+        return this.guid;
     }
 
     public long getCourseId() {

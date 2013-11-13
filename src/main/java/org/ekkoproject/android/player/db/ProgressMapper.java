@@ -1,6 +1,5 @@
 package org.ekkoproject.android.player.db;
 
-import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
 import android.content.ContentValues;
@@ -38,7 +37,7 @@ public class ProgressMapper extends AbstractMapper<Progress> {
 
     @Override
     protected Progress newObject(final Cursor c) {
-        return new Progress(this.getString(c, Contract.Progress.COLUMN_GUID, GUID_GUEST),
+        return new Progress(this.getString(c, Contract.Progress.COLUMN_GUID, null),
                             this.getLong(c, Contract.Progress.COLUMN_COURSE_ID, INVALID_COURSE),
                             this.getString(c, Contract.Progress.COLUMN_CONTENT_ID, null));
     }

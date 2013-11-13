@@ -238,21 +238,46 @@ public final class Contract {
 
     public static final class Answer extends Base {
         protected static final String TABLE_NAME = "quizMultipleChoiceAnswers";
+        public static final String COLUMN_GUID = "guid";
         public static final String COLUMN_COURSE_ID = "courseId";
         public static final String COLUMN_QUESTION_ID = "questionId";
         public static final String COLUMN_ANSWER_ID = "answerId";
-        public static final String COLUMN_ANSWERED = "answered";
+        protected static final String COLUMN_ANSWERED = "answered";
 
-        protected static final String[] PROJECTION_ALL = {COLUMN_COURSE_ID, COLUMN_QUESTION_ID,
+        protected static final String[] PROJECTION_ALL = {COLUMN_GUID, COLUMN_COURSE_ID, COLUMN_QUESTION_ID,
                 COLUMN_ANSWER_ID, COLUMN_ANSWERED};
 
-        protected static final String SQL_WHERE_PRIMARY_KEY =
-                COLUMN_COURSE_ID + " = ? AND " + COLUMN_QUESTION_ID + " = ? AND " + COLUMN_ANSWER_ID + " = ?";
+        private static final String SQL_COLUMN_GUID = COLUMN_GUID + " TEXT";
+        private static final String SQL_COLUMN_COURSE_ID = COLUMN_COURSE_ID + " INTEGER";
+        private static final String SQL_COLUMN_QUESTION_ID = COLUMN_QUESTION_ID + " TEXT";
+        private static final String SQL_COLUMN_ANSWER_ID = COLUMN_ANSWER_ID + " TEXT";
+        private static final String SQL_COLUMN_ANSWERED = COLUMN_ANSWERED + " INTEGER";
+        private static final String SQL_PRIMARY_KEY =
+                "PRIMARY KEY(" + COLUMN_GUID + "," + COLUMN_COURSE_ID + ", " + COLUMN_QUESTION_ID + "," +
+                        COLUMN_ANSWER_ID + ")";
 
-        protected static final String SQL_CREATE_TABLE =
-                "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_COURSE_ID + " INTEGER," + COLUMN_QUESTION_ID + " TEXT," +
-                        COLUMN_ANSWER_ID + " TEXT," + COLUMN_ANSWERED + " INTEGER, PRIMARY KEY(" + COLUMN_COURSE_ID +
-                        ", " + COLUMN_QUESTION_ID + ", " + COLUMN_ANSWER_ID + "))";
+        protected static final String SQL_WHERE_PRIMARY_KEY =
+                COLUMN_GUID + " = ? AND " + COLUMN_COURSE_ID + " = ? AND " + COLUMN_QUESTION_ID + " = ? AND " +
+                        COLUMN_ANSWER_ID + " = ?";
+
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_GUID, SQL_COLUMN_COURSE_ID, SQL_COLUMN_QUESTION_ID, SQL_COLUMN_ANSWER_ID,
+                      SQL_COLUMN_ANSWERED, SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        @Deprecated
+        private static final String V13_TABLE_NAME = TABLE_NAME + "_v13";
+        @Deprecated
+        protected static final String SQL_V13_RENAME_TABLE =
+                "ALTER TABLE " + TABLE_NAME + " RENAME TO " + V13_TABLE_NAME;
+        @Deprecated
+        private static final String V13_FIELDS =
+                StringUtils.join(",", COLUMN_COURSE_ID, COLUMN_QUESTION_ID, COLUMN_ANSWER_ID, COLUMN_ANSWERED);
+        @Deprecated
+        protected static final String SQL_V13_MIGRATE_DATA =
+                "INSERT INTO " + TABLE_NAME + "(" + COLUMN_GUID + "," + V13_FIELDS + ") SELECT ?, " + V13_FIELDS +
+                        " FROM " + V13_TABLE_NAME;
+        @Deprecated
+        protected static final String SQL_V13_DELETE_TABLE = "DROP TABLE IF EXISTS " + V13_TABLE_NAME;
     }
 }

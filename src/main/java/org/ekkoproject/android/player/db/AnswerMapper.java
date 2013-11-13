@@ -17,6 +17,9 @@ public class AnswerMapper extends AbstractMapper<Answer> {
     @Override
     protected void mapField(final ContentValues values, final String field, final Answer answer) {
         switch (field) {
+            case Contract.Answer.COLUMN_GUID:
+                values.put(field, answer.getGuid());
+                break;
             case Contract.Answer.COLUMN_COURSE_ID:
                 values.put(field, answer.getCourseId());
                 break;
@@ -37,7 +40,8 @@ public class AnswerMapper extends AbstractMapper<Answer> {
 
     @Override
     protected Answer newObject(final Cursor c) {
-        return new Answer(this.getLong(c, Contract.Answer.COLUMN_COURSE_ID, INVALID_COURSE),
+        return new Answer(this.getString(c, Contract.Answer.COLUMN_GUID, null),
+                          this.getLong(c, Contract.Answer.COLUMN_COURSE_ID, INVALID_COURSE),
                           this.getString(c, Contract.Answer.COLUMN_QUESTION_ID, null),
                           this.getString(c, Contract.Answer.COLUMN_ANSWER_ID, null));
     }

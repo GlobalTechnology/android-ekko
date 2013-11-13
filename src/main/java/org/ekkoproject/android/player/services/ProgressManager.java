@@ -40,8 +40,7 @@ public final class ProgressManager {
     /** broadcast actions */
     public static final String ACTION_UPDATE_PROGRESS = ProgressManager.class.getName() + ".ACTION_UPDATE_PROGRESS";
 
-    private static final Object LOCK_INSTANCE = new Object();
-    private static Map<String, ProgressManager> instances = new HashMap<>();
+    private static final Map<String, ProgressManager> INSTANCES = new HashMap<>();
 
     private final Context mContext;
     private final String mGuid;
@@ -59,15 +58,13 @@ public final class ProgressManager {
     }
 
     public static ProgressManager getInstance(final Context context, final String guid) {
-        if (!instances.containsKey(guid)) {
-            synchronized (LOCK_INSTANCE) {
-                if (!instances.containsKey(guid)) {
-                    instances.put(guid, new ProgressManager(context.getApplicationContext(), guid));
-                }
+        synchronized (INSTANCES) {
+            if (!INSTANCES.containsKey(guid)) {
+                INSTANCES.put(guid, new ProgressManager(context.getApplicationContext(), guid));
             }
         }
 
-        return instances.get(guid);
+        return INSTANCES.get(guid);
     }
 
     private static void broadcastProgressUpdate(final Context context, final long courseId) {
@@ -118,8 +115,8 @@ public final class ProgressManager {
                 // fetch a Cursor for all the quiz question answers in the specified course
                 // XXX: right now we handle answers as progress, this may need to change in the future
                 c2 = this.dao.getCursor(Answer.class, new String[] {Contract.Answer.COLUMN_ANSWER_ID},
-                                        Contract.Answer.COLUMN_COURSE_ID + " = ?",
-                                        new String[] {Long.toString(courseId)}, null);
+                                        Contract.Answer.COLUMN_GUID + " = ? AND " + Contract.Answer.COLUMN_COURSE_ID +
+                                                " = ?", new String[] {mGuid, Long.toString(courseId)}, null);
                 final int column2 = c2.getColumnIndex(Contract.Answer.COLUMN_ANSWER_ID);
                 if (column2 != -1) {
                     while (c2.moveToNext()) {
@@ -136,7 +133,6 @@ public final class ProgressManager {
                 broadcastProgressUpdate(mContext, courseId);
 
                 return Collections.unmodifiableSet(progress);
-
             } catch (final SQLiteException e) {
                 // suppress db exceptions
             } finally {
@@ -213,7 +209,7 @@ public final class ProgressManager {
                 }
                 // new answer, record it
                 else {
-                    final Answer answer = new Answer(courseId, questionId, answerId);
+                    final Answer answer = new Answer(mGuid, courseId, questionId, answerId);
                     answer.setAnswered();
                     this.dao.insert(answer);
                     changed = true;
@@ -233,7 +229,7 @@ public final class ProgressManager {
                 }
                 this.loadProgress(courseId);
             }
-        } catch (final SQLiteException e) {
+        } catch (final SQLiteException ignored) {
         }
     }
 
