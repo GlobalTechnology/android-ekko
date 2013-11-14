@@ -39,7 +39,7 @@ import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 import me.thekey.android.TheKey;
-import me.thekey.android.content.TheKeyBroadcastReceiver;
+import me.thekey.android.lib.content.TheKeyBroadcastReceiver;
 
 public class MainActivity extends ActionBarActivity implements OnNavigationListener {
     private static final String STATE_DRAWER_INDICATOR = MainActivity.class + ".STATE_DRAWER_INDICATOR";
@@ -342,8 +342,8 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
         // Create and show the login dialog only if it is not currently displayed
         final FragmentManager fm = this.getSupportFragmentManager();
         if (fm.findFragmentByTag("loginDialog") == null) {
-            LoginDialogFragment.newInstance(THEKEY_CLIENTID)
-                    .show(fm.beginTransaction().addToBackStack("loginDialog"), "loginDialog");
+            LoginDialogFragment.builder().clientId(THEKEY_CLIENTID).build().show(
+                    fm.beginTransaction().addToBackStack("loginDialog"), "loginDialog");
         }
     }
 
