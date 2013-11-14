@@ -2,10 +2,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Widget.Ekko.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/bg_ekko_actionbar</item>
         <item name="android:background">@drawable/bg_ekko_actionbar</item>
-        <item name="titleTextStyle">@style/TextAppearance.Ekko.ActionBar.Title</item>
+        <item name="android:logo" tools:ignore="NewApi">@drawable/ic_logo</item>
         <item name="android:titleTextStyle" tools:targetApi="honeycomb">@style/TextAppearance.Ekko.ActionBar.Title</item>
+
+        <!-- Compatability styles -->
+        <item name="background">@drawable/bg_ekko_actionbar</item>
+        <item name="logo">@drawable/ic_logo</item>
+        <item name="titleTextStyle">@style/TextAppearance.Ekko.ActionBar.Title</item>
     </style>
 
     <style name="Widget.Ekko.ActionButton.Overflow" parent="@style/Widget.AppCompat.ActionButton.Overflow">
