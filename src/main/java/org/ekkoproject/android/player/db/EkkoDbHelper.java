@@ -48,11 +48,11 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         final String guid = TheKeyImpl.getInstance(mContext, THEKEY_CLIENTID).getGuid();
 
         switch (oldVersion) {
-        case 7:
-            if (newVersion <= 7) {
-                break;
-            }
-            db.execSQL(Contract.Permission.SQL_CREATE_TABLE);
+            case 7:
+                if (newVersion <= 7) {
+                    break;
+                }
+                db.execSQL(Contract.Permission.SQL_V8_CREATE_TABLE);
             case 8:
                 if (newVersion <= 8) {
                     break;
@@ -76,7 +76,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                     break;
                 }
                 db.execSQL(Contract.Progress.SQL_V12_RENAME_TABLE);
-                db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
+                db.execSQL(Contract.Progress.SQL_V12_CREATE_TABLE);
                 db.execSQL(Contract.Progress.SQL_V12_MIGRATE_DATA, new Object[] {guid != null ? guid : GUID_GUEST});
                 db.execSQL(Contract.Progress.SQL_V12_DELETE_TABLE);
             case 12:
@@ -84,7 +84,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                     break;
                 }
                 db.execSQL(Contract.Answer.SQL_V13_RENAME_TABLE);
-                db.execSQL(Contract.Answer.SQL_CREATE_TABLE);
+                db.execSQL(Contract.Answer.SQL_V13_CREATE_TABLE);
                 db.execSQL(Contract.Answer.SQL_V13_MIGRATE_DATA, new Object[] {guid != null ? guid : GUID_GUEST});
                 db.execSQL(Contract.Answer.SQL_V13_DELETE_TABLE);
             case 13:

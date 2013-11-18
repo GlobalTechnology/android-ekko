@@ -46,13 +46,16 @@ public final class Contract {
                       SQL_COLUMN_PENDING, SQL_COLUMN_CONTENT_VISIBLE, SQL_COLUMN_HIDDEN, SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
+        /* V8 versions */
+        @Deprecated
+        protected static final String SQL_V8_CREATE_TABLE = "CREATE TABLE permission (guid TEXT, _id TEXT," +
+                "admin INTEGER, enrolled INTEGER, pending INTEGER, contentVisible INTEGER, PRIMARY KEY(guid, _id))";
+
         /* V11 updates */
         @Deprecated
-        protected static final String SQL_V11_ALTER_HIDDEN =
-                "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + SQL_COLUMN_HIDDEN;
+        protected static final String SQL_V11_ALTER_HIDDEN = "ALTER TABLE permission ADD COLUMN hidden INTEGER";
         @Deprecated
-        protected static final String SQL_V11_DEFAULT_HIDDEN =
-                "UPDATE " + TABLE_NAME + " SET " + COLUMN_HIDDEN + " = 0";
+        protected static final String SQL_V11_DEFAULT_HIDDEN = "UPDATE permission SET hidden = 0";
     }
 
     public static final class Course extends Base {
@@ -209,7 +212,7 @@ public final class Contract {
         private static final String SQL_COLUMN_CONTENT_ID = COLUMN_CONTENT_ID + " TEXT";
         private static final String SQL_COLUMN_COMPLETED = COLUMN_COMPLETED + " INTEGER";
         private static final String SQL_PRIMARY_KEY =
-                "PRIMARY KEY(" + COLUMN_GUID + "," + COLUMN_COURSE_ID + ", " + COLUMN_CONTENT_ID + ")";
+                "PRIMARY KEY(" + COLUMN_GUID + "," + COLUMN_COURSE_ID + "," + COLUMN_CONTENT_ID + ")";
 
         protected static final String SQL_WHERE_PRIMARY_KEY =
                 COLUMN_GUID + " = ? AND " + COLUMN_COURSE_ID + " = ? AND " + COLUMN_CONTENT_ID + " = ?";
@@ -223,15 +226,15 @@ public final class Contract {
         @Deprecated
         private static final String V12_TABLE_NAME = "progress_v12";
         @Deprecated
-        protected static final String SQL_V12_RENAME_TABLE =
-                "ALTER TABLE " + TABLE_NAME + " RENAME TO " + V12_TABLE_NAME;
+        protected static final String SQL_V12_RENAME_TABLE = "ALTER TABLE progress RENAME TO " + V12_TABLE_NAME;
         @Deprecated
-        private static final String V12_FIELDS =
-                StringUtils.join(",", COLUMN_COURSE_ID, COLUMN_CONTENT_ID, COLUMN_COMPLETED);
+        protected static final String SQL_V12_CREATE_TABLE = "CREATE TABLE progress (guid TEXT, courseId INTEGER," +
+                "contentId TEXT, completed INTEGER, PRIMARY KEY(guid, courseId, contentId))";
+        @Deprecated
+        private static final String V12_FIELDS = "courseId, contentId, completed";
         @Deprecated
         protected static final String SQL_V12_MIGRATE_DATA =
-                "INSERT INTO " + TABLE_NAME + "(" + COLUMN_GUID + "," + V12_FIELDS + ") SELECT ?, " + V12_FIELDS +
-                        " FROM " + V12_TABLE_NAME;
+                "INSERT INTO progress (guid," + V12_FIELDS + ") SELECT ?, " + V12_FIELDS + " FROM " + V12_TABLE_NAME;
         @Deprecated
         protected static final String SQL_V12_DELETE_TABLE = "DROP TABLE IF EXISTS " + V12_TABLE_NAME;
     }
@@ -266,17 +269,20 @@ public final class Contract {
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
         @Deprecated
-        private static final String V13_TABLE_NAME = TABLE_NAME + "_v13";
+        private static final String V13_TABLE_NAME = "answers_v13";
         @Deprecated
         protected static final String SQL_V13_RENAME_TABLE =
-                "ALTER TABLE " + TABLE_NAME + " RENAME TO " + V13_TABLE_NAME;
+                "ALTER TABLE quizMultipleChoiceAnswers RENAME TO " + V13_TABLE_NAME;
         @Deprecated
-        private static final String V13_FIELDS =
-                StringUtils.join(",", COLUMN_COURSE_ID, COLUMN_QUESTION_ID, COLUMN_ANSWER_ID, COLUMN_ANSWERED);
+        protected static final String SQL_V13_CREATE_TABLE = "CREATE TABLE quizMultipleChoiceAnswers (guid TEXT," +
+                "courseId INTEGER, questionId TEXT, answerId TEXT, answered INTEGER, PRIMARY KEY(guid, courseId," +
+                "questionId, answerId))";
+        @Deprecated
+        private static final String V13_FIELDS = "courseId,questionId,answerId,answered";
         @Deprecated
         protected static final String SQL_V13_MIGRATE_DATA =
-                "INSERT INTO " + TABLE_NAME + "(" + COLUMN_GUID + "," + V13_FIELDS + ") SELECT ?, " + V13_FIELDS +
-                        " FROM " + V13_TABLE_NAME;
+                "INSERT INTO quizMultipleChoiceAnswers (guid, " + V13_FIELDS + ") SELECT ?, " + V13_FIELDS + " FROM " +
+                        V13_TABLE_NAME;
         @Deprecated
         protected static final String SQL_V13_DELETE_TABLE = "DROP TABLE IF EXISTS " + V13_TABLE_NAME;
     }
