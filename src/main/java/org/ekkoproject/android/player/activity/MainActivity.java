@@ -178,8 +178,10 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
                 showCourseList(true);
                 return true;
             case R.id.login:
-            case R.id.logout:
                 this.showLoginDialog();
+                return true;
+            case R.id.logout:
+                mTheKey.logout();
                 return true;
             case R.id.about:
                 ShowLicense.createDialog(this, "Open Source Software Used", LICENSED_PROJECTS).show();
