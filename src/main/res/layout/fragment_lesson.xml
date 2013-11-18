@@ -16,10 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <org.ekkoproject.android.player.view.ChildViewPager
+            <android.support.v4.view.ViewPager
                 android:id="@+id/media"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"/>
 
             <com.viewpagerindicator.CirclePageIndicator
                 android:id="@+id/media_indicator"
@@ -38,10 +38,10 @@
         android:layout_height="0dp"
         android:layout_weight="1" >
 
-        <org.ekkoproject.android.player.view.ChildViewPager
+        <android.support.v4.view.ViewPager
             android:id="@+id/text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <ImageView
             style="@style/Widget.Ekko.Course.InfoBar.Shadow"
