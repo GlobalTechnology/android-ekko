@@ -14,6 +14,8 @@ import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Permission;
 
+import java.util.Locale;
+
 public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
     private final EkkoDao dao;
     private final String mGuid;
@@ -22,7 +24,7 @@ public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
     public CourseListCursorLoader(final Context context, final String guid, final boolean all) {
         super(context, new IntentFilter(ACTION_UPDATE_COURSES));
         this.dao = EkkoDao.getInstance(context);
-        mGuid = guid != null ? guid.toUpperCase() : GUID_GUEST;
+        mGuid = guid != null ? guid.toUpperCase(Locale.US) : GUID_GUEST;
         this.all = all;
     }
 

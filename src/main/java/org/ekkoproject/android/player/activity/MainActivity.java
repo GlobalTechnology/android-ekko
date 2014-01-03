@@ -6,6 +6,7 @@ import static org.ekkoproject.android.player.Constants.LICENSED_PROJECTS;
 import static org.ekkoproject.android.player.Constants.STATE_GUID;
 import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -72,6 +73,7 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
     /* BEGIN lifecycle */
 
     @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
         mTheKey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);

@@ -1,5 +1,7 @@
 package org.ekkoproject.android.player.model;
 
+import java.util.Locale;
+
 public class Permission {
     private final long courseId;
     private final String guid;
@@ -13,7 +15,7 @@ public class Permission {
 
     public Permission(final long courseId, final String guid) {
         this.courseId = courseId;
-        this.guid = guid != null ? guid.toUpperCase() : "";
+        this.guid = guid != null ? guid.toUpperCase(Locale.US) : "";
     }
 
     public long getCourseId() {

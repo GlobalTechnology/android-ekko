@@ -6,6 +6,7 @@ import static org.ekkoproject.android.player.fragment.Constants.ARG_COURSEID;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_GUID;
 import static org.ekkoproject.android.player.services.ManifestManager.FLAG_NON_BLOCKING;
 
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -45,6 +46,7 @@ public abstract class AbstractManifestAwareFragment extends AbstractCascadingUse
     /** BEGIN lifecycle */
 
     @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

@@ -5,6 +5,7 @@ import static org.appdev.entity.Resource.PROVIDER_NONE;
 import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -129,6 +130,7 @@ public final class ResourceManager {
     public static final int FLAG_DONT_DOWNLOAD = 1 << 1;
     public static final int FLAG_FORCE_DOWNLOAD = 1 << 2;
 
+    @SuppressLint("TrulyRandom")
     private static final Random RNG = new SecureRandom();
 
     private final Context context;
