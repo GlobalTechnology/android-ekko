@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Pair;
 
-import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.db.AbstractDao;
 import org.ccci.gto.android.common.db.Mapper;
 import org.ekkoproject.android.player.model.Answer;

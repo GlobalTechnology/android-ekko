@@ -1,8 +1,8 @@
 package org.ekkoproject.android.player.util;
 
-import static org.appdev.entity.Resource.PROVIDER_UNKNOWN;
-import static org.appdev.entity.Resource.PROVIDER_VIMEO;
-import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_UNKNOWN;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_VIMEO;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_YOUTUBE;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,7 +10,7 @@ import android.net.Uri;
 
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
-import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.R;
 
 import java.util.List;

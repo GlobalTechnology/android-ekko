@@ -9,7 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.util.Xml;
 
-import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.api.AbstractGtoSmxApi;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;

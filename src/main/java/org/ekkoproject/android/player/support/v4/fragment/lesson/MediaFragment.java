@@ -1,9 +1,9 @@
 package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
-import static org.appdev.entity.Resource.PROVIDER_NONE;
-import static org.appdev.entity.Resource.PROVIDER_UNKNOWN;
-import static org.appdev.entity.Resource.PROVIDER_VIMEO;
-import static org.appdev.entity.Resource.PROVIDER_YOUTUBE;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_NONE;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_UNKNOWN;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_VIMEO;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
 import org.ekkoproject.android.player.activity.MediaVideoActivity;

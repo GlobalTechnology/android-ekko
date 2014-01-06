@@ -1,8 +1,6 @@
-package org.appdev.entity;
+package org.ekkoproject.android.player.model;
 
 import org.ekkoproject.android.player.Constants.XML;
-import org.ekkoproject.android.player.model.Course;
-import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.util.ParserUtils;
 import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;

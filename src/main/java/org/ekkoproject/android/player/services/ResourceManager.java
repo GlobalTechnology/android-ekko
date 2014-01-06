@@ -1,7 +1,7 @@
 package org.ekkoproject.android.player.services;
 
 import static java.net.HttpURLConnection.HTTP_OK;
-import static org.appdev.entity.Resource.PROVIDER_NONE;
+import static org.ekkoproject.android.player.model.Resource.PROVIDER_NONE;
 import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
@@ -12,7 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
-import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.util.IOUtils;

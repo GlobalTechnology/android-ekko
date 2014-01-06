@@ -2,7 +2,6 @@ package org.ekkoproject.android.player.model;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import org.appdev.entity.Resource;
 import org.ccci.gto.android.common.util.XmlUtils;
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;

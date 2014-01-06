@@ -5,7 +5,7 @@ import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import org.appdev.entity.Resource;
+import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.db.AbstractMapper;
 
 public final class ResourceMapper extends AbstractMapper<Resource> {
