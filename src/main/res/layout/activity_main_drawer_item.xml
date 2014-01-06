@@ -10,7 +10,8 @@
         android:layout_height="32dp"
         android:layout_width="32dp"
         tools:src="@drawable/ic_action_logout_light"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        tools:ignore="ContentDescription"/>
 
     <TextView
         android:id="@+id/label"

@@ -3,11 +3,6 @@ package org.ekkoproject.android.player.activity;
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import java.io.File;
-
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.services.ResourceManager;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -21,6 +16,11 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.services.ResourceManager;
+
+import java.io.File;
+
 public class MediaVideoActivity extends Activity implements MediaPlayer.OnCompletionListener {
     private static final String EXTRA_RESOURCEID = MediaVideoActivity.class.getName() + ".EXTRA_RESOURCEID";
 
@@ -33,7 +33,7 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
     private MediaController videoController = null;
     private VideoView videoPlayer = null;
 
-    public static final Intent newIntent(final Context context, final long courseId, final String resourceId) {
+    public static Intent newIntent(final Context context, final long courseId, final String resourceId) {
         final Intent intent = new Intent(context, MediaVideoActivity.class);
         intent.putExtra(EXTRA_COURSEID, courseId);
         intent.putExtra(EXTRA_RESOURCEID, resourceId);

@@ -90,8 +90,8 @@ public class CourseCompletionFragment extends AbstractContentFragment implements
             }
 
             if (message == null || message.length() == 0) {
-                this.completionMessageView.setText(getResources().getString(R.string.course_completion_message_default,
-                        title));
+                this.completionMessageView
+                        .setText(getResources().getString(R.string.course_completion_message_default, (String) title));
             } else {
                 this.completionMessageView.setText(Html.fromHtml(message));
             }
