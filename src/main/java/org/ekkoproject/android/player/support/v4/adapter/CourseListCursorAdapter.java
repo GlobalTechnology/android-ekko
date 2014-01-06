@@ -8,6 +8,7 @@ import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_UNKNOW
 import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.ENROLL;
 import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.UNENROLL;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
@@ -77,11 +78,12 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
     }
 
     private void initCallbacks(final CourseViewHolder holder) {
-        if (holder.actionMenu != null) {
-            holder.actionMenu.setOnClickListener(new View.OnClickListener() {
+        final View actionMenu = holder.actionMenu();
+        if (actionMenu != null) {
+            actionMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    final PopupMenu popup = new PopupMenu(mActivity, holder.actionMenu);
+                    final PopupMenu popup = new PopupMenu(mActivity, actionMenu);
                     final CoursePopupMenuClickListener listener =
                             new CoursePopupMenuClickListener(mActivity, mGuid, holder);
                     listener.setOnNavigationListener(mOnNavigationListener);
@@ -148,8 +150,9 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             });
         }
 
-        if (holder.root != null) {
-            holder.root.setOnClickListener(new View.OnClickListener() {
+        final View root = holder.root();
+        if (root != null) {
+            root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     // Create and show the login dialog only if it is not currently displayed
@@ -161,7 +164,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             });
 
             // disable the click listener for now
-            holder.root.setClickable(false);
+            root.setClickable(false);
         }
     }
 
@@ -184,17 +187,20 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         holder.enrollmentType = CursorUtils.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN);
 
         // enable/disable not enrolled popup based on whether the content is visible
-        if (holder.root != null) {
-            holder.root.setClickable(!holder.contentVisible);
+        final View root = holder.root();
+        if (root != null) {
+            root.setClickable(!holder.contentVisible);
         }
 
         // actually bind the view
         super.bindView(view, context, c);
     }
 
+    @SuppressLint("ViewTag")
     private static class CourseViewHolder {
-        private final View root;
-        private final View actionMenu;
+        // we use WeakReferences for views in the ViewHolder because of potential memory leaks with setTag in Android < 4.0
+        private final WeakReference<View> root;
+        private final WeakReference<View> actionMenu;
 
         private long courseId;
         private boolean enrolled = false;
@@ -204,21 +210,29 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private int enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
 
         private CourseViewHolder(final View root) {
-            this.root = root;
-            this.actionMenu = ViewUtils.findView(root, View.class, R.id.action_menu);
+            this.root = new WeakReference<>(root);
+            this.actionMenu = new WeakReference<>(ViewUtils.findView(root, View.class, R.id.action_menu));
 
             this.attach();
         }
 
         private void attach() {
             // attach the holder to the various views
-            for (final View view : new View[] {this.root, this.actionMenu}) {
+            for (final View view : new View[] {this.root(), this.actionMenu()}) {
                 if (view == null) {
                     continue;
                 }
 
                 view.setTag(R.id.view_holder, this);
             }
+        }
+
+        private View root() {
+            return this.root.get();
+        }
+
+        private View actionMenu() {
+            return this.actionMenu.get();
         }
     }
 
