@@ -9,7 +9,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.util.Xml;
 
-import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.api.AbstractGtoSmxApi;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
@@ -18,6 +17,7 @@ import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
+import org.ekkoproject.android.player.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
@@ -177,8 +177,8 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         return false;
     }
 
-    public long streamManifest(final long id, final OutputStream out) throws ApiSocketException,
-            InvalidSessionApiException {
+    public long downloadManifest(final long id, final OutputStream out)
+            throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
             conn = this.sendRequest(new Request("courses/course/" + Long.toString(id) + "/manifest"));
@@ -195,17 +195,59 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         return -1;
     }
 
-    public long streamResource(final Resource resource, final OutputStream out) throws ApiSocketException,
-            InvalidSessionApiException {
-        return this.streamResource(resource.getCourseId(), resource.getResourceSha1(), out);
+    public long downloadResource(final Resource resource, final OutputStream out)
+            throws ApiSocketException, InvalidSessionApiException {
+        if (resource != null) {
+            if (resource.isFile()) {
+                return this.downloadFileResource(resource, out);
+            } else if (resource.isEcv()) {
+                return this.downloadEcvResource(resource, false, out);
+            }
+        }
+
+        return -1;
     }
 
-    public long streamResource(final long courseId, final String sha1, final OutputStream out)
+    public long downloadFileResource(final Resource resource, final OutputStream out)
+            throws ApiSocketException, InvalidSessionApiException {
+        return resource != null && resource.isFile() ?
+                this.downloadFileResource(resource.getCourseId(), resource.getResourceSha1(), out) : -1;
+    }
+
+    private long downloadFileResource(final long courseId, final String sha1, final OutputStream out)
             throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
             conn = this.sendRequest(
                     new Request("courses/course/" + Long.toString(courseId) + "/resources/resource/" + sha1));
+
+            if (conn != null && conn.getResponseCode() == HTTP_OK) {
+                return IOUtils.copy(conn.getInputStream(), out);
+            }
+        } catch (final IOException e) {
+            throw new ApiSocketException(e);
+        } finally {
+            IOUtils.closeQuietly(conn);
+        }
+
+        return -1;
+    }
+
+    public long downloadEcvResource(final Resource resource, final boolean thumbnail, final OutputStream out)
+            throws ApiSocketException, InvalidSessionApiException {
+        return resource != null && resource.isEcv() ?
+                this.downloadEcvResource(resource.getCourseId(), resource.getVideoId(), thumbnail, out) : -1;
+    }
+
+    private long downloadEcvResource(final long courseId, final long videoId, final boolean thumbnail,
+                                     final OutputStream out) throws ApiSocketException, InvalidSessionApiException {
+        HttpURLConnection conn = null;
+        try {
+            final Request request = new Request(
+                    "courses/course/" + Long.toString(courseId) + "/resources/video/" + Long.toString(videoId) +
+                            (thumbnail ? "/thumbnail" : "/download"));
+            request.followRedirects = true;
+            conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 return IOUtils.copy(conn.getInputStream(), out);

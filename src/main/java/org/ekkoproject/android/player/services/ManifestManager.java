@@ -203,7 +203,7 @@ public final class ManifestManager {
             OutputStream out = null;
             try {
                 out = this.context.openFileOutput(newName, 0);
-                EkkoHubApi.getInstance(this.context, guid).streamManifest(course.getId(), out);
+                EkkoHubApi.getInstance(this.context, guid).downloadManifest(course.getId(), out);
             } catch (final FileNotFoundException e) {
                 // not sure why this would happen
                 return null;

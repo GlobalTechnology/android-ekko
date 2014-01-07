@@ -384,7 +384,7 @@ public final class ResourceManager {
                 }
 
                 // download the resource
-                size = this.api.streamResource(resource, out);
+                size = this.api.downloadFileResource(resource, out);
             } catch (final FileNotFoundException e) {
                 // this is an odd exception
                 LOG.error("unexpected error opening resource cache file for download", e);
