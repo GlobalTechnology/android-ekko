@@ -138,17 +138,33 @@ public final class Contract {
             protected static final String COLUMN_NAME_PROVIDER = "provider";
             protected static final String COLUMN_NAME_URI = "uri";
             protected static final String COLUMN_NAME_MIMETYPE = "mimeType";
+            protected static final String COLUMN_VIDEO_ID = "videoId";
 
             protected static final String[] PROJECTION_ALL = { COLUMN_NAME_COURSE_ID, COLUMN_NAME_RESOURCE_ID,
                     COLUMN_NAME_PARENT_RESOURCE, COLUMN_NAME_TYPE, COLUMN_NAME_SHA1, COLUMN_NAME_SIZE,
-                    COLUMN_NAME_PROVIDER, COLUMN_NAME_URI, COLUMN_NAME_MIMETYPE };
+                    COLUMN_NAME_PROVIDER, COLUMN_NAME_URI, COLUMN_NAME_MIMETYPE, COLUMN_VIDEO_ID};
 
-            protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
-                    + COLUMN_NAME_COURSE_ID + " INTEGER," + COLUMN_NAME_RESOURCE_ID + " TEXT,"
-                    + COLUMN_NAME_PARENT_RESOURCE + " TEXT," + COLUMN_NAME_TYPE + " TEXT," + COLUMN_NAME_SHA1
-                    + " TEXT," + COLUMN_NAME_SIZE + " INTEGER," + COLUMN_NAME_PROVIDER + " TEXT," + COLUMN_NAME_URI
-                    + " TEXT," + COLUMN_NAME_MIMETYPE + " TEXT)";
+            private static final String SQL_COLUMN_COURSE_ID = COLUMN_NAME_COURSE_ID + " INTEGER";
+            private static final String SQL_COLUMN_RESOURCE_ID = COLUMN_NAME_RESOURCE_ID + " TEXT";
+            private static final String SQL_COLUMN_PARENT_RESOURCE = COLUMN_NAME_PARENT_RESOURCE + " TEXT";
+            private static final String SQL_COLUMN_TYPE = COLUMN_NAME_TYPE + " TEXT";
+            private static final String SQL_COLUMN_SHA1 = COLUMN_NAME_SHA1 + " TEXT";
+            private static final String SQL_COLUMN_SIZE = COLUMN_NAME_SIZE + " INTEGER";
+            private static final String SQL_COLUMN_PROVIDER = COLUMN_NAME_PROVIDER + " TEXT";
+            private static final String SQL_COLUMN_URI = COLUMN_NAME_URI + " TEXT";
+            private static final String SQL_COLUMN_MIMETYPE = COLUMN_NAME_MIMETYPE + " TEXT";
+            private static final String SQL_COLUMN_VIDEO_ID = COLUMN_VIDEO_ID + " INTEGER";
+
+            protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                    .join(",", SQL_COLUMN_COURSE_ID, SQL_COLUMN_RESOURCE_ID, SQL_COLUMN_PARENT_RESOURCE,
+                          SQL_COLUMN_TYPE, SQL_COLUMN_SHA1, SQL_COLUMN_SIZE, SQL_COLUMN_PROVIDER, SQL_COLUMN_URI,
+                          SQL_COLUMN_MIMETYPE, SQL_COLUMN_VIDEO_ID) + ")";
             protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+            /* V14 updates */
+            @Deprecated
+            protected static final String SQL_V14_ALTER_VIDEO_ID =
+                    "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + SQL_COLUMN_VIDEO_ID;
         }
     }
 

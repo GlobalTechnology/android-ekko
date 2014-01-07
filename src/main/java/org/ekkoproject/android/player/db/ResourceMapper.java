@@ -1,12 +1,13 @@
 package org.ekkoproject.android.player.db;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+import static org.ekkoproject.android.player.model.Resource.INVALID_VIDEO;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.db.AbstractMapper;
+import org.ekkoproject.android.player.model.Resource;
 
 public final class ResourceMapper extends AbstractMapper<Resource> {
     @Override
@@ -44,6 +45,9 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
             case Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE:
                 values.put(field, resource.getParentId());
                 break;
+            case Contract.Course.Resource.COLUMN_VIDEO_ID:
+                values.put(field, resource.getVideoId());
+                break;
             default:
                 super.mapField(values, field, resource);
                 break;
@@ -66,6 +70,7 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
         resource.setResourceSize(this.getLong(c, Contract.Course.Resource.COLUMN_NAME_SIZE, 0));
         resource.setProvider(this.getString(c, Contract.Course.Resource.COLUMN_NAME_PROVIDER));
         resource.setUri(this.getString(c, Contract.Course.Resource.COLUMN_NAME_URI));
+        resource.setVideoId(this.getLong(c, Contract.Course.Resource.COLUMN_VIDEO_ID, INVALID_VIDEO));
         return resource;
     }
 }

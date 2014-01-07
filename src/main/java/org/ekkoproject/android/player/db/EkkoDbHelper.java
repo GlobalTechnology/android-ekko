@@ -20,8 +20,9 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 11: 10/30/2013
      * 12: 11/12/2013
      * 13: 11/13/2013
+     * 14: 01/06/2014
      */
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 14;
     public static final String DATABASE_NAME = "Ekko.db";
 
     private final Context mContext;
@@ -89,6 +90,11 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 db.execSQL(Contract.Answer.SQL_V13_DELETE_TABLE);
             case 13:
                 if (newVersion <= 13) {
+                    break;
+                }
+                db.execSQL(Contract.Course.Resource.SQL_V14_ALTER_VIDEO_ID);
+            case 14:
+                if (newVersion <= 14) {
                     break;
                 }
                 break;

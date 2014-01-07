@@ -18,6 +18,8 @@ public class Resource {
     public static final int PROVIDER_YOUTUBE = 1;
     public static final int PROVIDER_VIMEO = 2;
 
+    public final static long INVALID_VIDEO = -1;
+
     private final long courseId;
     private final String id;
 
@@ -28,6 +30,7 @@ public class Resource {
 	private String provider;
     private String uri;
 	private String mimeType;
+    private long videoId;
     private final List<Resource> resources = new ArrayList<Resource>();
 
     private String parentId;
@@ -51,6 +54,14 @@ public class Resource {
 
     public void setParentId(final String parentId) {
         this.parentId = parentId;
+    }
+
+    public long getVideoId() {
+        return this.videoId;
+    }
+
+    public void setVideoId(final long videoId) {
+        this.videoId = videoId;
     }
 
     public String getResourceSha1() {
@@ -156,6 +167,10 @@ public class Resource {
         return "dynamic".equals(this.type);
     }
 
+    public boolean isEcv() {
+        return "ecv".equals(this.type);
+    }
+
     public boolean isFile() {
         return "file".equals(this.type);
     }
@@ -209,6 +224,7 @@ public class Resource {
         this.mimeType = parser.getAttributeValue(null, XML.ATTR_RESOURCE_MIMETYPE);
         this.provider = parser.getAttributeValue(null, XML.ATTR_RESOURCE_PROVIDER);
         this.uri = parser.getAttributeValue(null, XML.ATTR_RESOURCE_URI);
+        this.videoId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_RESOURCE_VIDEO_ID), INVALID_VIDEO);
 
         // handle any nested resources
         if (this.isDynamic()) {

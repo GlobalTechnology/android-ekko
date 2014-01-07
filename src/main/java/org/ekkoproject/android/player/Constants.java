@@ -121,5 +121,6 @@ public final class Constants {
         public static final String ATTR_RESOURCE_MIMETYPE = "mimeType";
         public static final String ATTR_RESOURCE_URI = "uri";
         public static final String ATTR_RESOURCE_PROVIDER = "provider";
+        public static final String ATTR_RESOURCE_VIDEO_ID = "videoId";
     }
 }
