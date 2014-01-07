@@ -4,15 +4,15 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Pair;
 
-import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.db.AbstractDao;
 import org.ccci.gto.android.common.db.Mapper;
 import org.ekkoproject.android.player.model.Answer;
-import org.ekkoproject.android.player.model.CachedResource;
+import org.ekkoproject.android.player.model.CachedFileResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.model.Progress;
+import org.ekkoproject.android.player.model.Resource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class EkkoDao extends AbstractDao {
     private static final Mapper<Permission> ACCESS_MAPPER = new PermissionMapper();
     private static final Mapper<Course> COURSE_MAPPER = new CourseMapper();
     private static final Mapper<Resource> RESOURCE_MAPPER = new ResourceMapper();
-    private static final Mapper<CachedResource> CACHED_RESOURCE_MAPPER = new CachedResourceMapper();
+    private static final Mapper<CachedFileResource> CACHED_RESOURCE_MAPPER = new CachedFileResourceMapper();
     private static final Mapper<CachedUriResource> CACHED_URI_RESOURCE_MAPPER = new CachedUriResourceMapper();
     private static final Mapper<Progress> PROGRESS_MAPPER = new ProgressMapper();
     private static final Mapper<Answer> ANSWER_MAPPER = new AnswerMapper();
@@ -60,8 +60,8 @@ public class EkkoDao extends AbstractDao {
             return Contract.Answer.TABLE_NAME;
         } else if (Progress.class.equals(clazz)) {
             return Contract.Progress.TABLE_NAME;
-        } else if (CachedResource.class.equals(clazz)) {
-            return Contract.CachedResource.TABLE_NAME;
+        } else if (CachedFileResource.class.equals(clazz)) {
+            return Contract.CachedFileResource.TABLE_NAME;
         } else if (CachedUriResource.class.equals(clazz)) {
             return Contract.CachedUriResource.TABLE_NAME;
         }
@@ -88,8 +88,8 @@ public class EkkoDao extends AbstractDao {
             return Contract.Permission.PROJECTION_ALL;
         } else if (Resource.class.equals(clazz)) {
             return Contract.Course.Resource.PROJECTION_ALL;
-        } else if (CachedResource.class.equals(clazz)) {
-            return Contract.CachedResource.PROJECTION_ALL;
+        } else if (CachedFileResource.class.equals(clazz)) {
+            return Contract.CachedFileResource.PROJECTION_ALL;
         } else if (CachedUriResource.class.equals(clazz)) {
             return Contract.CachedUriResource.PROJECTION_ALL;
         } else if (Progress.class.equals(clazz)) {
@@ -115,12 +115,12 @@ public class EkkoDao extends AbstractDao {
         } else if (obj instanceof Progress) {
             return this.getPrimaryKeyWhere(Progress.class, ((Progress) obj).getGuid(), ((Progress) obj).getCourseId(),
                                            ((Progress) obj).getContentId());
-        } else if (obj instanceof CachedResource) {
-            return this.getPrimaryKeyWhere(CachedResource.class, ((CachedResource) obj).getCourseId(),
-                                           ((CachedResource) obj).getSha1());
         } else if (obj instanceof CachedUriResource) {
             return this.getPrimaryKeyWhere(CachedUriResource.class, ((CachedUriResource) obj).getCourseId(),
                                            ((CachedUriResource) obj).getUri());
+        } else if (obj instanceof CachedFileResource) {
+            return this.getPrimaryKeyWhere(CachedFileResource.class, ((CachedFileResource) obj).getCourseId(),
+                                           ((CachedFileResource) obj).getSha1());
         }
 
         return super.getPrimaryKeyWhere(obj);
@@ -150,11 +150,11 @@ public class EkkoDao extends AbstractDao {
                 throw new IllegalArgumentException("invalid key for " + clazz);
             }
             where = Contract.Progress.SQL_WHERE_PRIMARY_KEY;
-        } else if (CachedResource.class.equals(clazz)) {
+        } else if (CachedFileResource.class.equals(clazz)) {
             if (key.length != 2) {
                 throw new IllegalArgumentException("invalid key for " + clazz);
             }
-            where = Contract.CachedResource.SQL_WHERE_PRIMARY_KEY;
+            where = Contract.CachedFileResource.SQL_WHERE_PRIMARY_KEY;
         } else if (CachedUriResource.class.equals(clazz)) {
             if (key.length != 2) {
                 throw new IllegalArgumentException("invalid key for " + clazz);
@@ -181,7 +181,7 @@ public class EkkoDao extends AbstractDao {
             return (Mapper<T>) ACCESS_MAPPER;
         } else if (Resource.class.equals(clazz)) {
             return (Mapper<T>) RESOURCE_MAPPER;
-        } else if (CachedResource.class.equals(clazz)) {
+        } else if (CachedFileResource.class.equals(clazz)) {
             return (Mapper<T>) CACHED_RESOURCE_MAPPER;
         } else if (CachedUriResource.class.equals(clazz)) {
             return (Mapper<T>) CACHED_URI_RESOURCE_MAPPER;

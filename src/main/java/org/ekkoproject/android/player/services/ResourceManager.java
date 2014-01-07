@@ -12,16 +12,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
-import org.ekkoproject.android.player.model.Resource;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.util.IOUtils;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.EkkoDao;
-import org.ekkoproject.android.player.model.CachedResource;
+import org.ekkoproject.android.player.model.CachedFileResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.util.MultiKeyLruCache;
 import org.ekkoproject.android.player.util.StringUtils;
 import org.ekkoproject.android.player.util.WeakMultiKeyLruCache;
@@ -61,7 +61,11 @@ public final class ResourceManager {
                 throw new IllegalArgumentException("resource cannot be null");
             }
             this.courseId = resource.getCourseId();
+
+            // file resource attributes
             this.sha1 = resource.isFile() ? resource.getResourceSha1() : null;
+
+            // uri resource attributes
             this.uri = resource.isUri() ? resource.getUri() : null;
             this.provider = resource.isUri() ? resource.getProvider() : PROVIDER_NONE;
         }
@@ -304,7 +308,7 @@ public final class ResourceManager {
 
         synchronized (getLock(this.downloadLocks, new Key(resource))) {
             // check for a cached copy of the resource
-            final CachedResource cachedResource = this.dao.find(CachedResource.class, resource.getCourseId(),
+            final CachedFileResource cachedResource = this.dao.find(CachedFileResource.class, resource.getCourseId(),
                     resource.getResourceSha1());
             if (cachedResource != null && cachedResource.getPath() != null) {
                 final File f = new File(cachedResource.getPath());
@@ -406,8 +410,8 @@ public final class ResourceManager {
             }
 
             if (f.exists()) {
-                // create CachedResource record
-                final CachedResource cachedResource = new CachedResource();
+                // create CachedFileResource record
+                final CachedFileResource cachedResource = new CachedFileResource();
                 cachedResource.setCourseId(resource.getCourseId());
                 cachedResource.setSha1(resource.getResourceSha1());
                 cachedResource.setSize(size);
@@ -497,7 +501,7 @@ public final class ResourceManager {
 
             // store the download
             if (success && f.exists()) {
-                // create CachedResource record
+                // create CachedFileResource record
                 final CachedUriResource cachedResource = new CachedUriResource();
                 cachedResource.setCourseId(resource.getCourseId());
                 cachedResource.setUri(resource.getUri());

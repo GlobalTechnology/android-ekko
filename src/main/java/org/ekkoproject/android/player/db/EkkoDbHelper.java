@@ -36,7 +36,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.Permission.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_CREATE_TABLE);
-        db.execSQL(Contract.CachedResource.SQL_CREATE_TABLE);
+        db.execSQL(Contract.CachedFileResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
         db.execSQL(Contract.Answer.SQL_CREATE_TABLE);
@@ -109,7 +109,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.Answer.SQL_DELETE_TABLE);
         db.execSQL(Contract.Progress.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_DELETE_TABLE);
-        db.execSQL(Contract.CachedResource.SQL_DELETE_TABLE);
+        db.execSQL(Contract.CachedFileResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.SQL_DELETE_TABLE);
         db.execSQL(Contract.Permission.SQL_DELETE_TABLE);
