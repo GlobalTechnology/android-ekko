@@ -131,7 +131,7 @@ public final class ResourceManager {
     public static final int FLAG_FORCE_DOWNLOAD = 1 << 2;
 
     @SuppressLint("TrulyRandom")
-    private static final Random RNG = new SecureRandom();
+    private static final Random NAME_RNG = new SecureRandom();
 
     private final Context context;
     private final EkkoHubApi api;
@@ -434,7 +434,7 @@ public final class ResourceManager {
             File f = null;
             for (int i = 0; i < 10; i++) {
                 final byte[] buf = new byte[16];
-                RNG.nextBytes(buf);
+                NAME_RNG.nextBytes(buf);
                 f = new File(this.cacheDir(), StringUtils.bytesToHex(buf));
                 try {
                     if (f.createNewFile()) {
