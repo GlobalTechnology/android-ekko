@@ -3,17 +3,17 @@ package org.ekkoproject.android.player.model;
 import java.util.Date;
 
 public abstract class CachedResource {
-    private long courseId;
+    private final long courseId;
     private String path;
     private long size;
     private Date lastAccessed = new Date(0);
 
-    public long getCourseId() {
-        return this.courseId;
+    public CachedResource(final long courseId) {
+        this.courseId = courseId;
     }
 
-    public void setCourseId(final long courseId) {
-        this.courseId = courseId;
+    public long getCourseId() {
+        return this.courseId;
     }
 
     public String getPath() {

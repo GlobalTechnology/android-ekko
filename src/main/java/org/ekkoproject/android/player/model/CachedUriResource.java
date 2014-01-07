@@ -3,9 +3,14 @@ package org.ekkoproject.android.player.model;
 import java.util.Date;
 
 public class CachedUriResource extends CachedResource {
-    private String uri;
+    private final String uri;
     private Date lastModified = new Date(0);
     private Date expires = new Date();
+
+    public CachedUriResource(final long courseId, final String uri) {
+        super(courseId);
+        this.uri = uri;
+    }
 
     public String getUri() {
         return this.uri;
@@ -25,10 +30,6 @@ public class CachedUriResource extends CachedResource {
 
     public Date getLastModifiedDate() {
         return this.lastModified;
-    }
-
-    public void setUri(final String uri) {
-        this.uri = uri;
     }
 
     public void setExpires() {

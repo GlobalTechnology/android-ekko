@@ -411,9 +411,8 @@ public final class ResourceManager {
 
             if (f.exists()) {
                 // create CachedFileResource record
-                final CachedFileResource cachedResource = new CachedFileResource();
-                cachedResource.setCourseId(resource.getCourseId());
-                cachedResource.setSha1(resource.getResourceSha1());
+                final CachedFileResource cachedResource =
+                        new CachedFileResource(resource.getCourseId(), resource.getResourceSha1());
                 cachedResource.setSize(size);
                 cachedResource.setPath(f.getPath());
                 cachedResource.setLastAccessed();
@@ -502,9 +501,7 @@ public final class ResourceManager {
             // store the download
             if (success && f.exists()) {
                 // create CachedFileResource record
-                final CachedUriResource cachedResource = new CachedUriResource();
-                cachedResource.setCourseId(resource.getCourseId());
-                cachedResource.setUri(resource.getUri());
+                final CachedUriResource cachedResource = new CachedUriResource(resource.getCourseId(), resource.getUri());
                 cachedResource.setSize(size);
                 cachedResource.setPath(f.getPath());
                 cachedResource.setExpires(expires);

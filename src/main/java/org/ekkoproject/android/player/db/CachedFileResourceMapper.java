@@ -1,5 +1,7 @@
 package org.ekkoproject.android.player.db;
 
+import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -25,13 +27,7 @@ public class CachedFileResourceMapper extends CachedResourceMapper<CachedFileRes
 
     @Override
     protected CachedFileResource newObject(final Cursor c) {
-        return new CachedFileResource();
-    }
-
-    @Override
-    public CachedFileResource toObject(final Cursor c) {
-        final CachedFileResource resource = super.toObject(c);
-        resource.setSha1(this.getString(c, Contract.CachedFileResource.COLUMN_SHA1, null));
-        return resource;
+        return new CachedFileResource(this.getLong(c, Contract.CachedResource.COLUMN_COURSE_ID, INVALID_COURSE),
+                                      this.getString(c, Contract.CachedFileResource.COLUMN_SHA1, null));
     }
 }

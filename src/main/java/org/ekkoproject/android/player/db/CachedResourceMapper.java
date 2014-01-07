@@ -1,7 +1,5 @@
 package org.ekkoproject.android.player.db;
 
-import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -12,7 +10,6 @@ public abstract class CachedResourceMapper<T extends CachedResource> extends Abs
     @Override
     public T toObject(final Cursor c) {
         final T resource = super.toObject(c);
-        resource.setCourseId(this.getLong(c, Contract.CachedResource.COLUMN_COURSE_ID, INVALID_COURSE));
         resource.setPath(this.getString(c, Contract.CachedResource.COLUMN_PATH, null));
         resource.setSize(this.getLong(c, Contract.CachedResource.COLUMN_SIZE, 0));
         resource.setLastAccessed(this.getLong(c, Contract.CachedResource.COLUMN_LAST_ACCESSED, 0));

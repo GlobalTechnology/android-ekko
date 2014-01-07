@@ -1,5 +1,7 @@
 package org.ekkoproject.android.player.db;
 
+import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -31,13 +33,13 @@ public class CachedUriResourceMapper extends CachedResourceMapper<CachedUriResou
 
     @Override
     protected CachedUriResource newObject(final Cursor c) {
-        return new CachedUriResource();
+        return new CachedUriResource(this.getLong(c, Contract.CachedResource.COLUMN_COURSE_ID, INVALID_COURSE),
+                                     this.getString(c, Contract.CachedUriResource.COLUMN_URI, null));
     }
 
     @Override
     public CachedUriResource toObject(final Cursor c) {
         final CachedUriResource resource = super.toObject(c);
-        resource.setUri(this.getString(c, Contract.CachedUriResource.COLUMN_URI, null));
         resource.setExpires(this.getLong(c, Contract.CachedUriResource.COLUMN_EXPIRES, 0));
         resource.setLastModified(this.getLong(c, Contract.CachedUriResource.COLUMN_LAST_MODIFIED, 0));
         return resource;
