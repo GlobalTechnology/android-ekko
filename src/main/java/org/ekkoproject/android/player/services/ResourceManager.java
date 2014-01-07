@@ -50,7 +50,7 @@ import java.util.Random;
 public final class ResourceManager {
     private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
 
-    private class Key {
+    private static class Key {
         private final long courseId;
         private final String sha1;
         private final String uri;
@@ -93,7 +93,7 @@ public final class ResourceManager {
         }
     }
 
-    private final class BitmapKey extends Key {
+    private static final class BitmapKey extends Key {
         private final int width;
         private final int height;
 
@@ -138,12 +138,13 @@ public final class ResourceManager {
     private final EkkoDao dao;
     private final ManifestManager manifestManager;
 
-    private final Map<Key, Object> downloadLocks = new HashMap<Key, Object>();
+    private final Map<Key, Object> downloadLocks = new HashMap<>();
     private final MultiKeyLruCache<BitmapKey, Bitmap> bitmaps;
-    private final Map<Key, BitmapFactory.Options> bitmapMeta = new HashMap<Key, BitmapFactory.Options>();
-    private final Map<BitmapKey, Object> bitmapLocks = new HashMap<BitmapKey, Object>();
+    private final Map<Key, BitmapFactory.Options> bitmapMeta = new HashMap<>();
+    private final Map<BitmapKey, Object> bitmapLocks = new HashMap<>();
 
     private static ResourceManager instance;
+    private static final Object LOCK_INSTANCE = new Object();
 
     private ResourceManager(final Context ctx) {
         this.context = ctx.getApplicationContext();
@@ -164,10 +165,13 @@ public final class ResourceManager {
         };
     }
 
-    public static final ResourceManager getInstance(final Context context) {
-        if (instance == null) {
-            instance = new ResourceManager(context);
+    public static ResourceManager getInstance(final Context context) {
+        synchronized (LOCK_INSTANCE) {
+            if (instance == null) {
+                instance = new ResourceManager(context);
+            }
         }
+
         return instance;
     }
 
@@ -264,7 +268,7 @@ public final class ResourceManager {
         if (f != null) {
             try {
                 return new FileInputStream(f);
-            } catch (final FileNotFoundException e) {
+            } catch (final FileNotFoundException ignored) {
             }
         }
         return null;
@@ -436,7 +440,7 @@ public final class ResourceManager {
                     if (f.createNewFile()) {
                         break;
                     }
-                } catch (final IOException e) {
+                } catch (final IOException ignored) {
                 }
                 f = null;
             }
