@@ -29,7 +29,7 @@ public class EkkoDao extends AbstractDao {
     private static final Mapper<Progress> PROGRESS_MAPPER = new ProgressMapper();
     private static final Mapper<Answer> ANSWER_MAPPER = new AnswerMapper();
 
-    private static final Object instanceLock = new Object();
+    private static final Object LOCK_INSTANCE = new Object();
     private static EkkoDao instance = null;
 
     private EkkoDao(final Context context) {
@@ -37,11 +37,9 @@ public class EkkoDao extends AbstractDao {
     }
 
     public static EkkoDao getInstance(final Context context) {
-        if (instance == null) {
-            synchronized (instanceLock) {
-                if (instance == null) {
-                    instance = new EkkoDao(context.getApplicationContext());
-                }
+        synchronized (LOCK_INSTANCE) {
+            if (instance == null) {
+                instance = new EkkoDao(context.getApplicationContext());
             }
         }
 
