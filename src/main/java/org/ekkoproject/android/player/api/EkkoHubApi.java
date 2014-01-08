@@ -82,6 +82,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
             request.replaceParams = true;
             request.params.add(Pair.create("start", Integer.toString(start)));
             request.params.add(Pair.create("limit", Integer.toString(limit)));
+            request.accept = Request.MediaType.APPLICATION_XML;
             conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
@@ -108,7 +109,9 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     public Course getCourse(final long id) throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
-            conn = this.sendRequest(new Request("courses/course/" + Long.toString(id)));
+            final Request request = new Request("courses/course/" + Long.toString(id));
+            request.accept = Request.MediaType.APPLICATION_XML;
+            conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 try {
@@ -136,6 +139,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         try {
             final Request request = new Request("courses/course/" + Long.toString(id) + "/enroll");
             request.method = "POST";
+            request.accept = Request.MediaType.APPLICATION_XML;
             conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
@@ -182,7 +186,9 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
             throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
         try {
-            conn = this.sendRequest(new Request("courses/course/" + Long.toString(id) + "/manifest"));
+            final Request request = new Request("courses/course/" + Long.toString(id) + "/manifest");
+            request.accept = Request.MediaType.APPLICATION_XML;
+            conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
                 return IOUtils.copy(conn.getInputStream(), out);
