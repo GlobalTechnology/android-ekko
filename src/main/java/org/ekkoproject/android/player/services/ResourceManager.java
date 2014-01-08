@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.services;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.ekkoproject.android.player.model.Resource.INVALID_VIDEO;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_NONE;
 import static org.ekkoproject.android.player.util.ThreadUtils.assertNotOnUiThread;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
@@ -17,6 +18,7 @@ import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.util.IOUtils;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.model.CachedEcvResource;
 import org.ekkoproject.android.player.model.CachedFileResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
@@ -55,8 +57,14 @@ public final class ResourceManager {
         private final String sha1;
         private final String uri;
         private final int provider;
+        private final long videoId;
+        private final boolean thumb;
 
         public Key(final Resource resource) {
+            this(resource, false);
+        }
+
+        public Key(final Resource resource, final boolean thumb) {
             if (resource == null) {
                 throw new IllegalArgumentException("resource cannot be null");
             }
@@ -68,6 +76,10 @@ public final class ResourceManager {
             // uri resource attributes
             this.uri = resource.isUri() ? resource.getUri() : null;
             this.provider = resource.isUri() ? resource.getProvider() : PROVIDER_NONE;
+
+            // ecv resource attributes
+            this.videoId = resource.isEcv() ? resource.getVideoId() : INVALID_VIDEO;
+            this.thumb = thumb;
         }
 
         @Override
@@ -77,10 +89,10 @@ public final class ResourceManager {
             }
             if (o instanceof Key) {
                 final Key key = (Key) o;
-                return this.courseId == key.courseId
-                        && ((this.sha1 == null && key.sha1 == null) || (this.sha1 != null && this.sha1.equals(key.sha1)))
-                        && ((this.uri == null && key.uri == null) || (this.uri != null && this.uri.equals(key.uri)))
-                        && this.provider == key.provider;
+                return this.courseId == key.courseId && ((this.sha1 == null && key.sha1 == null) ||
+                        (this.sha1 != null && this.sha1.equals(key.sha1))) &&
+                        ((this.uri == null && key.uri == null) || (this.uri != null && this.uri.equals(key.uri))) &&
+                        this.provider == key.provider && this.videoId == key.videoId && this.thumb == key.thumb;
             }
 
             return false;
@@ -93,6 +105,8 @@ public final class ResourceManager {
             hash = hash * 31 + (this.sha1 != null ? this.sha1.hashCode() : 0);
             hash = hash * 31 + (this.uri != null ? this.uri.hashCode() : 0);
             hash = hash * 31 + this.provider;
+            hash = hash * 31 + Long.valueOf(this.videoId).hashCode();
+            hash = hash * 31 + (this.thumb ? 1 : 0);
             return hash;
         }
     }
@@ -133,6 +147,7 @@ public final class ResourceManager {
     public static final int FLAG_NON_BLOCKING = 1 << 0;
     public static final int FLAG_DONT_DOWNLOAD = 1 << 1;
     public static final int FLAG_FORCE_DOWNLOAD = 1 << 2;
+    public static final int FLAG_TYPE_IMAGE = 1 << 3;
 
     @SuppressLint("TrulyRandom")
     private static final Random NAME_RNG = new SecureRandom();
@@ -198,7 +213,7 @@ public final class ResourceManager {
     }
 
     private Bitmap loadBitmap(final Resource resource, final int width, final int height) {
-        final File f = this.getFile(resource);
+        final File f = this.getFile(resource, FLAG_TYPE_IMAGE);
         if (f == null) {
             return null;
         }
@@ -294,6 +309,8 @@ public final class ResourceManager {
             return this.getFileResource(resource, flags);
         } else if (this.isDownloadableUriResource(resource)) {
             return this.getUriResource(resource, flags);
+        } else if (this.isValidEcvResource(resource)) {
+            return this.getEcvResource(resource, flags);
         }
 
         // default to null
@@ -319,7 +336,7 @@ public final class ResourceManager {
 
             // XXX: this is disabled to prevent using corrupted downloads
             // // check for a cached copy in the current download directory
-            // final File f = this.getFilePath(resource);
+            // final File f = this.getFileObject(resource);
             // if (f != null && f.exists()) {
             // return f;
             // }
@@ -351,6 +368,29 @@ public final class ResourceManager {
         }
     }
 
+    private File getEcvResource(final Resource resource, final int flags) {
+        // short-circuit if this isn't a valid file resource
+        if (!this.isValidEcvResource(resource)) {
+            return null;
+        }
+
+        final boolean thumb = (flags & FLAG_TYPE_IMAGE) == FLAG_TYPE_IMAGE;
+        synchronized (getLock(this.downloadLocks, new Key(resource, thumb))) {
+            // check for a cached copy of the resource
+            final CachedEcvResource cachedResource =
+                    this.dao.find(CachedEcvResource.class, resource.getCourseId(), resource.getVideoId(), thumb);
+            if (cachedResource != null && cachedResource.getPath() != null) {
+                final File f = new File(cachedResource.getPath());
+                if (f.exists()) {
+                    return f;
+                }
+            }
+
+            // download the resource
+            return this.downloadEcvResource(resource, thumb);
+        }
+    }
+
     private File downloadFileResource(final Resource resource) {
         return this.downloadFileResource(resource, FLAG_FORCE_DOWNLOAD);
     }
@@ -363,7 +403,7 @@ public final class ResourceManager {
 
         synchronized (getLock(this.downloadLocks, new Key(resource))) {
             // get File object
-            final File f = this.getFilePath(resource);
+            final File f = this.getFileObject(resource, null);
             if (f == null) {
                 return null;
             }
@@ -434,19 +474,7 @@ public final class ResourceManager {
 
         synchronized (getLock(this.downloadLocks, new Key(resource))) {
             // create a new file object for writing
-            File f = null;
-            for (int i = 0; i < 10; i++) {
-                final byte[] buf = new byte[16];
-                NAME_RNG.nextBytes(buf);
-                f = new File(this.cacheDir(), StringUtils.bytesToHex(buf));
-                try {
-                    if (f.createNewFile()) {
-                        break;
-                    }
-                } catch (final IOException ignored) {
-                }
-                f = null;
-            }
+            final File f = this.getFileObject(resource, null);
             if (f == null) {
                 return null;
             }
@@ -517,23 +545,108 @@ public final class ResourceManager {
         return null;
     }
 
+    private File downloadEcvResource(final Resource resource, final boolean thumb) {
+        // short-circuit if this isn't a valid resource
+        if (!this.isValidEcvResource(resource)) {
+            return null;
+        }
+
+        synchronized (getLock(this.downloadLocks, new Key(resource))) {
+            // get File object
+            final File f = this.getFileObject(resource, thumb ? "thumbnail" : "video");
+            if (f == null) {
+                return null;
+            }
+
+            // try downloading the file
+            OutputStream out = null;
+            long size = -1;
+            MessageDigest digest = null;
+            try {
+                out = new FileOutputStream(f);
+
+                // download the resource
+                size = this.api.downloadEcvResource(resource, thumb, out);
+            } catch (final FileNotFoundException e) {
+                // this is an odd exception
+                LOG.error("unexpected error opening resource cache file for download", e);
+                return null;
+            } catch (final ApiSocketException e) {
+                // connection error
+                LOG.debug("connection error", e);
+                return null;
+            } catch (final InvalidSessionApiException e) {
+                // the users session has expired, ask them to re-authenticate
+                LOG.debug("the users session expired");
+                return null;
+            } finally {
+                IOUtils.closeQuietly(out);
+
+                // delete invalid downloads
+                if (size < 0) {
+                    f.delete();
+                }
+            }
+
+            if (f.exists()) {
+                // create CachedFileResource record
+                final CachedEcvResource cachedResource =
+                        new CachedEcvResource(resource.getCourseId(), resource.getVideoId(), thumb);
+                cachedResource.setPath(f.getPath());
+                cachedResource.setSize(size);
+                cachedResource.setLastAccessed();
+                this.dao.replace(cachedResource);
+
+                // return the File object
+                return f;
+            }
+        }
+
+        return null;
+    }
+
     private File dir() {
-        final File dir = this.context.getExternalFilesDir("resources");
-        dir.mkdirs();
-        return dir;
+        return this.context.getExternalFilesDir("resources");
     }
 
     private File cacheDir() {
-        final File dir = new File(this.context.getExternalCacheDir(), "resources");
-        dir.mkdirs();
-        return dir;
+        return new File(this.context.getExternalCacheDir(), "resources");
     }
 
-    private File getFilePath(final Resource resource) {
+    private File getFileObject(final Resource resource, final String type) {
+        // find/create the directory for the specified resource
+        File dir;
+        if (this.isValidFileResource(resource) || this.isValidEcvResource(resource)) {
+            dir = dir();
+        } else if (this.isDownloadableUriResource(resource)) {
+            dir = cacheDir();
+        } else {
+            return null;
+        }
+        dir = new File(dir, Long.toString(resource.getCourseId()));
+        dir = new File(dir, resource.getResourceType());
+        if (type != null) {
+            dir = new File(dir, type);
+        }
+        dir.mkdirs();
+
+        // generate the File object based on resource type
         if (this.isValidFileResource(resource)) {
-            final File courseDir = new File(dir(), Long.toString(resource.getCourseId()));
-            courseDir.mkdirs();
-            return new File(courseDir, resource.getResourceSha1().toLowerCase(Locale.US));
+            return new File(dir, resource.getResourceSha1().toLowerCase(Locale.US));
+        } else if (this.isValidEcvResource(resource)) {
+            return new File(dir, Long.toString(resource.getVideoId()));
+        } else if (this.isDownloadableUriResource(resource)) {
+            for (int i = 0; i < 10; i++) {
+                final byte[] buf = new byte[16];
+                NAME_RNG.nextBytes(buf);
+                final File f = new File(dir, StringUtils.bytesToHex(buf));
+                try {
+                    if (f.createNewFile()) {
+                        return f;
+                    }
+                } catch (final IOException ignored) {
+                }
+            }
         }
 
         return null;
@@ -545,6 +658,10 @@ public final class ResourceManager {
 
     private boolean isValidFileResource(final Resource resource) {
         return resource != null && resource.isFile() && resource.getResourceSha1() != null;
+    }
+
+    private boolean isValidEcvResource(final Resource resource) {
+        return resource != null && resource.isEcv() && resource.getVideoId() != INVALID_VIDEO;
     }
 
     private Resource resolveResource(final long courseId, final String resourceId) {
