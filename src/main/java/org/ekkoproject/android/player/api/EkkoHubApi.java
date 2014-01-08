@@ -24,6 +24,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
@@ -217,16 +218,19 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     private long downloadFileResource(final long courseId, final String sha1, final OutputStream out)
             throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
+        InputStream in = null;
         try {
             conn = this.sendRequest(
                     new Request("courses/course/" + Long.toString(courseId) + "/resources/resource/" + sha1));
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
-                return IOUtils.copy(conn.getInputStream(), out);
+                in = conn.getInputStream();
+                return IOUtils.copy(in, out);
             }
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
+            IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(conn);
         }
 
@@ -242,6 +246,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     private long downloadEcvResource(final long courseId, final long videoId, final boolean thumbnail,
                                      final OutputStream out) throws ApiSocketException, InvalidSessionApiException {
         HttpURLConnection conn = null;
+        InputStream in = null;
         try {
             final Request request = new Request(
                     "courses/course/" + Long.toString(courseId) + "/resources/video/" + Long.toString(videoId) +
@@ -250,11 +255,13 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
             conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
-                return IOUtils.copy(conn.getInputStream(), out);
+                in = conn.getInputStream();
+                return IOUtils.copy(in, out);
             }
         } catch (final IOException e) {
             throw new ApiSocketException(e);
         } finally {
+            IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(conn);
         }
 
