@@ -4,11 +4,11 @@ import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.Constants.INVALID_ID;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
+import org.ekkoproject.android.player.util.BidiMap;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.ekkoproject.android.player.util.BidiMap;
 
 public class CourseManager {
     private static final AtomicLong nextId = new AtomicLong(1);
@@ -37,42 +37,33 @@ public class CourseManager {
         // get the BidiMap
         final BidiMap<Long, String> map = getMap(courseId);
 
-        // check to see if we already have a mapping
-        Long response = map.getKey(id);
-
         // create new id if one doesn't exist
-        if (response == null) {
-            synchronized (getLock(idMapLocks, courseId)) {
-                // double check that a value wasn't created
-                response = map.getKey(id);
-                if (response == null) {
-                    response = nextId.getAndIncrement();
-                    map.put(response, id.intern());
-                }
+        synchronized (getLock(idMapLocks, courseId)) {
+            // check to see if we already have a mapping
+            Long response = map.getKey(id);
+            if (response == null) {
+                response = nextId.getAndIncrement();
+                map.put(response, id.intern());
             }
-        }
 
-        // return the response
-        return response;
+            // return the response
+            return response;
+        }
     }
 
     private static BidiMap<Long, String> getMap(final long courseId) {
-        // get the BidiMap
-        BidiMap<Long, String> map = idMap.get(courseId);
+        synchronized (getLock(idMapLocks, courseId)) {
+            // get the BidiMap
+            BidiMap<Long, String> map = idMap.get(courseId);
 
-        // create a BidiMap if one doesn't exist
-        if (map == null) {
-            synchronized (getLock(idMapLocks, courseId)) {
-                // double check that map wasn't created by another thread
-                map = idMap.get(courseId);
-                if (map == null) {
-                    map = new BidiMap<Long, String>();
-                    idMap.put(courseId, map);
-                }
+            // create a BidiMap if one doesn't exist
+            if (map == null) {
+                map = new BidiMap<Long, String>();
+                idMap.put(courseId, map);
             }
-        }
 
-        // return the BidiMap
-        return map;
+            // return the BidiMap
+            return map;
+        }
     }
 }
