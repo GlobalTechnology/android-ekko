@@ -157,6 +157,11 @@ public final class Contract {
         protected static final String COLUMN_PATH = "path";
         protected static final String COLUMN_SIZE = "size";
         protected static final String COLUMN_LAST_ACCESSED = "lastAccessed";
+
+        protected static final String SQL_COLUMN_COURSE_ID = COLUMN_COURSE_ID + " INTEGER";
+        protected static final String SQL_COLUMN_PATH = COLUMN_PATH + " TEXT";
+        protected static final String SQL_COLUMN_SIZE = COLUMN_SIZE + " INTEGER";
+        protected static final String SQL_COLUMN_LAST_ACCESSED = COLUMN_LAST_ACCESSED + " INTEGER";
     }
 
     protected static final class CachedFileResource extends CachedResource {
@@ -166,16 +171,18 @@ public final class Contract {
         protected static final String[] PROJECTION_ALL =
                 {COLUMN_COURSE_ID, COLUMN_SHA1, COLUMN_SIZE, COLUMN_PATH, COLUMN_LAST_ACCESSED};
 
+        private static final String SQL_COLUMN_SHA1 = COLUMN_SHA1 + " TEXT";
+        private static final String SQL_PRIMARY_KEY = "PRIMARY KEY(" + COLUMN_COURSE_ID + "," + COLUMN_SHA1 + ")";
+
         protected static final String SQL_WHERE_PRIMARY_KEY = COLUMN_COURSE_ID + " = ? AND " + COLUMN_SHA1 + " = ?";
 
-        protected static final String SQL_CREATE_TABLE =
-                "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_COURSE_ID + " INTEGER," + COLUMN_SHA1 + " TEXT," +
-                        COLUMN_SIZE + " INTEGER," + COLUMN_PATH + " TEXT," + COLUMN_LAST_ACCESSED +
-                        " INTEGER, PRIMARY KEY(" + COLUMN_COURSE_ID + ", " + COLUMN_SHA1 + "))";
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_COURSE_ID, SQL_COLUMN_SHA1, SQL_COLUMN_PATH, SQL_COLUMN_SIZE,
+                      SQL_COLUMN_LAST_ACCESSED, SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
-    public static final class CachedUriResource extends CachedResource {
+    protected static final class CachedUriResource extends CachedResource {
         protected static final String TABLE_NAME = "cachedUriResources";
         public static final String COLUMN_URI = "uri";
         public static final String COLUMN_EXPIRES = "expires";
@@ -185,13 +192,16 @@ public final class Contract {
                 {COLUMN_COURSE_ID, COLUMN_URI, COLUMN_SIZE, COLUMN_PATH, COLUMN_EXPIRES, COLUMN_LAST_MODIFIED,
                         COLUMN_LAST_ACCESSED};
 
+        private static final String SQL_COLUMN_URI = COLUMN_URI + " TEXT";
+        private static final String SQL_COLUMN_EXPIRES = COLUMN_EXPIRES + " INTEGER";
+        private static final String SQL_COLUMN_LAST_MODIFIED = COLUMN_LAST_MODIFIED + " INTEGER";
+        private static final String SQL_PRIMARY_KEY = "PRIMARY KEY(" + COLUMN_COURSE_ID + "," + COLUMN_URI + ")";
+
         protected static final String SQL_WHERE_PRIMARY_KEY = COLUMN_COURSE_ID + " = ? AND " + COLUMN_URI + " = ?";
 
-        protected static final String SQL_CREATE_TABLE =
-                "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_COURSE_ID + " INTEGER," + COLUMN_URI + " TEXT," +
-                        COLUMN_SIZE + " INTEGER," + COLUMN_PATH + " TEXT," + COLUMN_EXPIRES + " INTEGER," +
-                        COLUMN_LAST_MODIFIED + " INTEGER," + COLUMN_LAST_ACCESSED + " INTEGER, PRIMARY KEY(" +
-                        COLUMN_COURSE_ID + ", " + COLUMN_URI + "))";
+        protected static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_COURSE_ID, SQL_COLUMN_URI, SQL_COLUMN_PATH, SQL_COLUMN_SIZE, SQL_COLUMN_EXPIRES,
+                      SQL_COLUMN_LAST_MODIFIED, SQL_COLUMN_LAST_ACCESSED, SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
