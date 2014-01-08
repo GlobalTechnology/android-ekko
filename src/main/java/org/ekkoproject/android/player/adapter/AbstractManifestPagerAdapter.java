@@ -1,11 +1,13 @@
 package org.ekkoproject.android.player.adapter;
 
+import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 
 import org.ekkoproject.android.player.model.Manifest;
 
-public abstract class AbstractManifestPagerAdapter extends FragmentStatePagerAdapter implements ManifestAdapter {
+public abstract class AbstractManifestPagerAdapter extends FragmentPagerAdapter implements ManifestAdapter {
     protected final String mGuid;
     private Manifest manifest = null;
 
@@ -27,5 +29,9 @@ public abstract class AbstractManifestPagerAdapter extends FragmentStatePagerAda
 
     protected Manifest getManifest() {
         return this.manifest;
+    }
+
+    protected long getCourseId() {
+        return this.manifest != null ? this.manifest.getCourseId() : INVALID_COURSE;
     }
 }

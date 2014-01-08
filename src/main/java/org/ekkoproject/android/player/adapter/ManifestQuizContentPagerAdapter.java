@@ -1,13 +1,13 @@
 package org.ekkoproject.android.player.adapter;
 
-import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+import static org.ekkoproject.android.player.Constants.INVALID_ID;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.model.Quiz;
+import org.ekkoproject.android.player.services.CourseManager;
 import org.ekkoproject.android.player.support.v4.fragment.QuestionFragment;
 import org.ekkoproject.android.player.support.v4.fragment.QuizResultsFragment;
 
@@ -54,8 +54,7 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
 
     @Override
     public Fragment getItem(final int position) {
-        final Manifest manifest = this.getManifest();
-        final long courseId = manifest != null ? manifest.getCourseId() : INVALID_COURSE;
+        final long courseId = this.getCourseId();
         final Quiz quiz = this.getQuiz();
         final String quizId = quiz != null ? quiz.getId() : null;
 
@@ -66,6 +65,17 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
             return QuizResultsFragment.newInstance(mGuid, courseId, quizId);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public long getItemId(final int position) {
+        if (position >= 0 && position < this.questions.size()) {
+            return CourseManager.convertId(this.getCourseId(), this.questions.get(position).getId());
+        } else if (position == this.questions.size()) {
+            return CourseManager.convertId(this.getCourseId(), "QuizResultsFragment");
+        } else {
+            return INVALID_ID;
         }
     }
 

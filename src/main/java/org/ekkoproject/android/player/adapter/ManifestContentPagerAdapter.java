@@ -1,6 +1,6 @@
 package org.ekkoproject.android.player.adapter;
 
-import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+import static org.ekkoproject.android.player.Constants.INVALID_ID;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +9,7 @@ import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Quiz;
+import org.ekkoproject.android.player.services.CourseManager;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractContentFragment;
 import org.ekkoproject.android.player.support.v4.fragment.CourseCompletionFragment;
 import org.ekkoproject.android.player.support.v4.fragment.LessonFragment;
@@ -43,8 +44,7 @@ public class ManifestContentPagerAdapter extends AbstractManifestPagerAdapter {
 
     @Override
     public Fragment getItem(final int position) {
-        final Manifest manifest = this.getManifest();
-        final long courseId = manifest != null ? manifest.getCourseId() : INVALID_COURSE;
+        final long courseId = this.getCourseId();
         if (position >= 0 && position < this.content.size()) {
             final CourseContent item = this.content.get(position);
 
@@ -65,6 +65,17 @@ public class ManifestContentPagerAdapter extends AbstractManifestPagerAdapter {
     }
 
     @Override
+    public long getItemId(final int position) {
+        if (position >= 0 && position < this.content.size()) {
+            return CourseManager.convertId(this.getCourseId(), this.content.get(position).getId());
+        } else if (position == this.content.size()) {
+            return CourseManager.convertId(this.getCourseId(), "CourseCompletionFragment");
+        } else {
+            return INVALID_ID;
+        }
+    }
+
+    @Override
     public int getItemPosition(final Object fragment) {
         // get the contentId represented by the fragment
         final String contentId;
@@ -78,14 +89,13 @@ public class ManifestContentPagerAdapter extends AbstractManifestPagerAdapter {
             contentId = null;
         }
 
-        // find the position of the contentId and make sure it is the correct
-        // type
+        // find the position of the contentId and make sure it is the correct type
         if (contentId != null) {
             for (int i = 0; i < this.content.size(); i++) {
                 final CourseContent content = this.content.get(i);
                 if (contentId.equals(content.getId())) {
-                    if ((fragment instanceof LessonFragment && content instanceof Lesson)
-                            || (fragment instanceof QuizFragment && content instanceof Quiz)) {
+                    if ((fragment instanceof LessonFragment && content instanceof Lesson) ||
+                            (fragment instanceof QuizFragment && content instanceof Quiz)) {
                         return i;
                     }
                 }

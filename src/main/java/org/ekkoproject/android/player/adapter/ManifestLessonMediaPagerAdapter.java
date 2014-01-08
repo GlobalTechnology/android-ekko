@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Media;
+import org.ekkoproject.android.player.services.CourseManager;
 import org.ekkoproject.android.player.support.v4.fragment.lesson.MediaFragment;
 
 import java.util.Collections;
@@ -47,5 +48,10 @@ public class ManifestLessonMediaPagerAdapter extends AbstractManifestLessonPager
         final Media media = this.media.get(position);
         final String mediaId = media != null ? media.getId() : null;
         return MediaFragment.newInstance(mGuid, courseId, lessonId, mediaId);
+    }
+
+    @Override
+    public long getItemId(final int position) {
+        return CourseManager.convertId(this.getCourseId(), this.media.get(position).getId());
     }
 }

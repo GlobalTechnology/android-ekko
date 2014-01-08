@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Text;
+import org.ekkoproject.android.player.services.CourseManager;
 import org.ekkoproject.android.player.support.v4.fragment.lesson.TextFragment;
 
 import java.util.Collections;
@@ -47,5 +48,10 @@ public class ManifestLessonTextPagerAdapter extends AbstractManifestLessonPagerA
         final Text text = this.text.get(position);
         final String textId = text != null ? text.getId() : null;
         return TextFragment.newInstance(mGuid, courseId, lessonId, textId);
+    }
+
+    @Override
+    public long getItemId(final int position) {
+        return CourseManager.convertId(this.getCourseId(), this.text.get(position).getId());
     }
 }
