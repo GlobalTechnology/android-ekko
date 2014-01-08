@@ -21,8 +21,9 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 12: 11/12/2013
      * 13: 11/13/2013
      * 14: 01/06/2014
+     * 15: 01/07/2014
      */
-    public static final int DATABASE_VERSION = 14;
+    public static final int DATABASE_VERSION = 15;
     public static final String DATABASE_NAME = "Ekko.db";
 
     private final Context mContext;
@@ -37,6 +38,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.Permission.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_CREATE_TABLE);
+        db.execSQL(Contract.CachedEcvResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedFileResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.Progress.SQL_CREATE_TABLE);
@@ -97,6 +99,11 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 if (newVersion <= 14) {
                     break;
                 }
+                db.execSQL(Contract.CachedEcvResource.SQL_V15_CREATE_TABLE);
+            case 15:
+                if (newVersion <= 15) {
+                    break;
+                }
                 break;
             default:
                 // unrecognized version, let's just reset the database
@@ -116,6 +123,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.Progress.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedFileResource.SQL_DELETE_TABLE);
+        db.execSQL(Contract.CachedEcvResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.SQL_DELETE_TABLE);
         db.execSQL(Contract.Permission.SQL_DELETE_TABLE);

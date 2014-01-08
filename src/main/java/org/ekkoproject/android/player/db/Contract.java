@@ -182,7 +182,7 @@ public final class Contract {
 
     protected static final class CachedFileResource extends CachedResource {
         protected static final String TABLE_NAME = "cachedResources";
-        public static final String COLUMN_SHA1 = "sha1";
+        protected static final String COLUMN_SHA1 = "sha1";
 
         protected static final String[] PROJECTION_ALL =
                 {COLUMN_COURSE_ID, COLUMN_SHA1, COLUMN_SIZE, COLUMN_PATH, COLUMN_LAST_ACCESSED};
@@ -196,6 +196,34 @@ public final class Contract {
                 .join(",", SQL_COLUMN_COURSE_ID, SQL_COLUMN_SHA1, SQL_COLUMN_PATH, SQL_COLUMN_SIZE,
                       SQL_COLUMN_LAST_ACCESSED, SQL_PRIMARY_KEY) + ")";
         protected static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    }
+
+    protected static final class CachedEcvResource extends CachedResource {
+        static final String TABLE_NAME = "cachedEcvResources";
+        static final String COLUMN_VIDEO_ID = "videoId";
+        static final String COLUMN_THUMBNAIL = "thumb";
+
+        static final String[] PROJECTION_ALL =
+                {COLUMN_COURSE_ID, COLUMN_VIDEO_ID, COLUMN_THUMBNAIL, COLUMN_PATH, COLUMN_SIZE, COLUMN_LAST_ACCESSED};
+
+        private static final String SQL_COLUMN_VIDEO_ID = COLUMN_VIDEO_ID + " INTEGER";
+        private static final String SQL_COLUMN_THUMBNAIL = COLUMN_THUMBNAIL + " INTEGER";
+        private static final String SQL_PRIMARY_KEY =
+                "PRIMARY KEY(" + COLUMN_COURSE_ID + "," + COLUMN_VIDEO_ID + "," + COLUMN_THUMBNAIL + ")";
+
+        static final String SQL_WHERE_PRIMARY_KEY =
+                COLUMN_COURSE_ID + " = ? AND " + COLUMN_VIDEO_ID + " = ? AND " + COLUMN_THUMBNAIL + " = ?";
+
+        static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_COURSE_ID, SQL_COLUMN_VIDEO_ID, SQL_COLUMN_THUMBNAIL, SQL_COLUMN_PATH,
+                      SQL_COLUMN_SIZE, SQL_COLUMN_LAST_ACCESSED, SQL_PRIMARY_KEY) + ")";
+        static final String SQL_DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        /* V15 updates */
+        @Deprecated
+        static final String SQL_V15_CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + StringUtils
+                .join(",", SQL_COLUMN_COURSE_ID, SQL_COLUMN_VIDEO_ID, SQL_COLUMN_THUMBNAIL, SQL_COLUMN_PATH,
+                      SQL_COLUMN_SIZE, SQL_COLUMN_LAST_ACCESSED, SQL_PRIMARY_KEY) + ")";
     }
 
     protected static final class CachedUriResource extends CachedResource {
