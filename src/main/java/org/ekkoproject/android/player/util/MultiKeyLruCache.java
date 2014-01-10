@@ -1,14 +1,14 @@
 package org.ekkoproject.android.player.util;
 
+import android.support.v4.util.LruCache;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import android.support.v4.util.LruCache;
 
 public class MultiKeyLruCache<K, V> extends LruCache<K, V> {
     private int sizeGap = 0;
 
-    private Map<V, Integer> copies = new HashMap<V, Integer>();
+    private final Map<V, Integer> copies = new HashMap<>();
 
     public MultiKeyLruCache(final int maxSize) {
         super(maxSize);
@@ -62,8 +62,12 @@ public class MultiKeyLruCache<K, V> extends LruCache<K, V> {
         Integer count;
         synchronized (this.copies) {
             count = this.copies.get(value);
-            count = count != null && count > 0 ? count - 1 : 0;
-            this.copies.put(value, count);
+            count = count != null ? count - 1 : 0;
+            if (count <= 0) {
+                this.copies.remove(value);
+            } else {
+                this.copies.put(value, count);
+            }
         }
         if (count > 0) {
             final int size = this.sizeOf(key, value);
