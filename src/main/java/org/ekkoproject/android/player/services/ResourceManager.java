@@ -12,6 +12,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.v4.util.LruCache;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
@@ -158,7 +159,7 @@ public final class ResourceManager {
     private final ManifestManager manifestManager;
 
     private final Map<Key, Object> downloadLocks = new HashMap<>();
-    private final MultiKeyLruCache<BitmapKey, Bitmap> bitmaps;
+    private final LruCache<BitmapKey, Bitmap> bitmaps;
     private final Map<Key, BitmapFactory.Options> bitmapMeta = new HashMap<>();
     private final Map<BitmapKey, Object> bitmapLocks = new HashMap<>();
 
@@ -172,8 +173,8 @@ public final class ResourceManager {
         this.manifestManager = ManifestManager.getInstance(this.context);
 
         this.bitmaps = new WeakMultiKeyLruCache<BitmapKey, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 16)) {
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
             @Override
+            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
             protected int sizeOf(final BitmapKey key, final Bitmap bitmap) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                     return bitmap.getByteCount() / 1024;
@@ -263,14 +264,23 @@ public final class ResourceManager {
                     opts.inSampleSize = scale;
                     bitmap = BitmapFactory.decodeFile(f.getPath(), opts);
                     if (bitmap != null) {
-                        this.bitmaps.putMulti(scaledKey, bitmap);
+                        if (this.bitmaps instanceof MultiKeyLruCache) {
+                            ((MultiKeyLruCache<BitmapKey, Bitmap>) this.bitmaps).putMulti(scaledKey, bitmap);
+                        } else {
+                            this.bitmaps.put(scaledKey, bitmap);
+                        }
                     }
                 }
             }
 
             // store the bitmap in the cache
             if (bitmap != null) {
-                this.bitmaps.putMulti(new BitmapKey(resource, width, height), bitmap);
+                if (this.bitmaps instanceof MultiKeyLruCache) {
+                    ((MultiKeyLruCache<BitmapKey, Bitmap>) this.bitmaps)
+                            .putMulti(new BitmapKey(resource, width, height), bitmap);
+                } else {
+                    this.bitmaps.put(new BitmapKey(resource, width, height), bitmap);
+                }
             }
 
             // return the bitmap
