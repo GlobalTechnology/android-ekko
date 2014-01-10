@@ -172,7 +172,7 @@ public final class ResourceManager {
         this.dao = EkkoDao.getInstance(ctx);
         this.manifestManager = ManifestManager.getInstance(this.context);
 
-        this.bitmaps = new WeakMultiKeyLruCache<BitmapKey, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 16)) {
+        this.bitmaps = new WeakMultiKeyLruCache<BitmapKey, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 8)) {
             @Override
             @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
             protected int sizeOf(final BitmapKey key, final Bitmap bitmap) {
