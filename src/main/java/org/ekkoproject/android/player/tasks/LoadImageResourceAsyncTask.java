@@ -1,5 +1,14 @@
 package org.ekkoproject.android.player.tasks;
 
+import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.widget.ImageView;
+
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.services.ResourceManager;
+
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -8,24 +17,22 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.services.ResourceManager;
-
-import android.annotation.TargetApi;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.widget.ImageView;
-
 public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitmap> {
-    private static final Executor LOAD_IMAGE_THREAD_POOL = new ThreadPoolExecutor(3, 7, 1, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
-                private final AtomicInteger mCount = new AtomicInteger(1);
+    private static final Executor LOAD_IMAGE_THREAD_POOL;
 
-                public Thread newThread(Runnable r) {
-                    return new Thread(r, "LoadImageResourceAsyncTask #" + mCount.getAndIncrement());
-                }
-            });
+    static {
+        final ThreadFactory tf = new ThreadFactory() {
+            private final AtomicInteger mCount = new AtomicInteger(1);
+
+            @Override
+            public Thread newThread(final Runnable r) {
+                return new Thread(r, "LoadImageResourceAsyncTask #" +
+                        mCount.getAndIncrement());
+            }
+        };
+        LOAD_IMAGE_THREAD_POOL =
+                new ThreadPoolExecutor(3, 7, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), tf);
+    }
 
     private final ResourceManager manager;
     private final WeakReference<ImageView> view;
@@ -47,7 +54,7 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
         this.width = width > 0 ? width : 50;
         this.height = height > 0 ? height : 50;
         view.setTag(R.id.image_loader_task, new WeakReference<AsyncTask<?, ?, ?>>(this));
-        this.view = new WeakReference<ImageView>(view);
+        this.view = new WeakReference<>(view);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -73,8 +80,8 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
         super.onPostExecute(bitmap);
 
         if (checkImageView()) {
-            final ImageView view = this.view.get();
             if (bitmap != null) {
+                final ImageView view = this.view.get();
                 if (view != null) {
                     view.setImageBitmap(bitmap);
                     view.setTag(R.id.image_loader_task, null);
