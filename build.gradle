@@ -15,7 +15,7 @@ apply plugin: 'android'
 apply plugin: 'android-test'
 
 group 'org.ccci.gto.android'
-version '0.9.3'
+version '0.9.4-SNAPSHOT'
 
 def generateVersionCode(version) {
     def code = 0;
