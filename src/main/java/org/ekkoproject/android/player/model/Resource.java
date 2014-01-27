@@ -13,6 +13,39 @@ import java.util.Collections;
 import java.util.List;
 
 public class Resource {
+    private static final String TYPE_FILE = "file";
+    private static final String TYPE_ECV = "ecv";
+    private static final String TYPE_URI = "uri";
+
+    public static enum Type {
+        UNKNOWN(null), FILE(TYPE_FILE), ECV(TYPE_ECV), URI(TYPE_URI);
+
+        private final String raw;
+
+        Type(final String raw) {
+            this.raw = raw;
+        }
+
+        public String raw() {
+            return this.raw;
+        }
+
+        public static Type fromRaw(final String raw) {
+            if (raw != null) {
+                switch (raw) {
+                    case TYPE_FILE:
+                        return FILE;
+                    case TYPE_ECV:
+                        return ECV;
+                    case TYPE_URI:
+                        return URI;
+                }
+            }
+
+            return UNKNOWN;
+        }
+    }
+
     public static final int PROVIDER_UNKNOWN = -1;
     public static final int PROVIDER_NONE = 0;
     public static final int PROVIDER_YOUTUBE = 1;
@@ -26,7 +59,7 @@ public class Resource {
 	private String sha1;
 	private long size;
 	private String file;
-	private String type;
+    private Type type;
 	private String provider;
     private String uri;
 	private String mimeType;
@@ -88,13 +121,23 @@ public class Resource {
 		this.file = file;
 	}
 
-	public String getResourceType() {
-		return type;
-	}
+    public Type getType() {
+        return this.type;
+    }
 
-	public void setResourceType(String type) {
-		this.type = type;
-	}
+    public void setType(final Type type) {
+        this.type = type;
+    }
+
+    @Deprecated
+    public String getResourceType() {
+        return this.type != null ? this.type.raw() : null;
+    }
+
+    @Deprecated
+    public void setResourceType(final String type) {
+        this.type = Type.fromRaw(type);
+    }
 
 	public String getResourceMimeType() {
 		return mimeType;
@@ -164,19 +207,19 @@ public class Resource {
     }
 
     public boolean isDynamic() {
-        return "dynamic".equals(this.type);
+        return false;
     }
 
     public boolean isEcv() {
-        return "ecv".equals(this.type);
+        return this.type == Type.ECV;
     }
 
     public boolean isFile() {
-        return "file".equals(this.type);
+        return this.type == Type.FILE;
     }
 
     public boolean isUri() {
-        return "uri".equals(this.type);
+        return this.type == Type.URI;
     }
 
     public static List<Resource> parseResources(final XmlPullParser parser, final long courseId, final int schemaVersion)
@@ -217,7 +260,7 @@ public class Resource {
             IOException {
         parser.require(XmlPullParser.START_TAG, XML.NS_EKKO, XML.ELEMENT_RESOURCE);
 
-        this.type = parser.getAttributeValue(null, XML.ATTR_RESOURCE_TYPE);
+        this.type = Type.fromRaw(parser.getAttributeValue(null, XML.ATTR_RESOURCE_TYPE));
         this.sha1 = parser.getAttributeValue(null, XML.ATTR_RESOURCE_SHA1);
         this.size = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_RESOURCE_SIZE), -1);
         this.file = parser.getAttributeValue(null, XML.ATTR_RESOURCE_FILE);

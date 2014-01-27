@@ -25,7 +25,7 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
                 values.put(field, resource.getId());
                 break;
             case Contract.Course.Resource.COLUMN_NAME_TYPE:
-                values.put(field, resource.getResourceType());
+                values.put(field, resource.getType().raw());
                 break;
             case Contract.Course.Resource.COLUMN_NAME_MIMETYPE:
                 values.put(field, resource.getResourceMimeType());
@@ -64,7 +64,7 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
     public Resource toObject(final Cursor c) {
         final Resource resource = super.toObject(c);
         resource.setParentId(this.getString(c, Contract.Course.Resource.COLUMN_NAME_PARENT_RESOURCE));
-        resource.setResourceType(this.getString(c, Contract.Course.Resource.COLUMN_NAME_TYPE));
+        resource.setType(Resource.Type.fromRaw(this.getString(c, Contract.Course.Resource.COLUMN_NAME_TYPE)));
         resource.setResourceMimeType(this.getString(c, Contract.Course.Resource.COLUMN_NAME_MIMETYPE));
         resource.setResourceSha1(this.getString(c, Contract.Course.Resource.COLUMN_NAME_SHA1));
         resource.setResourceSize(this.getLong(c, Contract.Course.Resource.COLUMN_NAME_SIZE, 0));
