@@ -2,6 +2,7 @@ package org.ekkoproject.android.player.activity;
 
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+import static org.ekkoproject.android.player.services.ResourceManager.FLAG_DONT_DOWNLOAD;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -17,6 +18,7 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.services.ResourceManager;
 
 import java.io.File;
@@ -24,10 +26,10 @@ import java.io.File;
 public class MediaVideoActivity extends Activity implements MediaPlayer.OnCompletionListener {
     private static final String EXTRA_RESOURCEID = MediaVideoActivity.class.getName() + ".EXTRA_RESOURCEID";
 
-    private ResourceManager resources = null;
+    private ResourceManager mResources = null;
 
-    private long courseId = INVALID_COURSE;
-    private String resourceId = null;
+    private long mCourseId = INVALID_COURSE;
+    private String mResourceId = null;
     private boolean needsStart = true;
 
     private MediaController videoController = null;
@@ -45,11 +47,11 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
     @Override
     protected void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
-        this.resources = ResourceManager.getInstance(this);
+        mResources = ResourceManager.getInstance(this);
 
         final Intent intent = getIntent();
-        this.courseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
-        this.resourceId = intent.getStringExtra(EXTRA_RESOURCEID);
+        mCourseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
+        mResourceId = intent.getStringExtra(EXTRA_RESOURCEID);
 
         this.setContentView(R.layout.activity_media_video);
         this.findViews();
@@ -107,14 +109,20 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
 
         @Override
         protected Uri doInBackground(final Void... params) {
+            // resolve the resource
+            final Resource resource = mResources.resolveResource(mCourseId, mResourceId);
+
             // check to see if the file has been downloaded already
-            final File file = MediaVideoActivity.this.resources.getFile(MediaVideoActivity.this.courseId,
-                    MediaVideoActivity.this.resourceId);
+            File file = mResources.getFile(resource, FLAG_DONT_DOWNLOAD);
             if (file != null) {
                 return Uri.parse(file.getAbsolutePath());
             }
 
-            // TODO: implement streaming files
+            // try downloading the resource now
+            file = mResources.getFile(resource);
+            if (file != null) {
+                return Uri.parse(file.getAbsolutePath());
+            }
 
             // no video uri found
             return null;

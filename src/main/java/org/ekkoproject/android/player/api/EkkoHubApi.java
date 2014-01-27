@@ -5,6 +5,8 @@ import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.util.Xml;
@@ -32,6 +34,8 @@ import java.util.Map;
 
 public final class EkkoHubApi extends AbstractGtoSmxApi {
     private static final Logger LOG = LoggerFactory.getLogger(EkkoHubApi.class);
+
+    private static final String HEADER_STREAM_URI = "X-Ekko-Stream-Uri";
 
     /** Broadcast actions */
     public static final String ACTION_ERROR_CONNECTION = "org.ekkoproject.android.player.api.EkkoHubApi.ERROR_CONNECTION";
@@ -243,21 +247,27 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         return -1;
     }
 
-    public long downloadEcvResource(final Resource resource, final boolean thumbnail, final OutputStream out)
-            throws ApiSocketException, InvalidSessionApiException {
-        return resource != null && resource.isEcv() ?
-                this.downloadEcvResource(resource.getCourseId(), resource.getVideoId(), thumbnail, out) : -1;
+    private Request ecvResourceRequest(final Resource resource, final String type) {
+        if (resource != null && resource.isEcv()) {
+            return new Request("courses/course/" + Long.toString(resource.getCourseId()) + "/resources/video/" +
+                                       Long.toString(resource.getVideoId()) + "/" + type);
+        }
+        return null;
     }
 
-    private long downloadEcvResource(final long courseId, final long videoId, final boolean thumbnail,
-                                     final OutputStream out) throws ApiSocketException, InvalidSessionApiException {
+    public long downloadEcvResource(final Resource resource, final boolean thumbnail, final OutputStream out)
+            throws ApiSocketException, InvalidSessionApiException {
+        // generate request
+        final Request request = ecvResourceRequest(resource, (thumbnail ? "thumbnail" : "download"));
+        if (request == null) {
+            return -1;
+        }
+        request.followRedirects = true;
+
+        // process request
         HttpURLConnection conn = null;
         InputStream in = null;
         try {
-            final Request request = new Request(
-                    "courses/course/" + Long.toString(courseId) + "/resources/video/" + Long.toString(videoId) +
-                            (thumbnail ? "/thumbnail" : "/download"));
-            request.followRedirects = true;
             conn = this.sendRequest(request);
 
             if (conn != null && conn.getResponseCode() == HTTP_OK) {
@@ -272,5 +282,44 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         }
 
         return -1;
+    }
+
+    public Uri getEcvStreamUri(final Resource resource) throws ApiSocketException, InvalidSessionApiException {
+        // determine if we want HLS or MP4
+        final boolean hls = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1;
+
+        // generate request
+        final Request request = ecvResourceRequest(resource, (hls ? "stream.m3u8" : "stream"));
+        if (request == null) {
+            return null;
+        }
+        request.params.add(Pair.create("type", (hls ? "HLS" : "MP4")));
+
+        // process request
+        HttpURLConnection conn = null;
+        try {
+            conn = this.sendRequest(request);
+
+            if (conn != null) {
+                final int code = conn.getResponseCode();
+                if (code == HTTP_OK || (code >= 300 && code < 400)) {
+                    final String streamUri = conn.getHeaderField(HEADER_STREAM_URI);
+                    if (streamUri != null) {
+                        final Uri uri = Uri.parse(streamUri);
+                        if (uri.isAbsolute()) {
+                            LOG.debug("returning stream uri {}", uri);
+
+                            return uri;
+                        }
+                    }
+                }
+            }
+        } catch (final IOException e) {
+            throw new ApiSocketException(e);
+        } finally {
+            IOUtils.closeQuietly(conn);
+        }
+
+        return null;
     }
 }
