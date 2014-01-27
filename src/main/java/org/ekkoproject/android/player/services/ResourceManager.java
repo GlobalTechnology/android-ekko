@@ -18,8 +18,10 @@ import android.support.v4.util.LruCache;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.util.IOUtils;
+import org.ekkoproject.android.player.api.ArclightApi;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.EkkoDao;
+import org.ekkoproject.android.player.model.CachedArclightResource;
 import org.ekkoproject.android.player.model.CachedEcvResource;
 import org.ekkoproject.android.player.model.CachedFileResource;
 import org.ekkoproject.android.player.model.CachedResource;
@@ -60,6 +62,7 @@ public final class ResourceManager {
         private final String uri;
         private final int provider;
         private final long videoId;
+        private final String refId;
         private final boolean thumb;
 
         public Key(final Resource resource) {
@@ -82,6 +85,9 @@ public final class ResourceManager {
             // ecv resource attributes
             this.videoId = resource.isEcv() ? resource.getVideoId() : INVALID_VIDEO;
             this.thumb = thumb;
+
+            // arclight resource attributes
+            this.refId = resource.isArclight() ? resource.getRefId() : null;
         }
 
         @Override
@@ -94,7 +100,9 @@ public final class ResourceManager {
                 return this.courseId == key.courseId && ((this.sha1 == null && key.sha1 == null) ||
                         (this.sha1 != null && this.sha1.equals(key.sha1))) &&
                         ((this.uri == null && key.uri == null) || (this.uri != null && this.uri.equals(key.uri))) &&
-                        this.provider == key.provider && this.videoId == key.videoId && this.thumb == key.thumb;
+                        this.provider == key.provider && this.videoId == key.videoId && this.thumb == key.thumb &&
+                        ((this.refId == null && key.refId == null) ||
+                                (this.refId != null && this.refId.equals(key.refId)));
             }
 
             return false;
@@ -109,6 +117,7 @@ public final class ResourceManager {
             hash = hash * 31 + this.provider;
             hash = hash * 31 + Long.valueOf(this.videoId).hashCode();
             hash = hash * 31 + (this.thumb ? 1 : 0);
+            hash = hash * 31 + (this.refId != null ? this.refId.hashCode() : 0);
             return hash;
         }
     }
@@ -441,7 +450,7 @@ public final class ResourceManager {
     }
 
     private boolean isThumbResource(final Resource resource, final int flags) {
-        return ((flags & FLAG_TYPE_IMAGE) == FLAG_TYPE_IMAGE) && resource.isEcv();
+        return ((flags & FLAG_TYPE_IMAGE) == FLAG_TYPE_IMAGE) && (resource.isArclight() || resource.isEcv());
     }
 
     private CachedResource createCachedResource(final Resource resource, final int flags) {
@@ -451,6 +460,8 @@ public final class ResourceManager {
                 return new CachedFileResource(resource.getCourseId(), resource.getResourceSha1());
             case ECV:
                 return new CachedEcvResource(resource.getCourseId(), resource.getVideoId(), thumb);
+            case ARCLIGHT:
+                return new CachedArclightResource(resource.getCourseId(), resource.getRefId(), thumb);
             case URI:
                 return new CachedUriResource(resource.getCourseId(), resource.getUri());
             default:
@@ -461,6 +472,8 @@ public final class ResourceManager {
     private CachedResource findCachedResource(final Resource resource, final int flags) {
         final boolean thumb = isThumbResource(resource, flags);
         switch (resource.getType()) {
+            case ARCLIGHT:
+                return this.dao.find(CachedArclightResource.class, resource.getCourseId(), resource.getRefId(), thumb);
             case ECV:
                 return this.dao.find(CachedEcvResource.class, resource.getCourseId(), resource.getVideoId(), thumb);
             case FILE:

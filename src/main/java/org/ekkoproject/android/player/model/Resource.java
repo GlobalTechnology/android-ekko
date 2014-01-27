@@ -16,9 +16,10 @@ public class Resource {
     private static final String TYPE_FILE = "file";
     private static final String TYPE_ECV = "ecv";
     private static final String TYPE_URI = "uri";
+    private static final String TYPE_ARCLIGHT = "arclight";
 
     public static enum Type {
-        UNKNOWN(null), FILE(TYPE_FILE), ECV(TYPE_ECV), URI(TYPE_URI);
+        UNKNOWN(null), FILE(TYPE_FILE), ECV(TYPE_ECV), URI(TYPE_URI), ARCLIGHT(TYPE_ARCLIGHT);
 
         private final String raw;
 
@@ -39,6 +40,8 @@ public class Resource {
                         return ECV;
                     case TYPE_URI:
                         return URI;
+                    case TYPE_ARCLIGHT:
+                        return ARCLIGHT;
                 }
             }
 
@@ -64,6 +67,7 @@ public class Resource {
     private String uri;
 	private String mimeType;
     private long videoId;
+    private String refId;
     private final List<Resource> resources = new ArrayList<Resource>();
 
     private String parentId;
@@ -95,6 +99,14 @@ public class Resource {
 
     public void setVideoId(final long videoId) {
         this.videoId = videoId;
+    }
+
+    public String getRefId() {
+        return this.refId;
+    }
+
+    public void setRefId(final String refId) {
+        this.refId = refId;
     }
 
     public String getResourceSha1() {
@@ -210,6 +222,10 @@ public class Resource {
         return false;
     }
 
+    public boolean isArclight() {
+        return this.type == Type.ARCLIGHT;
+    }
+
     public boolean isEcv() {
         return this.type == Type.ECV;
     }
@@ -268,6 +284,7 @@ public class Resource {
         this.provider = parser.getAttributeValue(null, XML.ATTR_RESOURCE_PROVIDER);
         this.uri = parser.getAttributeValue(null, XML.ATTR_RESOURCE_URI);
         this.videoId = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_RESOURCE_VIDEO_ID), INVALID_VIDEO);
+        this.refId = parser.getAttributeValue(null, XML.ATTR_RESOURCE_REF_ID);
 
         // handle any nested resources
         if (this.isDynamic()) {

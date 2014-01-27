@@ -7,6 +7,7 @@ import android.util.Pair;
 import org.ccci.gto.android.common.db.AbstractDao;
 import org.ccci.gto.android.common.db.Mapper;
 import org.ekkoproject.android.player.model.Answer;
+import org.ekkoproject.android.player.model.CachedArclightResource;
 import org.ekkoproject.android.player.model.CachedEcvResource;
 import org.ekkoproject.android.player.model.CachedFileResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
@@ -25,6 +26,7 @@ public class EkkoDao extends AbstractDao {
     private static final Mapper<Permission> ACCESS_MAPPER = new PermissionMapper();
     private static final Mapper<Course> COURSE_MAPPER = new CourseMapper();
     private static final Mapper<Resource> RESOURCE_MAPPER = new ResourceMapper();
+    private static final Mapper<CachedArclightResource> CACHED_ARCLIGHT_RESOURCE_MAPPER = new CachedArclightResourceMapper();
     private static final Mapper<CachedEcvResource> CACHED_ECV_RESOURCE_MAPPER = new CachedEcvResourceMapper();
     private static final Mapper<CachedFileResource> CACHED_FILE_RESOURCE_MAPPER = new CachedFileResourceMapper();
     private static final Mapper<CachedUriResource> CACHED_URI_RESOURCE_MAPPER = new CachedUriResourceMapper();
@@ -60,6 +62,8 @@ public class EkkoDao extends AbstractDao {
             return Contract.Answer.TABLE_NAME;
         } else if (Progress.class.equals(clazz)) {
             return Contract.Progress.TABLE_NAME;
+        } else if (CachedArclightResource.class.equals(clazz)) {
+            return Contract.CachedArclightResource.TABLE_NAME;
         } else if (CachedEcvResource.class.equals(clazz)) {
             return Contract.CachedEcvResource.TABLE_NAME;
         } else if (CachedFileResource.class.equals(clazz)) {
@@ -90,6 +94,8 @@ public class EkkoDao extends AbstractDao {
             return Contract.Permission.PROJECTION_ALL;
         } else if (Resource.class.equals(clazz)) {
             return Contract.Course.Resource.PROJECTION_ALL;
+        } else if (CachedArclightResource.class.equals(clazz)) {
+            return Contract.CachedArclightResource.PROJECTION_ALL;
         } else if (CachedEcvResource.class.equals(clazz)) {
             return Contract.CachedEcvResource.PROJECTION_ALL;
         } else if (CachedFileResource.class.equals(clazz)) {
@@ -119,6 +125,10 @@ public class EkkoDao extends AbstractDao {
         } else if (obj instanceof Progress) {
             return this.getPrimaryKeyWhere(Progress.class, ((Progress) obj).getGuid(), ((Progress) obj).getCourseId(),
                                            ((Progress) obj).getContentId());
+        } else if (obj instanceof CachedArclightResource) {
+            final CachedArclightResource resource = (CachedArclightResource) obj;
+            return this.getPrimaryKeyWhere(CachedArclightResource.class, resource.getCourseId(), resource.getRefId(),
+                                           resource.isThumbnail());
         } else if (obj instanceof CachedEcvResource) {
             final CachedEcvResource resource = (CachedEcvResource) obj;
             return this.getPrimaryKeyWhere(CachedEcvResource.class, resource.getCourseId(), resource.getVideoId(),
@@ -158,6 +168,11 @@ public class EkkoDao extends AbstractDao {
                 throw new IllegalArgumentException("invalid key for " + clazz);
             }
             where = Contract.Progress.SQL_WHERE_PRIMARY_KEY;
+        } else if (CachedArclightResource.class.equals(clazz)) {
+            if (key.length != 3) {
+                throw new IllegalArgumentException("invalid key for " + clazz);
+            }
+            where = Contract.CachedArclightResource.SQL_WHERE_PRIMARY_KEY;
         } else if (CachedEcvResource.class.equals(clazz)) {
             if (key.length != 3) {
                 throw new IllegalArgumentException("invalid key for " + clazz);
@@ -190,6 +205,8 @@ public class EkkoDao extends AbstractDao {
             return (Mapper<T>) ACCESS_MAPPER;
         } else if (Resource.class.equals(clazz)) {
             return (Mapper<T>) RESOURCE_MAPPER;
+        } else if (CachedArclightResource.class.equals(clazz)) {
+            return (Mapper<T>) CACHED_ARCLIGHT_RESOURCE_MAPPER;
         } else if (CachedEcvResource.class.equals(clazz)) {
             return (Mapper<T>) CACHED_ECV_RESOURCE_MAPPER;
         } else if (CachedFileResource.class.equals(clazz)) {

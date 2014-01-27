@@ -22,8 +22,10 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 13: 11/13/2013
      * 14: 01/06/2014
      * 15: 01/07/2014
+     * 16: 01/24/2014
+     * 17: 01/27/2014
      */
-    public static final int DATABASE_VERSION = 15;
+    public static final int DATABASE_VERSION = 17;
     public static final String DATABASE_NAME = "Ekko.db";
 
     private final Context mContext;
@@ -38,6 +40,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.Permission.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.SQL_CREATE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_CREATE_TABLE);
+        db.execSQL(Contract.CachedArclightResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedEcvResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedFileResource.SQL_CREATE_TABLE);
         db.execSQL(Contract.CachedUriResource.SQL_CREATE_TABLE);
@@ -104,6 +107,16 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 if (newVersion <= 15) {
                     break;
                 }
+                db.execSQL(Contract.Course.Resource.SQL_V16_ALTER_REF_ID);
+            case 16:
+                if (newVersion <= 16) {
+                    break;
+                }
+                db.execSQL(Contract.CachedArclightResource.SQL_V17_CREATE_TABLE);
+            case 17:
+                if (newVersion <= 17) {
+                    break;
+                }
                 break;
             default:
                 // unrecognized version, let's just reset the database
@@ -124,6 +137,7 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
         db.execSQL(Contract.CachedUriResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedFileResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.CachedEcvResource.SQL_DELETE_TABLE);
+        db.execSQL(Contract.CachedArclightResource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.Resource.SQL_DELETE_TABLE);
         db.execSQL(Contract.Course.SQL_DELETE_TABLE);
         db.execSQL(Contract.Permission.SQL_DELETE_TABLE);

@@ -48,6 +48,9 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
             case Contract.Course.Resource.COLUMN_VIDEO_ID:
                 values.put(field, resource.getVideoId());
                 break;
+            case Contract.Course.Resource.COLUMN_REF_ID:
+                values.put(field, resource.getRefId());
+                break;
             default:
                 super.mapField(values, field, resource);
                 break;
@@ -71,6 +74,7 @@ public final class ResourceMapper extends AbstractMapper<Resource> {
         resource.setProvider(this.getString(c, Contract.Course.Resource.COLUMN_NAME_PROVIDER));
         resource.setUri(this.getString(c, Contract.Course.Resource.COLUMN_NAME_URI));
         resource.setVideoId(this.getLong(c, Contract.Course.Resource.COLUMN_VIDEO_ID, INVALID_VIDEO));
+        resource.setRefId(this.getString(c, Contract.Course.Resource.COLUMN_REF_ID));
         return resource;
     }
 }
