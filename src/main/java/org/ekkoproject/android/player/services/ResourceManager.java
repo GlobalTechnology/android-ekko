@@ -11,6 +11,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.util.LruCache;
 
@@ -21,6 +22,7 @@ import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.CachedEcvResource;
 import org.ekkoproject.android.player.model.CachedFileResource;
+import org.ekkoproject.android.player.model.CachedResource;
 import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Manifest;
@@ -32,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -195,6 +196,42 @@ public final class ResourceManager {
         return instance;
     }
 
+    public Resource resolveResource(final long courseId, final String resourceId) {
+        assertNotOnUiThread();
+
+        // check manifest for resource, we disable downloading of the manifest for now
+        Manifest manifest = this.manifestManager.getManifest(courseId, ManifestManager.FLAG_DONT_DOWNLOAD);
+        if (manifest != null) {
+            final Resource resource = manifest.getResource(resourceId);
+            if (resource != null) {
+                return resource;
+            }
+        }
+
+        // check database for resource
+        final Course course = this.dao.findCourse(courseId, true);
+        if (course != null) {
+            final Resource resource = course.getResource(resourceId);
+            if (resource != null) {
+                return resource;
+            }
+        }
+
+        // maybe try downloading the manifest (only when we don't already have a manifest)
+        if (manifest == null) {
+            manifest = this.manifestManager.downloadManifest(courseId, null);
+            if (manifest != null) {
+                final Resource resource = manifest.getResource(resourceId);
+                if (resource != null) {
+                    return resource;
+                }
+            }
+        }
+
+        // we couldn't find a resource object
+        return null;
+    }
+
     public Bitmap getBitmap(final long courseId, final String resourceId, final int width, final int height) {
         return this.getBitmap(this.resolveResource(courseId, resourceId), width, height);
     }
@@ -288,25 +325,6 @@ public final class ResourceManager {
         }
     }
 
-    public InputStream getInputStream(final long courseId, final String resourceId) {
-        return this.getInputStream(this.resolveResource(courseId, resourceId));
-    }
-
-    public InputStream getInputStream(final Resource resource) {
-        final File f = this.getFile(resource);
-        if (f != null) {
-            try {
-                return new FileInputStream(f);
-            } catch (final FileNotFoundException ignored) {
-            }
-        }
-        return null;
-    }
-
-    public File getFile(final long courseId, final String resourceId) {
-        return this.getFile(this.resolveResource(courseId, resourceId));
-    }
-
     public File getFile(final Resource resource) {
         return this.getFile(resource, 0);
     }
@@ -314,169 +332,161 @@ public final class ResourceManager {
     public File getFile(final Resource resource, final int flags) {
         assertNotOnUiThread();
 
-        // switch based on resource type
-        if (this.isValidFileResource(resource)) {
-            return this.getFileResource(resource, flags);
-        } else if (this.isDownloadableUriResource(resource)) {
-            return this.getUriResource(resource, flags);
-        } else if (this.isValidEcvResource(resource)) {
-            return this.getEcvResource(resource, flags);
+        // only process valid resource types
+        if (isValidEcvResource(resource) || isValidFileResource(resource) || isDownloadableUriResource(resource)) {
+            synchronized (getLock(this.downloadLocks, new Key(resource, isThumbResource(resource, flags)))) {
+                // look for a cached resource
+                final CachedResource cachedResource = this.findCachedResource(resource, flags);
+                if (cachedResource != null && cachedResource.getPath() != null) {
+                    final File f = new File(cachedResource.getPath());
+                    if (f.exists()) {
+                        return f;
+                    }
+                }
+
+                // don't attempt to download this file
+                if ((flags & FLAG_DONT_DOWNLOAD) == FLAG_DONT_DOWNLOAD) {
+                    return null;
+                }
+
+                // download the resource
+                return this.downloadResource(resource, flags);
+            }
         }
 
         // default to null
         return null;
     }
 
-    private File getFileResource(final Resource resource, final int flags) {
-        // short-circuit if this isn't a valid file resource
-        if (!this.isValidFileResource(resource)) {
-            return null;
-        }
-
-        synchronized (getLock(this.downloadLocks, new Key(resource))) {
-            // check for a cached copy of the resource
-            final CachedFileResource cachedResource = this.dao.find(CachedFileResource.class, resource.getCourseId(),
-                    resource.getResourceSha1());
-            if (cachedResource != null && cachedResource.getPath() != null) {
-                final File f = new File(cachedResource.getPath());
-                if (f.exists()) {
-                    return f;
+    private File downloadResource(final Resource resource, final int flags) {
+        // only process valid resource types
+        if (isValidEcvResource(resource) || isValidFileResource(resource)) {
+            final boolean thumb = isThumbResource(resource, flags);
+            synchronized (getLock(this.downloadLocks, new Key(resource, thumb))) {
+                // get File object
+                final File f = this.getFileObject(resource, thumb ? "thumbnail" : null);
+                if (f == null) {
+                    return null;
                 }
-            }
 
-            // XXX: this is disabled to prevent using corrupted downloads
-            // // check for a cached copy in the current download directory
-            // final File f = this.getFileObject(resource);
-            // if (f != null && f.exists()) {
-            // return f;
-            // }
-
-            // download the resource
-            return this.downloadFileResource(resource);
-        }
-    }
-
-    private File getUriResource(final Resource resource, final int flags) {
-        // short-circuit if this isn't a downloadable uri resource
-        if (!this.isDownloadableUriResource(resource)) {
-            return null;
-        }
-
-        synchronized (getLock(this.downloadLocks, new Key(resource))) {
-            // check for a cached copy of the resource
-            final CachedUriResource cachedResource = this.dao.find(CachedUriResource.class, resource.getCourseId(),
-                    resource.getUri());
-            if (cachedResource != null && cachedResource.getPath() != null) {
-                final File f = new File(cachedResource.getPath());
-                if (f.exists()) {
-                    return f;
-                }
-            }
-
-            // download the resource
-            return this.downloadUriResource(resource);
-        }
-    }
-
-    private File getEcvResource(final Resource resource, final int flags) {
-        // short-circuit if this isn't a valid file resource
-        if (!this.isValidEcvResource(resource)) {
-            return null;
-        }
-
-        final boolean thumb = (flags & FLAG_TYPE_IMAGE) == FLAG_TYPE_IMAGE;
-        synchronized (getLock(this.downloadLocks, new Key(resource, thumb))) {
-            // check for a cached copy of the resource
-            final CachedEcvResource cachedResource =
-                    this.dao.find(CachedEcvResource.class, resource.getCourseId(), resource.getVideoId(), thumb);
-            if (cachedResource != null && cachedResource.getPath() != null) {
-                final File f = new File(cachedResource.getPath());
-                if (f.exists()) {
-                    return f;
-                }
-            }
-
-            // download the resource
-            return this.downloadEcvResource(resource, thumb);
-        }
-    }
-
-    private File downloadFileResource(final Resource resource) {
-        return this.downloadFileResource(resource, FLAG_FORCE_DOWNLOAD);
-    }
-
-    private File downloadFileResource(final Resource resource, final int flags) {
-        // short-circuit if this isn't a valid resource
-        if (!this.isValidFileResource(resource)) {
-            return null;
-        }
-
-        synchronized (getLock(this.downloadLocks, new Key(resource))) {
-            // get File object
-            final File f = this.getFileObject(resource, null);
-            if (f == null) {
-                return null;
-            }
-
-            // try downloading the file
-            OutputStream out = null;
-            long size = -1;
-            MessageDigest digest = null;
-            try {
-                out = new FileOutputStream(f);
-
-                // create a SHA-1 digest if possible for verification
+                // try downloading the file
+                OutputStream out = null;
+                long size = -1;
+                MessageDigest digest = null;
                 try {
-                    digest = MessageDigest.getInstance("SHA-1");
-                    out = new DigestOutputStream(out, digest);
-                } catch (final NoSuchAlgorithmException e) {
-                    digest = null;
+                    out = new FileOutputStream(f);
+
+                    // we want to digest File Resources while downloading
+                    if (resource.isFile()) {
+                        try {
+                            digest = MessageDigest.getInstance("SHA-1");
+                            out = new DigestOutputStream(out, digest);
+                        } catch (final NoSuchAlgorithmException e) {
+                            digest = null;
+                        }
+                    }
+
+                    // download the resource
+                    switch (resource.getType()) {
+                        case FILE:
+                            size = this.api.downloadFileResource(resource, out);
+                            break;
+                        case ECV:
+                            size = this.api.downloadEcvResource(resource, thumb, out);
+                            break;
+                    }
+                } catch (final FileNotFoundException e) {
+                    // this is an odd exception
+                    LOG.error("unexpected error opening resource cache file for download", e);
+                    return null;
+                } catch (final ApiSocketException e) {
+                    // connection error
+                    LOG.debug("connection error", e);
+                    return null;
+                } catch (final InvalidSessionApiException e) {
+                    // the users session has expired, ask them to re-authenticate
+                    LOG.debug("the users session expired");
+                    return null;
+                } finally {
+                    IOUtils.closeQuietly(out);
+
+                    // delete invalid downloads
+                    final String sha1 =
+                            digest != null ? StringUtils.bytesToHex(digest.digest()).toLowerCase(Locale.US) : null;
+                    if (size == -1 || (resource.getResourceSize() != -1 && size != resource.getResourceSize()) ||
+                            (sha1 != null && !sha1.equals(resource.getResourceSha1()))) {
+                        f.delete();
+                    }
                 }
 
-                // download the resource
-                size = this.api.downloadFileResource(resource, out);
-            } catch (final FileNotFoundException e) {
-                // this is an odd exception
-                LOG.error("unexpected error opening resource cache file for download", e);
-                return null;
-            } catch (final ApiSocketException e) {
-                // connection error
-                LOG.debug("connection error", e);
-                return null;
-            } catch (final InvalidSessionApiException e) {
-                // the users session has expired, ask them to re-authenticate
-                LOG.debug("the users session expired");
-                return null;
-            } finally {
-                IOUtils.closeQuietly(out);
+                if (f.exists()) {
+                    // create CachedResource record
+                    final CachedResource cachedResource = this.createCachedResource(resource, flags);
+                    if (cachedResource != null) {
+                        cachedResource.setSize(size);
+                        cachedResource.setPath(f.getPath());
+                        cachedResource.setLastAccessed();
+                        this.dao.replace(cachedResource);
+                    }
 
-                // delete invalid downloads
-                final String sha1 = digest != null ? StringUtils.bytesToHex(digest.digest()).toLowerCase(Locale.US)
-                        : null;
-                if (size == -1 || (resource.getResourceSize() != -1 && size != resource.getResourceSize())
-                        || (sha1 != null && !sha1.equals(resource.getResourceSha1()))) {
-                    f.delete();
+                    // return the File object
+                    return f;
                 }
             }
-
-            if (f.exists()) {
-                // create CachedFileResource record
-                final CachedFileResource cachedResource =
-                        new CachedFileResource(resource.getCourseId(), resource.getResourceSha1());
-                cachedResource.setSize(size);
-                cachedResource.setPath(f.getPath());
-                cachedResource.setLastAccessed();
-                this.dao.replace(cachedResource);
-
-                // return the File object
-                return f;
-            }
+        } else if (isDownloadableUriResource(resource)) {
+            return this.downloadUriResource(resource, flags);
         }
 
         return null;
     }
 
-    private File downloadUriResource(final Resource resource) {
+    private boolean isThumbResource(final Resource resource, final int flags) {
+        return ((flags & FLAG_TYPE_IMAGE) == FLAG_TYPE_IMAGE) && resource.isEcv();
+    }
+
+    private CachedResource createCachedResource(final Resource resource, final int flags) {
+        final boolean thumb = isThumbResource(resource, flags);
+        switch (resource.getType()) {
+            case FILE:
+                return new CachedFileResource(resource.getCourseId(), resource.getResourceSha1());
+            case ECV:
+                return new CachedEcvResource(resource.getCourseId(), resource.getVideoId(), thumb);
+            case URI:
+                return new CachedUriResource(resource.getCourseId(), resource.getUri());
+            default:
+                return null;
+        }
+    }
+
+    private CachedResource findCachedResource(final Resource resource, final int flags) {
+        final boolean thumb = isThumbResource(resource, flags);
+        switch (resource.getType()) {
+            case ECV:
+                return this.dao.find(CachedEcvResource.class, resource.getCourseId(), resource.getVideoId(), thumb);
+            case FILE:
+                return this.dao.find(CachedFileResource.class, resource.getCourseId(), resource.getResourceSha1());
+            case URI:
+                return this.dao.find(CachedUriResource.class, resource.getCourseId(), resource.getUri());
+            default:
+                return null;
+        }
+    }
+
+    public Uri getStreamUri(final Resource resource) {
+        assertNotOnUiThread();
+
+        // switch based on resource type
+        try {
+            if (this.isValidEcvResource(resource)) {
+                return this.api.getEcvStreamUri(resource);
+            }
+        } catch (final Exception ignored) {
+        }
+
+        return null;
+    }
+
+    private File downloadUriResource(final Resource resource, final int flags) {
         // short-circuit if this isn't a downloadable uri resource
         if (!this.isDownloadableUriResource(resource)) {
             return null;
@@ -555,72 +565,28 @@ public final class ResourceManager {
         return null;
     }
 
-    private File downloadEcvResource(final Resource resource, final boolean thumb) {
-        // short-circuit if this isn't a valid resource
-        if (!this.isValidEcvResource(resource)) {
-            return null;
-        }
-
-        synchronized (getLock(this.downloadLocks, new Key(resource))) {
-            // get File object
-            final File f = this.getFileObject(resource, thumb ? "thumbnail" : "video");
-            if (f == null) {
-                return null;
-            }
-
-            // try downloading the file
-            OutputStream out = null;
-            long size = -1;
-            MessageDigest digest = null;
-            try {
-                out = new FileOutputStream(f);
-
-                // download the resource
-                size = this.api.downloadEcvResource(resource, thumb, out);
-            } catch (final FileNotFoundException e) {
-                // this is an odd exception
-                LOG.error("unexpected error opening resource cache file for download", e);
-                return null;
-            } catch (final ApiSocketException e) {
-                // connection error
-                LOG.debug("connection error", e);
-                return null;
-            } catch (final InvalidSessionApiException e) {
-                // the users session has expired, ask them to re-authenticate
-                LOG.debug("the users session expired");
-                return null;
-            } finally {
-                IOUtils.closeQuietly(out);
-
-                // delete invalid downloads
-                if (size < 0) {
-                    f.delete();
-                }
-            }
-
-            if (f.exists()) {
-                // create CachedFileResource record
-                final CachedEcvResource cachedResource =
-                        new CachedEcvResource(resource.getCourseId(), resource.getVideoId(), thumb);
-                cachedResource.setPath(f.getPath());
-                cachedResource.setSize(size);
-                cachedResource.setLastAccessed();
-                this.dao.replace(cachedResource);
-
-                // return the File object
-                return f;
-            }
-        }
-
-        return null;
-    }
-
     private File dir() {
         return this.context.getExternalFilesDir("resources");
     }
 
     private File cacheDir() {
         return new File(this.context.getExternalCacheDir(), "resources");
+    }
+
+    private File randomFile(final File dir, final int len) {
+        for (int i = 0; i < 10; i++) {
+            final byte[] buf = new byte[len];
+            NAME_RNG.nextBytes(buf);
+            final File f = new File(dir, StringUtils.bytesToHex(buf));
+            try {
+                if (f.createNewFile()) {
+                    return f;
+                }
+            } catch (final IOException ignored) {
+            }
+        }
+
+        return null;
     }
 
     private File getFileObject(final Resource resource, final String type) {
@@ -634,7 +600,7 @@ public final class ResourceManager {
             return null;
         }
         dir = new File(dir, Long.toString(resource.getCourseId()));
-        dir = new File(dir, resource.getResourceType());
+        dir = new File(dir, resource.getType().raw());
         if (type != null) {
             dir = new File(dir, type);
         }
@@ -646,17 +612,7 @@ public final class ResourceManager {
         } else if (this.isValidEcvResource(resource)) {
             return new File(dir, Long.toString(resource.getVideoId()));
         } else if (this.isDownloadableUriResource(resource)) {
-            for (int i = 0; i < 10; i++) {
-                final byte[] buf = new byte[16];
-                NAME_RNG.nextBytes(buf);
-                final File f = new File(dir, StringUtils.bytesToHex(buf));
-                try {
-                    if (f.createNewFile()) {
-                        return f;
-                    }
-                } catch (final IOException ignored) {
-                }
-            }
+            return randomFile(dir, 16);
         }
 
         return null;
@@ -672,43 +628,5 @@ public final class ResourceManager {
 
     private boolean isValidEcvResource(final Resource resource) {
         return resource != null && resource.isEcv() && resource.getVideoId() != INVALID_VIDEO;
-    }
-
-    private Resource resolveResource(final long courseId, final String resourceId) {
-        assertNotOnUiThread();
-
-        // check manifest for resource, we disable downloading of the manifest
-        // for now
-        Manifest manifest = this.manifestManager.getManifest(courseId, ManifestManager.FLAG_DONT_DOWNLOAD);
-        if (manifest != null) {
-            final Resource resource = manifest.getResource(resourceId);
-            if (resource != null) {
-                return resource;
-            }
-        }
-
-        // check database for resource
-        final Course course = this.dao.findCourse(courseId, true);
-        if (course != null) {
-            final Resource resource = course.getResource(resourceId);
-            if (resource != null) {
-                return resource;
-            }
-        }
-
-        // maybe try downloading the manifest (only when we don't already have a
-        // manifest)
-        if (manifest == null) {
-            manifest = this.manifestManager.downloadManifest(courseId, null);
-            if (manifest != null) {
-                final Resource resource = manifest.getResource(resourceId);
-                if (resource != null) {
-                    return resource;
-                }
-            }
-        }
-
-        // we couldn't find a resource object
-        return null;
     }
 }

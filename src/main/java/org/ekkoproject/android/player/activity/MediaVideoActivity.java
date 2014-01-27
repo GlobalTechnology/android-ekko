@@ -118,6 +118,12 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
                 return Uri.parse(file.getAbsolutePath());
             }
 
+            // try streaming the file directly
+            final Uri streamUri = mResources.getStreamUri(resource);
+            if (streamUri != null) {
+                return streamUri;
+            }
+
             // try downloading the resource now
             file = mResources.getFile(resource);
             if (file != null) {
