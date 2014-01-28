@@ -164,6 +164,7 @@ public final class ResourceManager {
     private static final Random NAME_RNG = new SecureRandom();
 
     private final Context context;
+    private final ArclightApi arclightApi;
     private final EkkoHubApi api;
     private final EkkoDao dao;
     private final ManifestManager manifestManager;
@@ -179,6 +180,7 @@ public final class ResourceManager {
     private ResourceManager(final Context ctx) {
         this.context = ctx.getApplicationContext();
         this.api = EkkoHubApi.getInstance(this.context);
+        this.arclightApi = ArclightApi.getInstance();
         this.dao = EkkoDao.getInstance(ctx);
         this.manifestManager = ManifestManager.getInstance(this.context);
 
@@ -342,7 +344,8 @@ public final class ResourceManager {
         assertNotOnUiThread();
 
         // only process valid resource types
-        if (isValidEcvResource(resource) || isValidFileResource(resource) || isDownloadableUriResource(resource)) {
+        if (isValidArclightResource(resource) || isValidEcvResource(resource) || isValidFileResource(resource) ||
+                isDownloadableUriResource(resource)) {
             synchronized (getLock(this.downloadLocks, new Key(resource, isThumbResource(resource, flags)))) {
                 // look for a cached resource
                 final CachedResource cachedResource = this.findCachedResource(resource, flags);
@@ -369,7 +372,7 @@ public final class ResourceManager {
 
     private File downloadResource(final Resource resource, final int flags) {
         // only process valid resource types
-        if (isValidEcvResource(resource) || isValidFileResource(resource)) {
+        if (isValidArclightResource(resource) || isValidEcvResource(resource) || isValidFileResource(resource)) {
             final boolean thumb = isThumbResource(resource, flags);
             synchronized (getLock(this.downloadLocks, new Key(resource, thumb))) {
                 // get File object
@@ -402,6 +405,9 @@ public final class ResourceManager {
                             break;
                         case ECV:
                             size = this.api.downloadEcvResource(resource, thumb, out);
+                            break;
+                        case ARCLIGHT:
+                            size = this.arclightApi.downloadAsset(resource.getRefId(), thumb, out);
                             break;
                     }
                 } catch (final FileNotFoundException e) {
@@ -492,6 +498,8 @@ public final class ResourceManager {
         try {
             if (this.isValidEcvResource(resource)) {
                 return this.api.getEcvStreamUri(resource);
+            } else if (this.isValidArclightResource(resource)) {
+                return this.arclightApi.getAssetStreamUri(resource.getRefId());
             }
         } catch (final Exception ignored) {
         }
@@ -605,7 +613,8 @@ public final class ResourceManager {
     private File getFileObject(final Resource resource, final String type) {
         // find/create the directory for the specified resource
         File dir;
-        if (this.isValidFileResource(resource) || this.isValidEcvResource(resource)) {
+        if (this.isValidFileResource(resource) || this.isValidEcvResource(resource) ||
+                this.isValidArclightResource(resource)) {
             dir = dir();
         } else if (this.isDownloadableUriResource(resource)) {
             dir = cacheDir();
@@ -622,6 +631,16 @@ public final class ResourceManager {
         // generate the File object based on resource type
         if (this.isValidFileResource(resource)) {
             return new File(dir, resource.getResourceSha1().toLowerCase(Locale.US));
+        } else if (this.isValidArclightResource(resource)) {
+            try {
+                final MessageDigest md = MessageDigest.getInstance("SHA-1");
+                md.update(resource.getRefId().getBytes());
+                return new File(dir, StringUtils.bytesToHex(md.digest()));
+            } catch (final Exception e) {
+                // this is odd, log the error and just use a random file
+                LOG.debug("error creating SHA-1 hash of Arclight refId", e);
+                return randomFile(dir, 16);
+            }
         } else if (this.isValidEcvResource(resource)) {
             return new File(dir, Long.toString(resource.getVideoId()));
         } else if (this.isDownloadableUriResource(resource)) {
@@ -641,5 +660,9 @@ public final class ResourceManager {
 
     private boolean isValidEcvResource(final Resource resource) {
         return resource != null && resource.isEcv() && resource.getVideoId() != INVALID_VIDEO;
+    }
+
+    private boolean isValidArclightResource(final Resource resource) {
+        return resource != null && resource.isArclight() && resource.getRefId() != null;
     }
 }
