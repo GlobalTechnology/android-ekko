@@ -61,7 +61,6 @@ public class Resource {
 
 	private String sha1;
 	private long size;
-	private String file;
     private Type type;
 	private String provider;
     private String uri;
@@ -125,30 +124,12 @@ public class Resource {
 		this.size = size;
 	}
 
-	public String getResourceFile() {
-		return file;
-	}
-
-	public void setResourceFile(String file) {
-		this.file = file;
-	}
-
     public Type getType() {
         return this.type;
     }
 
     public void setType(final Type type) {
         this.type = type;
-    }
-
-    @Deprecated
-    public String getResourceType() {
-        return this.type != null ? this.type.raw() : null;
-    }
-
-    @Deprecated
-    public void setResourceType(final String type) {
-        this.type = Type.fromRaw(type);
     }
 
 	public String getResourceMimeType() {
@@ -279,7 +260,6 @@ public class Resource {
         this.type = Type.fromRaw(parser.getAttributeValue(null, XML.ATTR_RESOURCE_TYPE));
         this.sha1 = parser.getAttributeValue(null, XML.ATTR_RESOURCE_SHA1);
         this.size = StringUtils.toLong(parser.getAttributeValue(null, XML.ATTR_RESOURCE_SIZE), -1);
-        this.file = parser.getAttributeValue(null, XML.ATTR_RESOURCE_FILE);
         this.mimeType = parser.getAttributeValue(null, XML.ATTR_RESOURCE_MIMETYPE);
         this.provider = parser.getAttributeValue(null, XML.ATTR_RESOURCE_PROVIDER);
         this.uri = parser.getAttributeValue(null, XML.ATTR_RESOURCE_URI);
