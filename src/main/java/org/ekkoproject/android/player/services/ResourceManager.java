@@ -587,7 +587,17 @@ public final class ResourceManager {
     }
 
     private File dir() {
-        return this.context.getExternalFilesDir("resources");
+        final File external =  this.context.getExternalFilesDir("resources");
+        if(external != null) {
+            return external;
+        }
+
+        final File internal = this.context.getFilesDir();
+        if(internal != null) {
+            return new File(internal, "resources");
+        }
+
+        return null;
     }
 
     private File cacheDir() {
@@ -629,9 +639,9 @@ public final class ResourceManager {
         dir.mkdirs();
 
         // generate the File object based on resource type
-        if (this.isValidFileResource(resource)) {
+        if (resource.isFile()) {
             return new File(dir, resource.getResourceSha1().toLowerCase(Locale.US));
-        } else if (this.isValidArclightResource(resource)) {
+        } else if (resource.isArclight()) {
             try {
                 final MessageDigest md = MessageDigest.getInstance("SHA-1");
                 md.update(resource.getRefId().getBytes());
@@ -641,9 +651,9 @@ public final class ResourceManager {
                 LOG.debug("error creating SHA-1 hash of Arclight refId", e);
                 return randomFile(dir, 16);
             }
-        } else if (this.isValidEcvResource(resource)) {
+        } else if (resource.isEcv()) {
             return new File(dir, Long.toString(resource.getVideoId()));
-        } else if (this.isDownloadableUriResource(resource)) {
+        } else if (resource.isUri()) {
             return randomFile(dir, 16);
         }
 
