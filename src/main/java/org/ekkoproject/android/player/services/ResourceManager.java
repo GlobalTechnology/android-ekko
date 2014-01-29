@@ -54,6 +54,8 @@ import java.util.Map;
 import java.util.Random;
 
 public final class ResourceManager {
+    public enum StreamType {HLS, MP4, SINGLE_HLS};
+
     private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
 
     private static class Key {
@@ -494,10 +496,34 @@ public final class ResourceManager {
     public Uri getStreamUri(final Resource resource) {
         assertNotOnUiThread();
 
+        // don't attempt streaming on android < ICS, it doesn't seem to support it
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            return null;
+        }
+
+        // determine stream type
+        final StreamType type;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // HLS dynamic stream selection is broke in 4.4
+            // https://code.google.com/p/android/issues/detail?id=63346
+            type = StreamType.SINGLE_HLS;
+//        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//            // multiple issues with HLS before 4.2
+//            // http://www.jwplayer.com/blog/the-pain-of-live-streaming-on-android/
+//            type = StreamType.MP4;
+        } else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            // HLSv3 support was added in ICS, use MP4 for previous versions of Android
+            // http://developer.android.com/guide/appendix/media-formats.html
+            type = StreamType.MP4;
+        } else {
+            // we want to default to regular HLS
+            type = StreamType.HLS;
+        }
+
         // switch based on resource type
         try {
             if (this.isValidEcvResource(resource)) {
-                return this.api.getEcvStreamUri(resource);
+                return this.api.getEcvStreamUri(resource, type);
             } else if (this.isValidArclightResource(resource)) {
                 return this.arclightApi.getAssetStreamUri(resource.getRefId());
             }

@@ -6,7 +6,6 @@ import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.util.Xml;
@@ -20,6 +19,7 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.model.Resource;
+import org.ekkoproject.android.player.services.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
@@ -284,29 +284,25 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         return -1;
     }
 
-    public Uri getEcvStreamUri(final Resource resource) throws ApiSocketException, InvalidSessionApiException {
+    public Uri getEcvStreamUri(final Resource resource, final ResourceManager.StreamType type)
+            throws ApiSocketException, InvalidSessionApiException {
         // determine what stream format to use
         final String path;
         final String format;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // HLS dynamic stream selection is broke in 4.4
-            // https://code.google.com/p/android/issues/detail?id=63346
-            path = "stream.m3u8";
-            format = "HLS_1M";
-//        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//            // multiple issues with HLS before 4.2
-//            // http://www.jwplayer.com/blog/the-pain-of-live-streaming-on-android/
-//            path = "stream";
-//            format = "MP4";
-        } else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            // HLSv3 support was added in ICS, use MP4 for previous versions of Android
-            // http://developer.android.com/guide/appendix/media-formats.html
-            path = "stream";
-            format = "MP4";
-        } else {
-            // we want to default to regular HLS
-            path = "stream.m3u8";
-            format = "HLS";
+        switch (type) {
+            case MP4:
+                path = "stream";
+                format = "MP4";
+                break;
+            case SINGLE_HLS:
+                path = "stream.m3u8";
+                format = "HLS_1M";
+                break;
+            case HLS:
+            default:
+                path = "stream.m3u8";
+                format = "HLS";
+                break;
         }
 
         // generate request
