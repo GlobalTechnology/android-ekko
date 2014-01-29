@@ -16,10 +16,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <android.support.v4.view.ViewPager
+            <include
+                layout="@layout/widget_child_view_pager"
                 android:id="@+id/media"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
             <com.viewpagerindicator.CirclePageIndicator
                 android:id="@+id/media_indicator"
@@ -38,10 +39,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" >
 
-        <android.support.v4.view.ViewPager
+        <include
+            layout="@layout/widget_child_view_pager"
             android:id="@+id/text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
         <ImageView
             style="@style/Widget.Ekko.Course.InfoBar.Shadow"

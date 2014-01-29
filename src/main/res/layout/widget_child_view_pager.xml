@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    we use a custom ViewPager to support nested pagers on older devices
+    see: https://jira.gcx.org/browse/EKKOAND-29
+-->
+<org.ccci.gto.android.common.support.v4.view.ChildViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
