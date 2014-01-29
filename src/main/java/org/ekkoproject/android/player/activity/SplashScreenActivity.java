@@ -1,6 +1,7 @@
 package org.ekkoproject.android.player.activity;
 
-import org.ekkoproject.android.player.R;
+import static org.ekkoproject.android.player.Constants.GUID_GUEST;
+import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,6 +9,10 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+
+import org.ccci.gto.android.thekey.TheKeyImpl;
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 public class SplashScreenActivity extends Activity {
     @Override
@@ -33,6 +38,10 @@ public class SplashScreenActivity extends Activity {
             public void onAnimationStart(final Animation animation) {
             }
         });
+
+        // start an initial background sync
+        final String guid = TheKeyImpl.getInstance(this, THEKEY_CLIENTID).getGuid();
+        EkkoSyncService.syncCourses(this, guid != null ? guid : GUID_GUEST);
     }
 
     private void redirectTo() {
