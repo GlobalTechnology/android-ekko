@@ -285,15 +285,36 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     }
 
     public Uri getEcvStreamUri(final Resource resource) throws ApiSocketException, InvalidSessionApiException {
-        // determine if we want HLS or MP4
-        final boolean hls = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1;
+        // determine what stream format to use
+        final String path;
+        final String format;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // HLS dynamic stream selection is broke in 4.4
+            // https://code.google.com/p/android/issues/detail?id=63346
+            path = "stream.m3u8";
+            format = "HLS_1M";
+//        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//            // multiple issues with HLS before 4.2
+//            // http://www.jwplayer.com/blog/the-pain-of-live-streaming-on-android/
+//            path = "stream";
+//            format = "MP4";
+        } else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            // HLSv3 support was added in ICS, use MP4 for previous versions of Android
+            // http://developer.android.com/guide/appendix/media-formats.html
+            path = "stream";
+            format = "MP4";
+        } else {
+            // we want to default to regular HLS
+            path = "stream.m3u8";
+            format = "HLS";
+        }
 
         // generate request
-        final Request request = ecvResourceRequest(resource, (hls ? "stream.m3u8" : "stream"));
+        final Request request = ecvResourceRequest(resource, path);
         if (request == null) {
             return null;
         }
-        request.params.add(Pair.create("type", (hls ? "HLS" : "MP4")));
+        request.params.add(Pair.create("type", format));
 
         // process request
         HttpURLConnection conn = null;
