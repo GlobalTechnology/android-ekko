@@ -26,14 +26,17 @@ import java.io.File;
 public class MediaVideoActivity extends Activity implements MediaPlayer.OnCompletionListener {
     private static final String EXTRA_RESOURCEID = MediaVideoActivity.class.getName() + ".EXTRA_RESOURCEID";
 
-    private ResourceManager mResources = null;
+    private static final String STATE_PLAYING = MediaVideoActivity.class.getName() + ".STATE_PLAYING";
 
     private long mCourseId = INVALID_COURSE;
     private String mResourceId = null;
-    private boolean needsStart = true;
 
-    private MediaController videoController = null;
-    private VideoView videoPlayer = null;
+    private ResourceManager mResources = null;
+
+    private boolean mPlaying = true;
+
+    // Views
+    private VideoView mVideoPlayer = null;
 
     public static Intent newIntent(final Context context, final long courseId, final String resourceId) {
         final Intent intent = new Intent(context, MediaVideoActivity.class);
@@ -47,25 +50,61 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
     @Override
     protected void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
-        mResources = ResourceManager.getInstance(this);
+        this.setContentView(R.layout.activity_media_video);
+        this.findViews();
 
         final Intent intent = getIntent();
         mCourseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
         mResourceId = intent.getStringExtra(EXTRA_RESOURCEID);
 
-        this.setContentView(R.layout.activity_media_video);
-        this.findViews();
+        mResources = ResourceManager.getInstance(this);
+
+        // process saved state
+        if (savedState != null) {
+            mPlaying = savedState.getBoolean(STATE_PLAYING, mPlaying);
+        }
+
         this.setupVideoPlayer();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (this.needsStart) {
-            if (this.videoPlayer != null) {
-                this.videoPlayer.start();
-            }
-            this.needsStart = false;
+    protected void onRestart() {
+        super.onRestart();
+
+        // the video shouldn't be playing when we restart this activity
+        mPlaying = false;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mPlaying && mVideoPlayer != null && !mVideoPlayer.isPlaying()) {
+            mVideoPlayer.start();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mVideoPlayer != null && mVideoPlayer.isPlaying()) {
+            mVideoPlayer.pause();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle savedState) {
+        super.onSaveInstanceState(savedState);
+
+        savedState.putBoolean(STATE_PLAYING, mPlaying);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mVideoPlayer != null) {
+            mVideoPlayer.stopPlayback();
         }
     }
 
@@ -77,16 +116,16 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
     /** END lifecycle */
 
     private void setupVideoPlayer() {
-        if (this.videoPlayer != null) {
-            this.videoController = new MediaController(this);
-            this.videoPlayer.setMediaController(this.videoController);
-            this.videoPlayer.setOnCompletionListener(this);
+        if (mVideoPlayer != null) {
+            mVideoPlayer.setMediaController(new MediaController(this));
+            mVideoPlayer.setOnCompletionListener(this);
+
             new LoadVideoAsyncTask().execute();
         }
     }
 
     private void findViews() {
-        this.videoPlayer = findView(VideoView.class, R.id.video);
+        mVideoPlayer = findView(VideoView.class, R.id.video);
     }
 
     private <T extends View> T findView(final Class<T> clazz, final int id) {
@@ -139,8 +178,8 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
             super.onPostExecute(uri);
 
             // set the video file on the player
-            if (MediaVideoActivity.this.videoPlayer != null) {
-                MediaVideoActivity.this.videoPlayer.setVideoURI(uri);
+            if (mVideoPlayer != null) {
+                mVideoPlayer.setVideoURI(uri);
             }
         }
     }

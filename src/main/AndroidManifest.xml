@@ -28,7 +28,8 @@
             android:theme="@android:style/Theme.NoTitleBar"/>
         <activity
             android:name="org.ekkoproject.android.player.activity.MediaVideoActivity"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="sensor"
+            android:configChanges="orientation|screenSize"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
 
         <service
