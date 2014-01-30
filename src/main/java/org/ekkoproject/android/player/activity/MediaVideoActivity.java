@@ -23,10 +23,11 @@ import org.ekkoproject.android.player.services.ResourceManager;
 
 import java.io.File;
 
-public class MediaVideoActivity extends Activity implements MediaPlayer.OnCompletionListener {
+public class MediaVideoActivity extends Activity {
     private static final String EXTRA_RESOURCEID = MediaVideoActivity.class.getName() + ".EXTRA_RESOURCEID";
 
     private static final String STATE_PLAYING = MediaVideoActivity.class.getName() + ".STATE_PLAYING";
+    private static final String STATE_POSITION = MediaVideoActivity.class.getName() + ".STATE_POSITION";
 
     private long mCourseId = INVALID_COURSE;
     private String mResourceId = null;
@@ -34,6 +35,7 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
     private ResourceManager mResources = null;
 
     private boolean mPlaying = true;
+    private int mPos = -1;
 
     // Views
     private VideoView mVideoPlayer = null;
@@ -62,55 +64,62 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
         // process saved state
         if (savedState != null) {
             mPlaying = savedState.getBoolean(STATE_PLAYING, mPlaying);
+            mPos = savedState.getInt(STATE_POSITION, mPos);
         }
 
         this.setupVideoPlayer();
-    }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        // the video shouldn't be playing when we restart this activity
-        mPlaying = false;
+        new LoadVideoAsyncTask().execute();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        // seek back to the position we last stopped at
+        this.seekToPosition();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // start the video player if needed
         if (mPlaying && mVideoPlayer != null && !mVideoPlayer.isPlaying()) {
             mVideoPlayer.start();
         }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
 
-        if (mVideoPlayer != null && mVideoPlayer.isPlaying()) {
+        if (mVideoPlayer != null) {
+            mPlaying = mVideoPlayer.isPlaying();
             mVideoPlayer.pause();
         }
+        this.getPosition();
     }
 
     @Override
     protected void onSaveInstanceState(final Bundle savedState) {
         super.onSaveInstanceState(savedState);
 
+        // store save state data
         savedState.putBoolean(STATE_PLAYING, mPlaying);
+        savedState.putInt(STATE_POSITION, mPos);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        // stop the video player
         if (mVideoPlayer != null) {
             mVideoPlayer.stopPlayback();
         }
-    }
 
-    @Override
-    public void onCompletion(final MediaPlayer mp) {
-        finish();
+        this.clearViews();
     }
 
     /** END lifecycle */
@@ -118,14 +127,17 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
     private void setupVideoPlayer() {
         if (mVideoPlayer != null) {
             mVideoPlayer.setMediaController(new MediaController(this));
-            mVideoPlayer.setOnCompletionListener(this);
-
-            new LoadVideoAsyncTask().execute();
+            final MediaPlayerListener listener = new MediaPlayerListener();
+            mVideoPlayer.setOnCompletionListener(listener);
         }
     }
 
     private void findViews() {
         mVideoPlayer = findView(VideoView.class, R.id.video);
+    }
+
+    private void clearViews() {
+        mVideoPlayer = null;
     }
 
     private <T extends View> T findView(final Class<T> clazz, final int id) {
@@ -134,6 +146,21 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
             return clazz.cast(view);
         }
         return null;
+    }
+
+    private void getPosition() {
+        if (mVideoPlayer != null) {
+            mPos = mVideoPlayer.getDuration() > -1 ? mVideoPlayer.getCurrentPosition() : -1;
+        }
+    }
+
+    private void seekToPosition() {
+        // only seek if we have a video player, it's not playing, and we have a valid position different
+        // than the current position
+        if (mVideoPlayer != null && !mVideoPlayer.isPlaying() && mPos != -1 &&
+                mPos != mVideoPlayer.getCurrentPosition()) {
+            mVideoPlayer.seekTo(mPos);
+        }
     }
 
     private class LoadVideoAsyncTask extends AsyncTask<Void, Void, Uri> {
@@ -181,6 +208,13 @@ public class MediaVideoActivity extends Activity implements MediaPlayer.OnComple
             if (mVideoPlayer != null) {
                 mVideoPlayer.setVideoURI(uri);
             }
+        }
+    }
+
+    private class MediaPlayerListener implements MediaPlayer.OnCompletionListener {
+        @Override
+        public void onCompletion(final MediaPlayer mp) {
+            finish();
         }
     }
 }
