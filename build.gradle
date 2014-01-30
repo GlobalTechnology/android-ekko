@@ -33,7 +33,7 @@ android {
         versionName project.version
         versionCode generateVersionCode(project.version)
 
-        minSdkVersion 8
+        minSdkVersion 10
         targetSdkVersion 19
     }
 
