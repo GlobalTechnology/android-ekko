@@ -38,7 +38,9 @@ public class MediaVideoActivity extends Activity {
     private int mPos = -1;
 
     // Views
+    private View mRoot = null;
     private VideoView mVideoPlayer = null;
+    private MediaController mController = null;
 
     public static Intent newIntent(final Context context, final long courseId, final String resourceId) {
         final Intent intent = new Intent(context, MediaVideoActivity.class);
@@ -126,18 +128,37 @@ public class MediaVideoActivity extends Activity {
 
     private void setupVideoPlayer() {
         if (mVideoPlayer != null) {
-            mVideoPlayer.setMediaController(new MediaController(this));
+            // MediaPlayer callback listener
             final MediaPlayerListener listener = new MediaPlayerListener();
             mVideoPlayer.setOnCompletionListener(listener);
+
+            // MediaPlayer controller
+            mController = new MediaController(this);
+            mVideoPlayer.setMediaController(mController);
+
+            // show the MediaPlayer controller on any click event
+            if (mRoot != null) {
+                mRoot.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        if (mController != null) {
+                            mController.show();
+                        }
+                    }
+                });
+            }
         }
     }
 
     private void findViews() {
+        mRoot = findView(View.class, android.R.id.content);
         mVideoPlayer = findView(VideoView.class, R.id.video);
     }
 
     private void clearViews() {
+        mRoot = null;
         mVideoPlayer = null;
+        mController = null;
     }
 
     private <T extends View> T findView(final Class<T> clazz, final int id) {
