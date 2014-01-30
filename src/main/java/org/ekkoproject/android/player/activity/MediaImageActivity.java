@@ -3,17 +3,17 @@ package org.ekkoproject.android.player.activity;
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 
-import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.services.ResourceManager;
-import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
-import org.ekkoproject.android.player.view.ResourceImageView;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+
+import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.services.ResourceManager;
+import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
+import org.ekkoproject.android.player.view.ResourceImageView;
 
 public class MediaImageActivity extends Activity {
     private static final String EXTRA_RESOURCEID = MediaImageActivity.class.getName() + ".EXTRA_RESOURCEID";
@@ -25,7 +25,7 @@ public class MediaImageActivity extends Activity {
 
     private ImageView image = null;
 
-    public static final Intent newIntent(final Context context, final long courseId, final String resourceId) {
+    public static Intent newIntent(final Context context, final long courseId, final String resourceId) {
         final Intent intent = new Intent(context, MediaImageActivity.class);
         intent.putExtra(EXTRA_COURSEID, courseId);
         intent.putExtra(EXTRA_RESOURCEID, resourceId);
