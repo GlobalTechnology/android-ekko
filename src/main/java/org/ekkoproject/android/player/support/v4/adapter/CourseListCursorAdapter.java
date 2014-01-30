@@ -258,7 +258,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         @Override
         public boolean onMenuItemClick(final MenuItem item) {
             final int id = item.getItemId();
-            switch(id) {
+            switch (id) {
                 case R.id.enroll:
                     final EnrollmentRunnable task = new EnrollmentRunnable(mContext, mGuid, ENROLL, holder.courseId);
                     task.setOnNavigationListener(mOnNavigationListener);

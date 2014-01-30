@@ -1,10 +1,10 @@
 package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
+import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_NONE;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_UNKNOWN;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_VIMEO;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_YOUTUBE;
-import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
 import android.annotation.TargetApi;
@@ -17,13 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
 import org.ekkoproject.android.player.activity.MediaVideoActivity;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Media;
+import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;

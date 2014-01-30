@@ -2,8 +2,9 @@ package org.ekkoproject.android.player.adapter;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 
-import java.util.Collections;
-import java.util.List;
+import android.content.Context;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Lesson;
@@ -13,9 +14,8 @@ import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
 
-import android.content.Context;
-import android.view.View;
-import android.widget.ImageView;
+import java.util.Collections;
+import java.util.List;
 
 public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Media> {
     private static final List<Media> NO_MEDIA = Collections.emptyList();
