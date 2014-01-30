@@ -49,7 +49,7 @@ public class MediaVideoActivity extends Activity {
         return intent;
     }
 
-    /** BEGIN lifecycle */
+    /* BEGIN lifecycle */
 
     @Override
     protected void onCreate(final Bundle savedState) {
@@ -124,7 +124,7 @@ public class MediaVideoActivity extends Activity {
         this.clearViews();
     }
 
-    /** END lifecycle */
+    /* END lifecycle */
 
     private void setupVideoPlayer() {
         if (mVideoPlayer != null) {
@@ -188,9 +188,9 @@ public class MediaVideoActivity extends Activity {
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
         public final AsyncTask<Void, Void, Uri> execute() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                return this.executeOnExecutor(THREAD_POOL_EXECUTOR);
+                return super.executeOnExecutor(THREAD_POOL_EXECUTOR);
             } else {
-                return this.execute(new Void[] {});
+                return super.execute();
             }
         }
 
