@@ -10,7 +10,7 @@ import org.ekkoproject.android.player.model.CachedArclightResource;
 public class CachedArclightResourceMapper extends CachedResourceMapper<CachedArclightResource> {
     @Override
     public ContentValues toContentValues(final CachedArclightResource resource) {
-        return this.toContentValues(resource, Contract.CachedEcvResource.PROJECTION_ALL);
+        return this.toContentValues(resource, Contract.CachedArclightResource.PROJECTION_ALL);
     }
 
     @Override
