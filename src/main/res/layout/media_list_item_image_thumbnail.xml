@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
-    <org.ekkoproject.android.player.view.ResourceImageView
+    <org.ekkoproject.android.player.view.SimpleResourceImageView
         android:id="@+id/thumbnail"
         android:layout_width="60dp"
         android:layout_height="60dp"

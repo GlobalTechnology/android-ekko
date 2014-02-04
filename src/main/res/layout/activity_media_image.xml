@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#000000" >
 
-    <org.ekkoproject.android.player.view.ResourceImageView
+    <org.ekkoproject.android.player.view.SimpleResourceImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

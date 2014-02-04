@@ -7,7 +7,7 @@
     ekko:aspectRatioHeight="9"
     ekko:aspectRatioWidth="16" >
 
-    <org.ekkoproject.android.player.view.ResourceImageView
+    <org.ekkoproject.android.player.view.SimpleResourceImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

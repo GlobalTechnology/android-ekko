@@ -117,7 +117,7 @@ public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Me
         if (thumbnailView instanceof ResourceImageView) {
             if (thumbnail != null) {
                 ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), thumbnail);
-            } else if (media.isImage() && resource != null) {
+            } else if (media.isImage()) {
                 ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), resource);
             } else {
                 ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), null);

@@ -1,5 +1,8 @@
 package org.ekkoproject.android.player.tasks;
 
+import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MIN_BITMAP_HEIGHT;
+import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MIN_BITMAP_WIDTH;
+
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -26,50 +29,55 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
 
             @Override
             public Thread newThread(final Runnable r) {
-                return new Thread(r, "LoadImageResourceAsyncTask #" +
-                        mCount.getAndIncrement());
+                return new Thread(r, "LoadImageResourceAsyncTask #" + mCount.getAndIncrement());
             }
         };
         LOAD_IMAGE_THREAD_POOL =
                 new ThreadPoolExecutor(3, 7, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), tf);
     }
 
-    private final ResourceManager manager;
-    private final WeakReference<ImageView> view;
-    private final long courseId;
-    private final String resourceId;
-    private final int width;
-    private final int height;
+    private final ResourceManager mResources;
+    private final WeakReference<ImageView> mView;
+    private final long mCourseId;
+    private final String mResourceId;
+    private final ResourceManager.BitmapOptions mOpts;
 
     public LoadImageResourceAsyncTask(final ResourceManager manager, final ImageView view, final long courseId,
-            final String resourceId) {
+                                      final String resourceId) {
         this(manager, view, courseId, resourceId, view.getWidth(), view.getHeight());
     }
 
     public LoadImageResourceAsyncTask(final ResourceManager manager, final ImageView view, final long courseId,
-            final String resourceId, final int width, final int height) {
-        this.manager = manager;
-        this.courseId = courseId;
-        this.resourceId = resourceId;
-        this.width = width > 0 ? width : 50;
-        this.height = height > 0 ? height : 50;
+                                      final String resourceId, final int width, final int height) {
+        this(manager, view, courseId, resourceId,
+             new ResourceManager.BitmapOptions(width > 0 ? width : DEFAULT_MIN_BITMAP_WIDTH,
+                                               height > 0 ? height : DEFAULT_MIN_BITMAP_HEIGHT));
+    }
+
+    public LoadImageResourceAsyncTask(final ResourceManager resources, final ImageView view, final long courseId,
+                                      final String resourceId, final ResourceManager.BitmapOptions opts) {
+        mResources = resources;
+        mCourseId = courseId;
+        mResourceId = resourceId;
+        mOpts = opts;
+        mView = new WeakReference<>(view);
+
         view.setTag(R.id.image_loader_task, new WeakReference<AsyncTask<?, ?, ?>>(this));
-        this.view = new WeakReference<>(view);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public AsyncTask<Void, Void, Bitmap> execute() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            return this.executeOnExecutor(LOAD_IMAGE_THREAD_POOL);
+            return super.executeOnExecutor(LOAD_IMAGE_THREAD_POOL);
         } else {
-            return this.execute(new Void[] {});
+            return super.execute();
         }
     }
 
     @Override
     protected Bitmap doInBackground(final Void... params) {
         if (checkImageView()) {
-            return this.manager.getBitmap(this.courseId, this.resourceId, this.width, this.height);
+            return mResources.getBitmap(mCourseId, mResourceId, mOpts);
         }
 
         return null;
@@ -81,7 +89,7 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
 
         if (checkImageView()) {
             if (bitmap != null) {
-                final ImageView view = this.view.get();
+                final ImageView view = mView.get();
                 if (view != null) {
                     view.setImageBitmap(bitmap);
                     view.setTag(R.id.image_loader_task, null);
@@ -91,7 +99,7 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
     }
 
     private boolean checkImageView() {
-        final ImageView view = this.view.get();
+        final ImageView view = mView.get();
         if (view != null) {
             final Object ref = view.getTag(R.id.image_loader_task);
             if (ref instanceof WeakReference) {
@@ -99,6 +107,7 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
                 return this == task;
             }
         }
+
         return false;
     }
 }

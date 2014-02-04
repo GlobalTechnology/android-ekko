@@ -17,6 +17,8 @@ import android.support.v4.util.LruCache;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
+import org.ccci.gto.android.common.model.Dimension;
+import org.ccci.gto.android.common.util.BitmapUtils;
 import org.ccci.gto.android.common.util.IOUtils;
 import org.ekkoproject.android.player.api.ArclightApi;
 import org.ekkoproject.android.player.api.EkkoHubApi;
@@ -57,6 +59,11 @@ public final class ResourceManager {
     public enum StreamType {HLS, MP4, SINGLE_HLS};
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
+
+    public static final int DEFAULT_MAX_BITMAP_HEIGHT = 2048;
+    public static final int DEFAULT_MAX_BITMAP_WIDTH = 2048;
+    public static final int DEFAULT_MIN_BITMAP_WIDTH = 50;
+    public static final int DEFAULT_MIN_BITMAP_HEIGHT = 50;
 
     private static class Key {
         private final long courseId;
@@ -99,12 +106,11 @@ public final class ResourceManager {
             }
             if (o instanceof Key) {
                 final Key key = (Key) o;
-                return this.courseId == key.courseId && ((this.sha1 == null && key.sha1 == null) ||
-                        (this.sha1 != null && this.sha1.equals(key.sha1))) &&
-                        ((this.uri == null && key.uri == null) || (this.uri != null && this.uri.equals(key.uri))) &&
+                return this.courseId == key.courseId &&
+                        ((this.sha1 == key.sha1) || (this.sha1 != null && this.sha1.equals(key.sha1))) &&
+                        ((this.uri == key.uri) || (this.uri != null && this.uri.equals(key.uri))) &&
                         this.provider == key.provider && this.videoId == key.videoId && this.thumb == key.thumb &&
-                        ((this.refId == null && key.refId == null) ||
-                                (this.refId != null && this.refId.equals(key.refId)));
+                        ((this.refId == key.refId) || (this.refId != null && this.refId.equals(key.refId)));
             }
 
             return false;
@@ -124,14 +130,53 @@ public final class ResourceManager {
         }
     }
 
-    private static final class BitmapKey extends Key {
-        private final int width;
-        private final int height;
+    public static class BitmapOptions {
+        private final Dimension mSize;
+        private final Dimension mMaxSize;
 
-        public BitmapKey(final Resource resource, int width, int height) {
+        public BitmapOptions(final int width, final int height) {
+            this(new Dimension(width, height), null);
+        }
+
+        public BitmapOptions(final int width, final int height, final int maxWidth, final int maxHeight) {
+            this(new Dimension(width, height), new Dimension(maxWidth, maxHeight));
+        }
+
+        public BitmapOptions(final Dimension size, final Dimension maxSize) {
+            mSize = size;
+            mMaxSize = maxSize;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o instanceof BitmapOptions && getClass().equals(o.getClass())) {
+                final BitmapOptions that = (BitmapOptions) o;
+                return (mSize == that.mSize || (mSize != null && mSize.equals(that.mSize))) &&
+                        (mMaxSize == that.mMaxSize || (mMaxSize != null && mMaxSize.equals(that.mMaxSize)));
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 0;
+            hash = 31 * hash + (mSize != null ? mSize.hashCode() : 0);
+            hash = 31 * hash + (mMaxSize != null ? mMaxSize.hashCode() : 0);
+            return hash;
+        }
+    }
+
+    private static final class BitmapKey extends Key {
+        private final BitmapOptions mOpts;
+
+        public BitmapKey(final Resource resource, final BitmapOptions opts) {
             super(resource);
-            this.width = width;
-            this.height = height;
+            assert opts != null;
+            mOpts = opts;
         }
 
         @Override
@@ -141,7 +186,7 @@ public final class ResourceManager {
             }
             if (o instanceof BitmapKey) {
                 final BitmapKey key = (BitmapKey) o;
-                return super.equals(o) && this.width == key.width && this.height == key.height;
+                return super.equals(o) && (mOpts == key.mOpts || (mOpts != null && mOpts.equals(key.mOpts)));
             }
 
             return false;
@@ -150,8 +195,7 @@ public final class ResourceManager {
         @Override
         public int hashCode() {
             int hash = super.hashCode();
-            hash = hash * 31 + width;
-            hash = hash * 31 + height;
+            hash = hash * 31 + (mOpts != null ? mOpts.hashCode() : 0);
             return hash;
         }
     }
@@ -245,31 +289,37 @@ public final class ResourceManager {
         return null;
     }
 
-    public Bitmap getBitmap(final long courseId, final String resourceId, final int width, final int height) {
-        return this.getBitmap(this.resolveResource(courseId, resourceId), width, height);
+    public Bitmap getBitmap(final long courseId, final String resourceId, final BitmapOptions opts) {
+        return this.getBitmap(this.resolveResource(courseId, resourceId), opts);
     }
 
-    public Bitmap getBitmap(final Resource resource, final int width, final int height) {
+    private Bitmap getBitmap(final Resource resource, final BitmapOptions opts) {
         assertNotOnUiThread();
+        assert opts != null;
+
+        // short-circuit if we don't have a valid resource
+        if (resource == null) {
+            return null;
+        }
 
         // look for a cached bitmap
-        final BitmapKey key = new BitmapKey(resource, width, height);
+        final BitmapKey key = new BitmapKey(resource, opts);
         final Bitmap img = this.bitmaps.get(key);
         if (img != null) {
             return img;
         }
 
         // load the bitmap
-        return loadBitmap(resource, width, height);
+        return loadBitmap(resource, opts);
     }
 
-    private Bitmap loadBitmap(final Resource resource, final int width, final int height) {
+    private Bitmap loadBitmap(final Resource resource, final BitmapOptions opts) {
         final File f = this.getFile(resource, FLAG_TYPE_IMAGE);
         if (f == null) {
             return null;
         }
 
-        final BitmapKey key = new BitmapKey(resource, width, height);
+        final BitmapKey key = new BitmapKey(resource, opts);
         synchronized (getLock(this.bitmapLocks, key)) {
             // make sure the bitmap wasn't just loaded
             Bitmap bitmap = this.bitmaps.get(key);
@@ -297,22 +347,22 @@ public final class ResourceManager {
                 return null;
             }
 
-            // calculate how much to scale the image by
-            int scale = 1;
-            while (width * (scale + 1) < meta.outWidth && height * (scale + 1) < meta.outHeight) {
-                scale++;
-            }
+            // calculate how much to scale the image by. Make sure output size is larger than requested size,
+            // but smaller than max width & max height
+            final int scale = BitmapUtils.calcScale(opts.mSize, new Dimension(meta.outWidth, meta.outHeight),
+                                                    opts.mMaxSize);
 
             // check to see if there is a Bitmap at this scale already
-            final BitmapKey scaledKey = new BitmapKey(resource, meta.outWidth / scale, meta.outHeight / scale);
+            final BitmapKey scaledKey =
+                    new BitmapKey(resource, new BitmapOptions(meta.outWidth / scale, meta.outHeight / scale));
             synchronized (getLock(this.bitmapLocks, scaledKey)) {
                 bitmap = this.bitmaps.get(scaledKey);
 
                 // we don't have a scaled bitmap, so load one
                 if (bitmap == null) {
-                    final BitmapFactory.Options opts = new BitmapFactory.Options();
-                    opts.inSampleSize = scale;
-                    bitmap = BitmapFactory.decodeFile(f.getPath(), opts);
+                    final BitmapFactory.Options loadOpts = new BitmapFactory.Options();
+                    loadOpts.inSampleSize = scale;
+                    bitmap = BitmapFactory.decodeFile(f.getPath(), loadOpts);
                     if (bitmap != null) {
                         if (this.bitmaps instanceof MultiKeyLruCache) {
                             ((MultiKeyLruCache<BitmapKey, Bitmap>) this.bitmaps).putMulti(scaledKey, bitmap);
@@ -326,10 +376,9 @@ public final class ResourceManager {
             // store the bitmap in the cache
             if (bitmap != null) {
                 if (this.bitmaps instanceof MultiKeyLruCache) {
-                    ((MultiKeyLruCache<BitmapKey, Bitmap>) this.bitmaps)
-                            .putMulti(new BitmapKey(resource, width, height), bitmap);
+                    ((MultiKeyLruCache<BitmapKey, Bitmap>) this.bitmaps).putMulti(key, bitmap);
                 } else {
-                    this.bitmaps.put(new BitmapKey(resource, width, height), bitmap);
+                    this.bitmaps.put(key, bitmap);
                 }
             }
 

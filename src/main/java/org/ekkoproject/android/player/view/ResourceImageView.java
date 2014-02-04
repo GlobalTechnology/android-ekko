@@ -1,71 +1,81 @@
 package org.ekkoproject.android.player.view;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
+import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MAX_BITMAP_HEIGHT;
+import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MAX_BITMAP_WIDTH;
+import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MIN_BITMAP_HEIGHT;
+import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MIN_BITMAP_WIDTH;
 
+import android.annotation.TargetApi;
+import android.graphics.Canvas;
+import android.os.Build;
+import android.widget.ImageView;
+
+import org.ccci.gto.android.common.model.Dimension;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.widget.ImageView;
+public interface ResourceImageView {
+    public final class Helper {
+        private final ImageView mView;
+        private final ResourceManager mResources;
 
-public class ResourceImageView extends ImageView {
-    private final ResourceManager manager;
+        private long mCourseId = INVALID_COURSE;
+        private String mResourceId = null;
+        private Dimension mSize = new Dimension(DEFAULT_MIN_BITMAP_WIDTH, DEFAULT_MIN_BITMAP_HEIGHT);
+        private int mMaxWidth = DEFAULT_MAX_BITMAP_WIDTH;
+        private int mMaxHeight = DEFAULT_MAX_BITMAP_HEIGHT;
 
-    private int width = 0;
-    private int height = 0;
-    private long courseId = INVALID_COURSE;
-    private String resourceId = null;
+        public Helper(final ImageView view) {
+            mView = view;
+            mResources = ResourceManager.getInstance(mView.getContext());
+        }
 
-    public ResourceImageView(final Context context) {
-        super(context);
-        this.manager = ResourceManager.getInstance(context);
-    }
+        public void setResource(final long courseId, final String resourceId) {
+            if (mCourseId != courseId || (mResourceId != null && !mResourceId.equals(resourceId)) ||
+                    (mResourceId == null && resourceId != null)) {
+                mCourseId = courseId;
+                mResourceId = resourceId;
 
-    public ResourceImageView(final Context context, final AttributeSet attrs) {
-        super(context, attrs);
-        this.manager = ResourceManager.getInstance(context);
-    }
+                mView.setImageDrawable(null);
+                triggerUpdate();
+            }
+        }
 
-    public ResourceImageView(final Context context, final AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
-        this.manager = ResourceManager.getInstance(context);
-    }
+        public void onSizeChanged(int w, int h, int oldw, int oldh) {
+            if (oldw != w || oldh != h) {
+                mSize = new Dimension(w, h);
+                this.triggerUpdate();
+            }
+        }
 
-    public void setResource(final long courseId, final String resourceId) {
-        final boolean needsUpdate = this.courseId != courseId
-                || (this.resourceId != null && !this.resourceId.equals(resourceId))
-                || (this.resourceId == null && resourceId != null);
+        @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+        public void onDraw(final Canvas canvas) {
+            // update the maxSize (only on ICS where we can get the actual max size)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                final int maxWidth = canvas.getMaximumBitmapWidth();
+                final int maxHeight = canvas.getMaximumBitmapHeight();
+                if (mMaxWidth != maxWidth || mMaxHeight != maxHeight) {
+                    mMaxWidth = maxWidth;
+                    mMaxHeight = maxHeight;
+                    this.triggerUpdate();
+                }
+            }
+        }
 
-        this.courseId = courseId;
-        this.resourceId = resourceId;
-
-        if (needsUpdate) {
-            this.setImageDrawable(null);
-            this.triggerUpdate();
+        private void triggerUpdate() {
+            if (mCourseId != INVALID_COURSE && mResourceId != null) {
+                final ResourceManager.BitmapOptions opts =
+                        new ResourceManager.BitmapOptions(mSize, new Dimension(mMaxWidth, mMaxHeight));
+                new LoadImageResourceAsyncTask(mResources, mView, mCourseId, mResourceId, opts).execute();
+            } else {
+                // clear the image and any pending image_loader_task
+                mView.setTag(R.id.image_loader_task, null);
+                mView.setImageDrawable(null);
+            }
         }
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        this.width = w;
-        this.height = h;
-
-        if (oldw != w || oldh != h) {
-            this.triggerUpdate();
-        }
-    }
-
-    private void triggerUpdate() {
-        if (this.courseId != INVALID_COURSE && this.resourceId != null && this.width > 0 && this.height > 0) {
-            new LoadImageResourceAsyncTask(this.manager, this, this.courseId, this.resourceId, this.width, this.height)
-                    .execute();
-        } else {
-            // clear the image and any pending image_loader_task
-            this.setTag(R.id.image_loader_task, null);
-            this.setImageDrawable(null);
-        }
-    }
+    void setResource(long courseId, String resourceId);
 }
