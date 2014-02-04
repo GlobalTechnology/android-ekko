@@ -4,16 +4,17 @@ import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.Constants.INVALID_ID;
 import static org.ekkoproject.android.player.util.ThreadUtils.getLock;
 
-import org.ekkoproject.android.player.util.BidiMap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class CourseManager {
-    private static final AtomicLong nextId = new AtomicLong(1);
-    private static final Map<Long, BidiMap<Long, String>> idMap = new HashMap<Long, BidiMap<Long, String>>();
-    private static final Map<Long, Object> idMapLocks = new HashMap<Long, Object>();
+    private static final AtomicLong ID = new AtomicLong(1);
+    private static final Map<Long, BiMap<Long, String>> IDS = new HashMap<>();
+    private static final Map<Long, Object> ID_LOCKS = new HashMap<>();
 
     public static String convertId(final long courseId, final long id) {
         // short-circuit for invalid id's
@@ -21,10 +22,10 @@ public class CourseManager {
             return null;
         }
 
-        // get the BidiMap
-        final BidiMap<Long, String> map = getMap(courseId);
+        // get the BiMap
+        final BiMap<Long, String> map = getMap(courseId);
 
-        // return the BidiMap value
+        // return the BiMap value
         return map.get(id);
     }
 
@@ -34,15 +35,15 @@ public class CourseManager {
             return INVALID_ID;
         }
 
-        // get the BidiMap
-        final BidiMap<Long, String> map = getMap(courseId);
+        // get the BiMap
+        final BiMap<Long, String> map = getMap(courseId);
 
         // create new id if one doesn't exist
-        synchronized (getLock(idMapLocks, courseId)) {
+        synchronized (getLock(ID_LOCKS, courseId)) {
             // check to see if we already have a mapping
-            Long response = map.getKey(id);
+            Long response = map.inverse().get(id);
             if (response == null) {
-                response = nextId.getAndIncrement();
+                response = ID.getAndIncrement();
                 map.put(response, id.intern());
             }
 
@@ -51,18 +52,18 @@ public class CourseManager {
         }
     }
 
-    private static BidiMap<Long, String> getMap(final long courseId) {
-        synchronized (getLock(idMapLocks, courseId)) {
-            // get the BidiMap
-            BidiMap<Long, String> map = idMap.get(courseId);
+    private static BiMap<Long, String> getMap(final long courseId) {
+        synchronized (getLock(ID_LOCKS, courseId)) {
+            // get the BiMap
+            BiMap<Long, String> map = IDS.get(courseId);
 
-            // create a BidiMap if one doesn't exist
+            // create a BiMap if one doesn't exist
             if (map == null) {
-                map = new BidiMap<Long, String>();
-                idMap.put(courseId, map);
+                map = HashBiMap.create();
+                IDS.put(courseId, map);
             }
 
-            // return the BidiMap
+            // return the BiMap
             return map;
         }
     }
