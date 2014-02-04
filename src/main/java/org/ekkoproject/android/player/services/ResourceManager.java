@@ -15,6 +15,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.util.LruCache;
 
+import com.google.common.base.Objects;
+
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.model.Dimension;
@@ -110,11 +112,9 @@ public final class ResourceManager {
             }
             if (o instanceof Key) {
                 final Key key = (Key) o;
-                return this.courseId == key.courseId &&
-                        ((this.sha1 == key.sha1) || (this.sha1 != null && this.sha1.equals(key.sha1))) &&
-                        ((this.uri == key.uri) || (this.uri != null && this.uri.equals(key.uri))) &&
-                        this.provider == key.provider && this.videoId == key.videoId && this.thumb == key.thumb &&
-                        ((this.refId == key.refId) || (this.refId != null && this.refId.equals(key.refId)));
+                return this.courseId == key.courseId && Objects.equal(this.sha1, key.sha1) &&
+                        Objects.equal(this.uri, key.uri) && this.provider == key.provider &&
+                        this.videoId == key.videoId && Objects.equal(this.refId, key.refId) && this.thumb == key.thumb;
             }
 
             return false;
@@ -158,8 +158,7 @@ public final class ResourceManager {
             }
             if (o instanceof BitmapOptions && getClass().equals(o.getClass())) {
                 final BitmapOptions that = (BitmapOptions) o;
-                return (mSize == that.mSize || (mSize != null && mSize.equals(that.mSize))) &&
-                        (mMaxSize == that.mMaxSize || (mMaxSize != null && mMaxSize.equals(that.mMaxSize)));
+                return Objects.equal(this.mSize, that.mSize) && Objects.equal(this.mMaxSize, that.mMaxSize);
             }
 
             return false;
@@ -190,7 +189,7 @@ public final class ResourceManager {
             }
             if (o instanceof BitmapKey) {
                 final BitmapKey key = (BitmapKey) o;
-                return super.equals(o) && (mOpts == key.mOpts || (mOpts != null && mOpts.equals(key.mOpts)));
+                return super.equals(o) && Objects.equal(mOpts, key.mOpts);
             }
 
             return false;
