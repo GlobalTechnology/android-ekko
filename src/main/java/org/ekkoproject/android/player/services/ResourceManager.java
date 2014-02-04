@@ -142,10 +142,6 @@ public final class ResourceManager {
             this(new Dimension(width, height), null);
         }
 
-        public BitmapOptions(final int width, final int height, final int maxWidth, final int maxHeight) {
-            this(new Dimension(width, height), new Dimension(maxWidth, maxHeight));
-        }
-
         public BitmapOptions(final Dimension size, final Dimension maxSize) {
             mSize = size;
             mMaxSize = maxSize;

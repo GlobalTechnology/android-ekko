@@ -21,7 +21,8 @@
                 android:id="@+id/question"
                 style="@style/TextAppearance.Ekko.Course.Quiz.Question"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:textIsSelectable="false"/>
         </FrameLayout>
     </org.ekkoproject.android.player.widget.RatioLayout>
 
