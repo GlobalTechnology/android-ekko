@@ -60,6 +60,10 @@ public final class ResourceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceManager.class);
 
+    // boundaries for Bitmap cache size
+    private static final int CACHE_MIN_SIZE = 0;
+    private static final int CACHE_MAX_SIZE = (int) (Runtime.getRuntime().maxMemory() / 1024 / 2);
+
     public static final int DEFAULT_MAX_BITMAP_HEIGHT = 2048;
     public static final int DEFAULT_MAX_BITMAP_WIDTH = 2048;
     public static final int DEFAULT_MIN_BITMAP_WIDTH = 50;
@@ -230,11 +234,13 @@ public final class ResourceManager {
         this.dao = EkkoDao.getInstance(ctx);
         this.manifestManager = ManifestManager.getInstance(this.context);
 
-        this.bitmaps = new WeakMultiKeyLruCache<BitmapKey, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 8)) {
+        this.bitmaps = new WeakMultiKeyLruCache<BitmapKey, Bitmap>(CACHE_MAX_SIZE) {
             @Override
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+            @TargetApi(Build.VERSION_CODES.KITKAT)
             protected int sizeOf(final BitmapKey key, final Bitmap bitmap) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    return bitmap.getAllocationByteCount();
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                     return bitmap.getByteCount() / 1024;
                 } else {
                     return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
@@ -362,7 +368,23 @@ public final class ResourceManager {
                 if (bitmap == null) {
                     final BitmapFactory.Options loadOpts = new BitmapFactory.Options();
                     loadOpts.inSampleSize = scale;
-                    bitmap = BitmapFactory.decodeFile(f.getPath(), loadOpts);
+
+                    int maxSize = this.bitmaps.maxSize();
+                    while (true) {
+                        try {
+                            bitmap = BitmapFactory.decodeFile(f.getPath(), loadOpts);
+                            break;
+                        } catch (final OutOfMemoryError oom) {
+                            maxSize = maxSize > 0 ? maxSize / 2 : -1;
+                            if (maxSize >= CACHE_MIN_SIZE) {
+                                bitmaps.trimToSize(maxSize);
+                                continue;
+                            }
+
+                            throw oom;
+                        }
+                    }
+
                     if (bitmap != null) {
                         if (this.bitmaps instanceof MultiKeyLruCache) {
                             ((MultiKeyLruCache<BitmapKey, Bitmap>) this.bitmaps).putMulti(scaledKey, bitmap);
