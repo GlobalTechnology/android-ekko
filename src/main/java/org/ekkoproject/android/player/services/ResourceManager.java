@@ -16,6 +16,7 @@ import android.os.Build;
 import android.support.v4.util.LruCache;
 
 import com.google.common.base.Objects;
+import com.google.common.io.BaseEncoding;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
@@ -34,7 +35,6 @@ import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.util.MultiKeyLruCache;
-import org.ekkoproject.android.player.util.StringUtils;
 import org.ekkoproject.android.player.util.WeakMultiKeyLruCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -498,8 +498,10 @@ public final class ResourceManager {
                     IOUtils.closeQuietly(out);
 
                     // delete invalid downloads
+
                     final String sha1 =
-                            digest != null ? StringUtils.bytesToHex(digest.digest()).toLowerCase(Locale.US) : null;
+                            digest != null ? BaseEncoding.base16().encode(digest.digest()).toLowerCase(Locale.US) :
+                                    null;
                     if (size == -1 || (resource.getResourceSize() != -1 && size != resource.getResourceSize()) ||
                             (sha1 != null && !sha1.equals(resource.getResourceSha1()))) {
                         f.delete();
@@ -704,7 +706,7 @@ public final class ResourceManager {
         for (int i = 0; i < 10; i++) {
             final byte[] buf = new byte[len];
             NAME_RNG.nextBytes(buf);
-            final File f = new File(dir, StringUtils.bytesToHex(buf));
+            final File f = new File(dir, BaseEncoding.base16().encode(buf));
             try {
                 if (f.createNewFile()) {
                     return f;
@@ -741,7 +743,7 @@ public final class ResourceManager {
             try {
                 final MessageDigest md = MessageDigest.getInstance("SHA-1");
                 md.update(resource.getRefId().getBytes());
-                return new File(dir, StringUtils.bytesToHex(md.digest()));
+                return new File(dir, BaseEncoding.base16().encode(md.digest()));
             } catch (final Exception e) {
                 // this is odd, log the error and just use a random file
                 LOG.debug("error creating SHA-1 hash of Arclight refId", e);
