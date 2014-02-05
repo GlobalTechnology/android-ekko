@@ -494,8 +494,7 @@ public final class ResourceManager {
                     // delete invalid downloads
 
                     final String sha1 =
-                            digest != null ? BaseEncoding.base16().encode(digest.digest()).toLowerCase(Locale.US) :
-                                    null;
+                            digest != null ? BaseEncoding.base16().lowerCase().encode(digest.digest()) : null;
                     if (size == -1 || (resource.getResourceSize() != -1 && size != resource.getResourceSize()) ||
                             (sha1 != null && !sha1.equals(resource.getResourceSha1()))) {
                         f.delete();
@@ -700,7 +699,7 @@ public final class ResourceManager {
         for (int i = 0; i < 10; i++) {
             final byte[] buf = new byte[len];
             NAME_RNG.nextBytes(buf);
-            final File f = new File(dir, BaseEncoding.base16().encode(buf));
+            final File f = new File(dir, BaseEncoding.base16().lowerCase().encode(buf));
             try {
                 if (f.createNewFile()) {
                     return f;
@@ -734,15 +733,8 @@ public final class ResourceManager {
         if (resource.isFile()) {
             return new File(dir, resource.getResourceSha1().toLowerCase(Locale.US));
         } else if (resource.isArclight()) {
-            try {
-                final MessageDigest md = MessageDigest.getInstance("SHA-1");
-                md.update(resource.getRefId().getBytes());
-                return new File(dir, BaseEncoding.base16().encode(md.digest()));
-            } catch (final Exception e) {
-                // this is odd, log the error and just use a random file
-                LOG.debug("error creating SHA-1 hash of Arclight refId", e);
-                return randomFile(dir, 16);
-            }
+            return new File(dir,
+                            BaseEncoding.base32().omitPadding().lowerCase().encode(resource.getRefId().getBytes()));
         } else if (resource.isEcv()) {
             return new File(dir, Long.toString(resource.getVideoId()));
         } else if (resource.isUri()) {
