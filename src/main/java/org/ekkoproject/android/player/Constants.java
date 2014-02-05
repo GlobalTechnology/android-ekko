@@ -23,9 +23,15 @@ public final class Constants {
     public static final String STATE_GUID =  Constants.class.getPackage().getName() + ".STATE_GUID";
 
     public static final LicensedProject[] LICENSED_PROJECTS = new LicensedProject[] {
-            new LicensedProject("ViewPagerIndicator", null, "http://viewpagerindicator.com/", License.APACHE2),
+            new LicensedProject("Android Support Library", null,
+                                "http://developer.android.com/tools/support-library/index.html", License.APACHE2),
+            new LicensedProject("Guava", null, "https://code.google.com/p/guava-libraries/", License.APACHE2),
             new LicensedProject("showlicense", null, "https://github.com/behumble/showlicense", License.APACHE2),
             new LicensedProject("SLF4J", null, "http://www.slf4j.org/", License.MIT),
+            new LicensedProject("ViewPagerIndicator", null, "http://viewpagerindicator.com/", License.APACHE2),
+            // This is a best guess about the license, I couldn't find a license for the library, just for code samples
+            new LicensedProject("YouTube Android Player API", null,
+                                "https://developers.google.com/youtube/android/player/", License.APACHE2),
     };
 
     /** XML constants */
