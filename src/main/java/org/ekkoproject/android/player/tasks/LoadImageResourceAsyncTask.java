@@ -13,7 +13,6 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.services.ResourceManager;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -21,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitmap> {
-    private static final Executor LOAD_IMAGE_THREAD_POOL;
+    private static final ThreadPoolExecutor LOAD_IMAGE_THREAD_POOL;
 
     static {
         final ThreadFactory tf = new ThreadFactory() {
@@ -33,7 +32,8 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
             }
         };
         LOAD_IMAGE_THREAD_POOL =
-                new ThreadPoolExecutor(3, 7, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), tf);
+                new ThreadPoolExecutor(7, 7, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), tf);
+        LOAD_IMAGE_THREAD_POOL.allowCoreThreadTimeOut(true);
     }
 
     private final ResourceManager mResources;
