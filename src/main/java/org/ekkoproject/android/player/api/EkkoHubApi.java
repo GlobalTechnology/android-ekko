@@ -206,13 +206,13 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
         return -1;
     }
 
-    public long downloadResource(final Resource resource, final OutputStream out)
+    public long downloadResource(final Resource resource, final boolean thumbnail, final OutputStream out)
             throws ApiSocketException, InvalidSessionApiException {
         if (resource != null) {
             if (resource.isFile()) {
                 return this.downloadFileResource(resource, out);
             } else if (resource.isEcv()) {
-                return this.downloadEcvResource(resource, false, out);
+                return this.downloadEcvResource(resource, thumbnail, out);
             }
         }
 

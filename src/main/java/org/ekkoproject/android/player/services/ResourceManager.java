@@ -469,10 +469,8 @@ public final class ResourceManager {
                     // download the resource
                     switch (resource.getType()) {
                         case FILE:
-                            size = this.api.downloadFileResource(resource, out);
-                            break;
                         case ECV:
-                            size = this.api.downloadEcvResource(resource, thumb, out);
+                            size = this.api.downloadResource(resource, thumb, out);
                             break;
                         case ARCLIGHT:
                             size = this.arclightApi.downloadAsset(resource.getRefId(), thumb, out);
