@@ -3,7 +3,7 @@ package org.ekkoproject.android.player.sync;
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.EXTRA_GUID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
-import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
+import static org.ekkoproject.android.player.services.ResourceManager.FLAG_TYPE_IMAGE;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,35 +14,37 @@ import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.app.ThreadedIntentService;
 import org.ccci.gto.android.common.db.AbstractDao.Transaction;
-import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.model.Permission;
+import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.services.ManifestManager;
+import org.ekkoproject.android.player.services.ResourceManager;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.thekey.android.TheKey;
-
 public class EkkoSyncService extends ThreadedIntentService {
     // actions this service can broadcast
-    public static final String ACTION_UPDATE_COURSES = "org.ekkoproject.android.player.sync.EkkoSyncService.UPDATE_COURSES";
+    public static final String ACTION_UPDATE_COURSES = EkkoSyncService.class.getName() + ".ACTION_UPDATE_COURSES";
 
     // data passed to this service in Intents
-    public static final String EXTRA_SYNCTYPE = "org.ekkoproject.android.player.sync.EkkoSyncService.SYNCTYPE";
+    public static final String EXTRA_SYNCTYPE = EkkoSyncService.class.getName() + ".EXTRA_SYNCTYPE";
+    public static final String EXTRA_RESOURCE = EkkoSyncService.class.getName() + ".EXTRA_RESOURCE";
+    public static final String EXTRA_IMAGE_RESOURCE = EkkoSyncService.class.getName() + ".EXTRA_IMAGE_RESOURCE";
 
     public static final int SYNCTYPE_COURSES = 1;
     public static final int SYNCTYPE_COURSE = 2;
     public static final int SYNCTYPE_MANIFEST = 3;
+    public static final int SYNCTYPE_RESOURCE = 4;
 
     private EkkoDao dao;
     private ManifestManager manifestManager;
-    private TheKey thekey;
+    private ResourceManager mResources;
 
     public EkkoSyncService() {
         super("ekko_sync_service");
@@ -75,14 +77,24 @@ public class EkkoSyncService extends ThreadedIntentService {
         context.startService(intent);
     }
 
-    /** BEGIN lifecycle */
+    public static void syncResource(final Context context, final long courseId, final String resourceId,
+                                    final boolean image) {
+        final Intent intent = new Intent(context, EkkoSyncService.class);
+        intent.putExtra(EXTRA_SYNCTYPE, SYNCTYPE_RESOURCE);
+        intent.putExtra(EXTRA_COURSEID, courseId);
+        intent.putExtra(EXTRA_RESOURCE, resourceId);
+        intent.putExtra(EXTRA_IMAGE_RESOURCE, image);
+        context.startService(intent);
+    }
+
+    /* BEGIN lifecycle */
 
     @Override
     public void onCreate() {
         super.onCreate();
         this.dao = EkkoDao.getInstance(this);
         this.manifestManager = ManifestManager.getInstance(this);
-        this.thekey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);
+        mResources = ResourceManager.getInstance(this);
     }
 
     @Override
@@ -101,6 +113,11 @@ public class EkkoSyncService extends ThreadedIntentService {
                 case SYNCTYPE_MANIFEST:
                     this.syncManifest(guid, courseId);
                     break;
+                case SYNCTYPE_RESOURCE:
+                    final String resourceId = intent.getStringExtra(EXTRA_RESOURCE);
+                    final boolean image = intent.getBooleanExtra(EXTRA_IMAGE_RESOURCE, false);
+                    this.syncResource(courseId, resourceId, image);
+                    break;
             }
         } catch (final ApiSocketException e) {
             EkkoHubApi.broadcastConnectionError(this);
@@ -116,11 +133,11 @@ public class EkkoSyncService extends ThreadedIntentService {
         this.manifestManager = null;
     }
 
-    /** END lifecycle */
+    /* END lifecycle */
 
     /**
      * synchronize all available courses from the hub
-     * 
+     *
      * @throws ApiSocketException
      * @throws InvalidSessionApiException
      */
@@ -176,7 +193,7 @@ public class EkkoSyncService extends ThreadedIntentService {
             }
         }
 
-        if(!error) {
+        if (!error) {
             // delete any permissions not returned
             final Transaction tx = this.dao.beginTransaction();
             try {
@@ -226,6 +243,12 @@ public class EkkoSyncService extends ThreadedIntentService {
         }
     }
 
+    private void syncResource(final long courseId, final String resourceId, final boolean image) {
+        final Resource resource = mResources.resolveResource(courseId, resourceId);
+        final int flags = (image ? FLAG_TYPE_IMAGE : 0);
+        mResources.getFile(resource, flags);
+    }
+
     private EkkoHubApi getApi(final String guid) {
         return EkkoHubApi.getInstance(this, guid);
     }
@@ -259,5 +282,8 @@ public class EkkoSyncService extends ThreadedIntentService {
 
         // schedule a manifest sync
         EkkoSyncService.syncManifest(this, guid, course.getId());
+
+        // schedule an automated download of the banner resource
+        EkkoSyncService.syncResource(this, course.getId(), course.getBanner(), true);
     }
 }
