@@ -139,12 +139,21 @@ public class Course {
     }
 
     public void setEnrollmentType(final String type) {
-        if ("disabled".equals(type)) {
-            this.enrollmentType = ENROLLMENT_TYPE_DISABLED;
-        } else if ("open".equals(type)) {
-            this.enrollmentType = ENROLLMENT_TYPE_OPEN;
-        } else if ("approval".equals(type)) {
-            this.enrollmentType = ENROLLMENT_TYPE_APPROVAL;
+        if(type != null) {
+            switch (type) {
+                case "disabled":
+                    this.enrollmentType = ENROLLMENT_TYPE_DISABLED;
+                    break;
+                case "open":
+                    this.enrollmentType = ENROLLMENT_TYPE_OPEN;
+                    break;
+                case "approval":
+                    this.enrollmentType = ENROLLMENT_TYPE_APPROVAL;
+                    break;
+                default:
+                    this.enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
+                    break;
+            }
         } else {
             this.enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
         }
