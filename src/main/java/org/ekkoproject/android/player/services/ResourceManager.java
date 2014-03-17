@@ -234,7 +234,7 @@ public final class ResourceManager {
             @TargetApi(Build.VERSION_CODES.KITKAT)
             protected int sizeOf(final BitmapKey key, final Bitmap bitmap) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    return bitmap.getAllocationByteCount();
+                    return bitmap.getAllocationByteCount() / 1024;
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                     return bitmap.getByteCount() / 1024;
                 } else {
