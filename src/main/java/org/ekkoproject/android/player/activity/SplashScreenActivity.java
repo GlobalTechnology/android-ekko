@@ -10,6 +10,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 
+import com.newrelic.agent.android.NewRelic;
+
 import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
@@ -18,6 +20,7 @@ public class SplashScreenActivity extends Activity {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NewRelic.withApplicationToken(this.getString(R.string.newRelicApiKey)).start(this.getApplication());
         final View view = View.inflate(this, R.layout.activity_splash_screen, null);
         setContentView(view);
 
