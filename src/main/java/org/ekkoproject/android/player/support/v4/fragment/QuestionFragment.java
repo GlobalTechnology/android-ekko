@@ -26,12 +26,15 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
     private static final String ARG_QUESTIONID = QuestionFragment.class.getName() + ".ARG_QUESTIONID";
     private static final String ARG_SHOWANSWER = QuestionFragment.class.getName() + ".ARG_SHOWANSWER";
 
-    private String questionId = null;
-    private boolean showAnswers = false;
-
     private TextView questionView = null;
     private ListView optionsView = null;
     private ManifestQuizQuestionOptionAdapter optionsViewAdapter = null;
+
+    /* final attributes */
+    private String questionId = null;
+
+    /* non-final attributes */
+    private boolean showAnswers = false;
 
     public static QuestionFragment newInstance(final String guid, final long courseId, final String quizId,
                                                final String questionId, final boolean showAnswer) {
@@ -64,13 +67,13 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedState) {
         return inflater.inflate(R.layout.fragment_quiz_question, container, false);
     }
 
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onActivityCreated(final Bundle savedState) {
+        super.onActivityCreated(savedState);
         this.findViews();
         this.setupOptionsView();
     }

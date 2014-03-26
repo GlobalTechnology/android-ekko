@@ -32,13 +32,13 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
     /* BEGIN lifecycle */
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedState) {
         return inflater.inflate(R.layout.fragment_quiz, container, false);
     }
 
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onActivityCreated(final Bundle savedState) {
+        super.onActivityCreated(savedState);
         this.findViews();
         this.setupContentPager();
     }

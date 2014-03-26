@@ -2,20 +2,19 @@ package org.ekkoproject.android.player.adapter;
 
 import static org.ekkoproject.android.player.Constants.DEFAULT_LAYOUT;
 
-import java.util.Collections;
-import java.util.List;
+import android.content.Context;
+import android.text.Html;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.TextView;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Option;
 import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.services.CourseManager;
 
-import android.content.Context;
-import android.text.Html;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.TextView;
+import java.util.Collections;
+import java.util.List;
 
 public class ManifestQuizQuestionOptionAdapter extends AbstractManifestQuizQuestionAdapter<Option> {
     private static final List<Option> NO_OPTIONS = Collections.emptyList();
@@ -109,8 +108,6 @@ public class ManifestQuizQuestionOptionAdapter extends AbstractManifestQuizQuest
         final View optionView = v.findViewById(R.id.option);
         if (optionView instanceof TextView) {
             ((TextView) optionView).setText(Html.fromHtml(option.getValue()));
-        } else if (optionView instanceof CheckBox) {
-            ((CheckBox) optionView).setText(Html.fromHtml(option.getValue()));
         }
     }
 
