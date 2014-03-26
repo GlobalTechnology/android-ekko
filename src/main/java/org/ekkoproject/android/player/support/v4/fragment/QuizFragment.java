@@ -1,6 +1,12 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Pair;
@@ -8,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.ccci.gto.android.common.util.BroadcastUtils;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestQuizContentPagerAdapter;
 import org.ekkoproject.android.player.model.Manifest;
@@ -17,7 +24,7 @@ import java.util.Set;
 public class QuizFragment extends AbstractContentFragment implements AbstractContentFragment.OnNavigateListener {
     private ViewPager contentPager = null;
 
-    private boolean showAnswers = false;
+    private boolean mShowAnswers = false;
 
     public static QuizFragment newInstance(final String guid, final long courseId, final String quizId) {
         final QuizFragment fragment = new QuizFragment();
@@ -113,24 +120,63 @@ public class QuizFragment extends AbstractContentFragment implements AbstractCon
         if (this.contentPager != null) {
             final ManifestQuizContentPagerAdapter adapter =
                     new ManifestQuizContentPagerAdapter(getChildFragmentManager(), getGuid(), getContentId());
-            adapter.setShowAnswers(this.showAnswers);
             this.contentPager.setAdapter(adapter);
         }
     }
 
-    public void showAnswers() {
-        this.showAnswers = true;
-        if (this.contentPager != null) {
-            final PagerAdapter adapter = this.contentPager.getAdapter();
-            if (adapter instanceof ManifestQuizContentPagerAdapter) {
-                ((ManifestQuizContentPagerAdapter) adapter).setShowAnswers(this.showAnswers);
-            }
+    public void setShowAnswers(final boolean showAnswers) {
+        if (mShowAnswers != showAnswers) {
+            mShowAnswers = showAnswers;
+
+            // broadcast the new mShowAnswers state to all existing fragments
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(
+                    Broadcasts.showAnswersIntent(this.getCourseId(), this.getContentId(), this.mShowAnswers));
         }
+    }
+
+    public boolean getShowAnswers() {
+        return mShowAnswers;
     }
 
     @Override
     protected Pair<Integer, Integer> getProgress(final Manifest manifest, final Set<String> progress) {
         // we don't have progress for a QuizFragment
         return null;
+    }
+
+    public static final class Broadcasts {
+        private static final String ACTION_SHOW_ANSWERS = QuizFragment.class.getName() + ".ACTION_SHOW_ANSWERS";
+        private static final String EXTRA_SHOW_ANSWERS = QuizFragment.class.getName() + ".EXTRA_SHOW_ANSWERS";
+
+        private static final Uri BASE_COURSE = Uri.parse("ekko://course/");
+
+        private static Uri quizUri(final long courseId, final String quizId) {
+            return BASE_COURSE.buildUpon().appendPath(Long.toString(courseId)).appendPath("quiz").appendPath(quizId)
+                    .build();
+        }
+
+        /* Intents */
+        private static Intent showAnswersIntent(final long courseId, final String quizId, final boolean showAnswers) {
+            return new Intent(ACTION_SHOW_ANSWERS, quizUri(courseId, quizId)).putExtra(EXTRA_SHOW_ANSWERS, showAnswers);
+        }
+
+        /* Intent Filters */
+        public static IntentFilter showAnswersFilter(final long courseId, final String quizId) {
+            final IntentFilter filter = new IntentFilter(ACTION_SHOW_ANSWERS);
+            BroadcastUtils.addDataUri(filter, quizUri(courseId, quizId));
+            return filter;
+        }
+    }
+
+    public abstract static class QuizBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final String action = intent.getAction();
+            if (Broadcasts.ACTION_SHOW_ANSWERS.equals(action)) {
+                this.onShowAnswers(intent.getBooleanExtra(Broadcasts.EXTRA_SHOW_ANSWERS, false));
+            }
+        }
+
+        protected abstract void onShowAnswers(boolean showAnswers);
     }
 }

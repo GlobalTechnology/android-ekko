@@ -26,12 +26,12 @@ public class ManifestQuizQuestionOptionAdapter extends AbstractManifestQuizQuest
 
     private int answerLayout = DEFAULT_LAYOUT;
 
-    private boolean showAnswers;
+    private boolean mShowAnswers;
 
     public ManifestQuizQuestionOptionAdapter(final Context context, final String quizId, final String questionId,
             final boolean showAnswers) {
         super(context, quizId, questionId);
-        this.showAnswers = showAnswers;
+        mShowAnswers = showAnswers;
     }
 
     /* BEGIN lifecycle */
@@ -54,8 +54,8 @@ public class ManifestQuizQuestionOptionAdapter extends AbstractManifestQuizQuest
     }
 
     public void setShowAnswers(final boolean showAnswers) {
-        final boolean changed = this.showAnswers != showAnswers;
-        this.showAnswers = showAnswers;
+        final boolean changed = mShowAnswers != showAnswers;
+        mShowAnswers = showAnswers;
         if (changed) {
             this.notifyDataSetChanged();
         }
@@ -91,7 +91,7 @@ public class ManifestQuizQuestionOptionAdapter extends AbstractManifestQuizQuest
 
     @Override
     public int getItemViewType(final int position) {
-        if (this.showAnswers && this.options.get(position).isAnswer()) {
+        if (mShowAnswers && this.options.get(position).isAnswer()) {
             return VIEW_TYPE_ANSWER;
         }
 
@@ -115,7 +115,7 @@ public class ManifestQuizQuestionOptionAdapter extends AbstractManifestQuizQuest
     protected int getLayout(final int viewType) {
         switch (viewType) {
         case VIEW_TYPE_ANSWER:
-            if (this.showAnswers && this.answerLayout != DEFAULT_LAYOUT) {
+            if (mShowAnswers && this.answerLayout != DEFAULT_LAYOUT) {
                 return this.answerLayout;
             }
         case VIEW_TYPE_DEFAULT:

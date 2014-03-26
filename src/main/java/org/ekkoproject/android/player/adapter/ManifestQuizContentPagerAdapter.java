@@ -19,8 +19,6 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
 
     private List<Question> questions = NO_QUESTIONS;
 
-    private boolean showAnswers = false;
-
     public ManifestQuizContentPagerAdapter(final FragmentManager fm, final String guid, final String quizId) {
         super(fm, guid, quizId);
     }
@@ -39,14 +37,6 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
 
     /* END lifecycle */
 
-    public void setShowAnswers(final boolean showAnswers) {
-        final boolean stateChanged = showAnswers != this.showAnswers;
-        this.showAnswers = showAnswers;
-        if (stateChanged) {
-            this.notifyDataSetChanged();
-        }
-    }
-
     @Override
     public int getCount() {
         return this.questions.size() + 1;
@@ -60,7 +50,7 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
 
         if (position >= 0 && position < this.questions.size()) {
             final String questionId = this.questions.get(position).getId();
-            return QuestionFragment.newInstance(mGuid, courseId, quizId, questionId, this.showAnswers);
+            return QuestionFragment.newInstance(mGuid, courseId, quizId, questionId);
         } else if (this.questions.size() == position) {
             return QuizResultsFragment.newInstance(mGuid, courseId, quizId);
         } else {
@@ -82,9 +72,6 @@ public class ManifestQuizContentPagerAdapter extends AbstractManifestQuizPagerAd
     @Override
     public int getItemPosition(final Object fragment) {
         if (fragment instanceof QuestionFragment) {
-            // XXX: this is a bit of a hack to push showAnswers updates
-            ((QuestionFragment) fragment).setShowAnswers(this.showAnswers);
-
             // search for this fragment
             final String questionId = ((QuestionFragment) fragment).getQuestionId();
             if (questionId != null) {

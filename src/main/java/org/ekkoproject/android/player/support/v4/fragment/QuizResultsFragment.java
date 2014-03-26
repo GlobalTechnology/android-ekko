@@ -1,7 +1,6 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,9 +61,9 @@ public class QuizResultsFragment extends AbstractContentFragment implements View
                 ((OnNavigateListener) listener).onNavigateNext();
                 break;
             case R.id.show_answers:
-                final Fragment parent = this.getParentFragment();
-                if (parent instanceof QuizFragment) {
-                    ((QuizFragment) parent).showAnswers();
+                final QuizFragment quiz = this.getAncestorFragment(QuizFragment.class);
+                if (quiz != null) {
+                    quiz.setShowAnswers(true);
                 }
                 ((OnNavigateListener) listener).onNavigateFirst();
                 break;

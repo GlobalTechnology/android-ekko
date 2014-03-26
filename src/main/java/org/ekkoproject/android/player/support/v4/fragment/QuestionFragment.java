@@ -1,8 +1,10 @@
 package org.ekkoproject.android.player.support.v4.fragment;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -24,26 +26,25 @@ import java.util.Set;
 
 public class QuestionFragment extends AbstractContentFragment implements AdapterView.OnItemClickListener {
     private static final String ARG_QUESTIONID = QuestionFragment.class.getName() + ".ARG_QUESTIONID";
-    private static final String ARG_SHOWANSWER = QuestionFragment.class.getName() + ".ARG_SHOWANSWER";
 
     private TextView questionView = null;
     private ListView optionsView = null;
     private ManifestQuizQuestionOptionAdapter optionsViewAdapter = null;
+    private BroadcastReceiver mReceiver = null;
 
     /* final attributes */
     private String questionId = null;
 
     /* non-final attributes */
-    private boolean showAnswers = false;
+    private boolean mShowAnswers = false;
 
     public static QuestionFragment newInstance(final String guid, final long courseId, final String quizId,
-                                               final String questionId, final boolean showAnswer) {
+                                               final String questionId) {
         final QuestionFragment fragment = new QuestionFragment();
 
         // handle arguments
         final Bundle args = buildArgs(guid, courseId, quizId);
         args.putString(ARG_QUESTIONID, questionId);
-        args.putBoolean(ARG_SHOWANSWER, showAnswer);
         fragment.setArguments(args);
 
         return fragment;
@@ -58,7 +59,6 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
 
         // process arguments
         final Bundle args = getArguments();
-        this.showAnswers = args.getBoolean(ARG_SHOWANSWER, false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             this.questionId = args.getString(ARG_QUESTIONID, null);
         } else {
@@ -75,7 +75,15 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
     public void onActivityCreated(final Bundle savedState) {
         super.onActivityCreated(savedState);
         this.findViews();
+        this.createBroadcastReceiver();
         this.setupOptionsView();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        this.startBroadcastReceiver();
+        this.syncShowAnswers();
     }
 
     @Override
@@ -104,6 +112,12 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        this.stopBroadcastReceiver();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.clearViews();
@@ -115,11 +129,11 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
         return this.questionId;
     }
 
-    public void setShowAnswers(final boolean showAnswers) {
-        final boolean changed = this.showAnswers != showAnswers;
-        this.showAnswers = showAnswers;
+    void setShowAnswers(final boolean showAnswers) {
+        final boolean changed = mShowAnswers != showAnswers;
+        mShowAnswers = showAnswers;
         if (changed && this.optionsViewAdapter != null) {
-            this.optionsViewAdapter.setShowAnswers(this.showAnswers);
+            this.optionsViewAdapter.setShowAnswers(mShowAnswers);
         }
     }
 
@@ -135,11 +149,40 @@ public class QuestionFragment extends AbstractContentFragment implements Adapter
         this.optionsViewAdapter = null;
     }
 
+    private void syncShowAnswers() {
+        final QuizFragment quiz = this.getAncestorFragment(QuizFragment.class);
+        if (quiz != null) {
+            this.setShowAnswers(quiz.getShowAnswers());
+        }
+    }
+
+    private void createBroadcastReceiver() {
+        mReceiver = new QuizFragment.QuizBroadcastReceiver() {
+            @Override
+            protected void onShowAnswers(final boolean showAnswers) {
+                setShowAnswers(showAnswers);
+            }
+        };
+    }
+
+    private void startBroadcastReceiver() {
+        if (mReceiver != null) {
+            LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(mReceiver, QuizFragment.Broadcasts
+                    .showAnswersFilter(getCourseId(), getContentId()));
+        }
+    }
+
+    private void stopBroadcastReceiver() {
+        if (mReceiver != null) {
+            LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(mReceiver);
+        }
+    }
+
     private void setupOptionsView() {
         if (this.optionsView != null) {
             // attach the data adapter
             this.optionsViewAdapter = new ManifestQuizQuestionOptionAdapter(getActivity(), this.getContentId(),
-                    this.questionId, this.showAnswers);
+                                                                            this.questionId, mShowAnswers);
             this.optionsViewAdapter.setLayout(R.layout.list_item_quiz_question_option);
             this.optionsViewAdapter.setAnswerLayout(R.layout.list_item_quiz_question_option_answer);
             this.optionsView.setAdapter(this.optionsViewAdapter);
