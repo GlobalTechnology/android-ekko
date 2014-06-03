@@ -12,9 +12,10 @@ import android.view.animation.Animation.AnimationListener;
 
 import com.newrelic.agent.android.NewRelic;
 
-import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
+
+import me.thekey.android.lib.TheKeyImpl;
 
 public class SplashScreenActivity extends Activity {
     @Override

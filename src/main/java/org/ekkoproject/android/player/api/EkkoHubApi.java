@@ -14,7 +14,6 @@ import org.ccci.gto.android.common.api.AbstractGtoSmxApi;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.util.IOUtils;
-import org.ccci.gto.android.thekey.TheKeyImpl;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
@@ -31,6 +30,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
+
+import me.thekey.android.lib.TheKeyImpl;
 
 public final class EkkoHubApi extends AbstractGtoSmxApi {
     private static final Logger LOG = LoggerFactory.getLogger(EkkoHubApi.class);

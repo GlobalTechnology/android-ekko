@@ -31,8 +31,6 @@ import android.widget.ListView;
 import com.thinkfree.showlicense.android.ShowLicense;
 
 import org.ccci.gto.android.common.adapter.MenuListAdapter;
-import org.ccci.gto.android.thekey.TheKeyImpl;
-import org.ccci.gto.android.thekey.support.v4.dialog.LoginDialogFragment;
 import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.support.v4.fragment.CourseFragment;
@@ -40,7 +38,9 @@ import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
 import me.thekey.android.TheKey;
+import me.thekey.android.lib.TheKeyImpl;
 import me.thekey.android.lib.content.TheKeyBroadcastReceiver;
+import me.thekey.android.lib.support.v4.dialog.LoginDialogFragment;
 
 public class MainActivity extends ActionBarActivity implements OnNavigationListener {
     private static final String STATE_DRAWER_INDICATOR = MainActivity.class + ".STATE_DRAWER_INDICATOR";

@@ -7,7 +7,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import org.ccci.gto.android.thekey.TheKeyImpl;
+import me.thekey.android.lib.TheKeyImpl;
 
 public class EkkoDbHelper extends SQLiteOpenHelper {
     /*
