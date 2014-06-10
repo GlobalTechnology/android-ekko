@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.0'
+        classpath 'com.android.tools.build:gradle:0.11.1'
         classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.378.0'
 //        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
@@ -29,7 +29,7 @@ def generateVersionCode(version) {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
+    buildToolsVersion "19.1"
 
     defaultConfig {
         versionName project.version
@@ -62,7 +62,7 @@ android {
 
     buildTypes {
         debug {
-            packageNameSuffix ".debug"
+            applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
 
             buildConfigField "String", "NEW_RELIC_API_KEY", "\"AA10ca156dd8c21018710ba9ba8fc4bf7e019aa80a\""
@@ -124,16 +124,16 @@ dependencies {
 apply from: 'maven_publish.gradle'
 afterEvaluate { project ->
     artifacts {
-        archives(file("build/apk/ekko-production-release.apk")) {
+        archives(file("build/outputs/apk/ekko-production-release.apk")) {
             type 'apk'
             builtBy assembleProductionRelease
         }
-        archives(file("build/proguard/production/release/mapping.txt")) {
+        archives(file("build/outputs/proguard/production/release/mapping.txt")) {
             classifier 'mapping'
             type 'txt'
             builtBy proguardProductionRelease
         }
-        archives androidSourcesJar
-        archives androidJavadocsJar
+//        archives androidSourcesJar
+//        archives androidJavadocsJar
     }
 }
