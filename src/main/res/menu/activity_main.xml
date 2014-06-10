@@ -7,7 +7,6 @@
             android:id="@+id/login"
             android:visible="false"
             android:orderInCategory="0"
-            android:showAsAction="never"
             custom:showAsAction="never"
             android:title="@string/action_login"/>
         <item
@@ -15,14 +14,12 @@
             android:visible="false"
             android:icon="@drawable/ic_action_logout_light"
             android:orderInCategory="0"
-            android:showAsAction="never"
             custom:showAsAction="never"
             android:title="@string/action_logout"/>
         <item
             android:id="@+id/refresh"
             android:icon="@drawable/ic_action_reload"
             android:orderInCategory="10"
-            android:showAsAction="ifRoom"
             custom:showAsAction="ifRoom"
             android:title="@string/action_refresh"/>
     </group>
