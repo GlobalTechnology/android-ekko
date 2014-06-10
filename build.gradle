@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.9.0'
-        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.330.0'
+        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.378.0'
 //        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
 }
@@ -114,7 +114,7 @@ dependencies {
     compile group: 'me.thekey.android',      name: 'thekey-api',                 version: '0.6.0-SNAPSHOT', ext: 'jar'
     compile group: 'me.thekey.android',      name: 'thekey-lib',                 version: '0.6.0-SNAPSHOT', ext: 'aar'
 
-    compile 'com.newrelic.agent.android:android-agent:3.330.0'
+    compile 'com.newrelic.agent.android:android-agent:3.378.0'
 
 //    testCompile 'junit:junit:4.11'
 //    testCompile 'org.robolectric:robolectric:2.3'
