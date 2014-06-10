@@ -118,8 +118,13 @@ public class CourseListFragment extends AbstractListFragment {
         super.onViewCreated(view, savedInstanceState);
         this.findViews();
         this.setupListAdapter();
-        this.startLoaders();
         this.needsRestore = true;
+    }
+
+    @Override
+    public void onActivityCreated(final Bundle savedState) {
+        super.onActivityCreated(savedState);
+        this.startLoaders();
     }
 
     @Override
