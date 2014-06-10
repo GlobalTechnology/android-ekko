@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.util;
 
+import static org.ekkoproject.android.player.BuildConfig.YOUTUBE_API_KEY;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_UNKNOWN;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_VIMEO;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_YOUTUBE;
@@ -11,7 +12,6 @@ import android.net.Uri;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 import org.ekkoproject.android.player.model.Resource;
-import org.ekkoproject.android.player.R;
 
 import java.util.List;
 import java.util.Locale;
@@ -28,9 +28,8 @@ public final class ResourceUtils {
                 case PROVIDER_YOUTUBE:
                     final String videoId = youtubeExtractVideoId(uri);
                     if (videoId != null) {
-                        return YouTubeStandalonePlayer.createVideoIntent(activity,
-                                                                         activity.getString(R.string.youTubeApiKey),
-                                                                         videoId, 0, true, false);
+                        return YouTubeStandalonePlayer
+                                .createVideoIntent(activity, YOUTUBE_API_KEY, videoId, 0, true, false);
                     }
                 case PROVIDER_UNKNOWN:
                     return new Intent(Intent.ACTION_VIEW, uri);

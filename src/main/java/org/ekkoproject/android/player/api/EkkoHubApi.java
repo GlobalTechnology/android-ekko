@@ -1,7 +1,8 @@
 package org.ekkoproject.android.player.api;
 
 import static java.net.HttpURLConnection.HTTP_OK;
-import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
+import static org.ekkoproject.android.player.BuildConfig.EKKO_SMX_API_URI;
+import static org.ekkoproject.android.player.BuildConfig.THEKEY_CLIENTID;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +15,6 @@ import org.ccci.gto.android.common.api.AbstractGtoSmxApi;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.util.IOUtils;
-import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.CourseList;
 import org.ekkoproject.android.player.model.Resource;
@@ -48,7 +48,7 @@ public final class EkkoHubApi extends AbstractGtoSmxApi {
     private static final Map<String, EkkoHubApi> instances = new HashMap<>();
 
     private EkkoHubApi(final Context context, final String guid) {
-        super(context, TheKeyImpl.getInstance(context, THEKEY_CLIENTID), PREFFILE_EKKOHUB, R.string.ekkoSmxUri, guid);
+        super(context, TheKeyImpl.getInstance(context, THEKEY_CLIENTID), PREFFILE_EKKOHUB, EKKO_SMX_API_URI, guid);
         this.setIncludeAppVersion(true);
         this.setAllowGuest(true);
     }

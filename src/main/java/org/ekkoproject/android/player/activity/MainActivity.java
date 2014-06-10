@@ -1,10 +1,10 @@
 package org.ekkoproject.android.player.activity;
 
 import static org.ccci.gto.android.common.util.ThreadUtils.isUiThread;
+import static org.ekkoproject.android.player.BuildConfig.THEKEY_CLIENTID;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.LICENSED_PROJECTS;
 import static org.ekkoproject.android.player.Constants.STATE_GUID;
-import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.annotation.TargetApi;
 import android.content.Context;

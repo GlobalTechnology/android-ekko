@@ -1,6 +1,8 @@
 package org.ekkoproject.android.player.api;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.ekkoproject.android.player.BuildConfig.ARCLIGHT_API_KEY;
+import static org.ekkoproject.android.player.BuildConfig.ARCLIGHT_API_URI;
 
 import android.net.Uri;
 import android.util.Pair;
@@ -30,8 +32,7 @@ import java.util.Map;
 public class ArclightApi {
     private static final Logger LOG = LoggerFactory.getLogger(ArclightApi.class);
 
-    private static final String API_KEY = "52d40edd323002.56665774";
-    private static final Uri API_URI = Uri.parse("https://api.arclight.org/");
+    private static final Uri API_URI = Uri.parse(ARCLIGHT_API_URI);
     private static final int DEFAULT_ATTEMPTS = 3;
 
     private static final ArclightApi INSTANCE = new ArclightApi();
@@ -56,7 +57,7 @@ public class ArclightApi {
                 // generate uri for this request
                 final Uri.Builder uri = API_URI.buildUpon();
                 uri.appendPath(service);
-                uri.appendQueryParameter("apiKey", API_KEY);
+                uri.appendQueryParameter("apiKey", ARCLIGHT_API_KEY);
                 uri.appendQueryParameter("responseType", "JSON");
                 for (final Pair<String, String> param : params) {
                     uri.appendQueryParameter(param.first, param.second);

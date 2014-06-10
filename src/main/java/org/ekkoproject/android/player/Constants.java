@@ -4,8 +4,6 @@ import com.thinkfree.showlicense.License;
 import com.thinkfree.showlicense.LicensedProject;
 
 public final class Constants {
-    public final static long THEKEY_CLIENTID = 85613451684391165L;
-
     public final static long INVALID_ID = Long.MIN_VALUE;
     public final static long INVALID_COURSE = -1;
     public final static int DEFAULT_LAYOUT = 0;

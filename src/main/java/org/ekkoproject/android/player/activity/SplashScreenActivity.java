@@ -1,7 +1,8 @@
 package org.ekkoproject.android.player.activity;
 
+import static org.ekkoproject.android.player.BuildConfig.NEW_RELIC_API_KEY;
+import static org.ekkoproject.android.player.BuildConfig.THEKEY_CLIENTID;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
-import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -21,7 +22,7 @@ public class SplashScreenActivity extends Activity {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NewRelic.withApplicationToken(this.getString(R.string.newRelicApiKey)).start(this.getApplication());
+        NewRelic.withApplicationToken(NEW_RELIC_API_KEY).start(this.getApplication());
         final View view = View.inflate(this, R.layout.activity_splash_screen, null);
         setContentView(view);
 

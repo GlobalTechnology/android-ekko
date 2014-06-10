@@ -1,7 +1,7 @@
 package org.ekkoproject.android.player.db;
 
+import static org.ekkoproject.android.player.BuildConfig.THEKEY_CLIENTID;
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
-import static org.ekkoproject.android.player.Constants.THEKEY_CLIENTID;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
