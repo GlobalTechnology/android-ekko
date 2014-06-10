@@ -8,13 +8,13 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:0.9.0'
         classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.330.0'
-        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
+//        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
 }
 
 apply plugin: 'android'
 apply plugin: 'newrelic'
-apply plugin: 'android-test'
+//apply plugin: 'android-test'
 
 group 'org.ccci.gto.android'
 version '0.9.4-SNAPSHOT'
@@ -105,9 +105,9 @@ dependencies {
 
     compile 'com.newrelic.agent.android:android-agent:3.330.0'
 
-    testCompile 'junit:junit:4.11'
-    testCompile 'org.robolectric:robolectric:2.1.+'
-    testCompile 'com.squareup:fest-android:1.0.+'
+//    testCompile 'junit:junit:4.11'
+//    testCompile 'org.robolectric:robolectric:2.3'
+//    testCompile 'com.squareup:fest-android:1.0.+'
 }
 
 apply from: 'maven_publish.gradle'
