@@ -4,16 +4,10 @@ buildscript {
         maven {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/comnewrelic-1153'
-        }
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/comnewrelic-1154'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.11.1'
-        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.402.0'
+        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.407.0'
 //        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
 }
@@ -101,9 +95,6 @@ repositories {
             password gcxMavenRepositoryPassword
         }
     }
-    maven {
-        url 'https://oss.sonatype.org/content/repositories/comnewrelic-1153'
-    }
     // This is a temporary workaround until ViewPagerIndicator is distributed as an aar
     maven {
         url 'https://github.com/Dahlgren/vpi-aar/raw/master/'
@@ -123,7 +114,7 @@ dependencies {
     compile group: 'me.thekey.android',      name: 'thekey-api',                 version: '0.6.0',          ext: 'jar'
     compile group: 'me.thekey.android',      name: 'thekey-lib',                 version: '0.6.0',          ext: 'aar'
 
-    compile 'com.newrelic.agent.android:android-agent:3.402.0'
+    compile 'com.newrelic.agent.android:android-agent:3.407.0'
 
 //    testCompile 'junit:junit:4.11'
 //    testCompile 'org.robolectric:robolectric:2.3'
