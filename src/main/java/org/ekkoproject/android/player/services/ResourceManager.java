@@ -590,7 +590,7 @@ public final class ResourceManager {
             if (this.isValidEcvResource(resource)) {
                 return this.api.getEcvStreamUri(resource, type);
             } else if (this.isValidArclightResource(resource)) {
-                return this.arclightApi.getAssetStreamUri(resource.getRefId());
+                return this.arclightApi.getAssetStreamUri(resource.getRefId(), type);
             }
         } catch (final Exception ignored) {
         }

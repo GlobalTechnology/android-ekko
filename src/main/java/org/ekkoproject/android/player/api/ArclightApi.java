@@ -9,6 +9,7 @@ import android.util.Pair;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.util.IOUtils;
+import org.ekkoproject.android.player.services.ResourceManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -115,7 +116,7 @@ public class ArclightApi {
         final List<Pair<String, String>> params = new ArrayList<>();
         params.add(Pair.create("refId", refId));
         if (requestPlayer) {
-            params.add(Pair.create("requestPlayer", "Android"));
+            params.add(Pair.create("requestPlayer", "AndroidHLS"));
         }
         if (downloadUrls) {
             params.add(Pair.create("getDownloadUrl", "true"));
@@ -133,7 +134,7 @@ public class ArclightApi {
         return null;
     }
 
-    public Uri getAssetStreamUri(final String refId) throws ApiSocketException {
+    public Uri getAssetStreamUri(final String refId, final ResourceManager.StreamType type) throws ApiSocketException {
         final JSONObject json = this.getAssetDetails(refId, true, false);
 
         try {
@@ -142,12 +143,25 @@ public class ArclightApi {
             Uri uri = null;
             for (int i = 0; i < renditions.length(); i++) {
                 final JSONObject rendition = renditions.getJSONObject(i).getJSONObject("rendition");
-                final int bitrate = rendition.getInt("videoBitrate");
-                if (bitrate > bandwidth) {
-                    try {
-                        uri = Uri.parse(rendition.getString("uri"));
-                        bandwidth = bitrate;
-                    } catch (final Exception ignored) {
+                final String container = rendition.optString("videoContainer");
+                if (container != null) {
+                    switch (container) {
+                        case "MP4":
+                            final int bitrate = rendition.getInt("videoBitrate");
+                            if (bitrate > bandwidth) {
+                                try {
+                                    uri = Uri.parse(rendition.getString("uri"));
+                                    bandwidth = bitrate;
+                                } catch (final Exception ignored) {
+                                }
+                            }
+                            break;
+                        case "M2TS":
+                            if (type == ResourceManager.StreamType.HLS) {
+                                //XXX: disabled for now due to invalid HLS master playlist
+//                                return Uri.parse(rendition.getString("uri"));
+                            }
+                            break;
                     }
                 }
             }
