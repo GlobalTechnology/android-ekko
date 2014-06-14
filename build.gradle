@@ -17,7 +17,7 @@ apply plugin: 'newrelic'
 //apply plugin: 'android-test'
 
 group 'org.ccci.gto.android'
-version '0.9.4-SNAPSHOT'
+version '0.9.4'
 
 def generateVersionCode(version) {
     def code = 0;
