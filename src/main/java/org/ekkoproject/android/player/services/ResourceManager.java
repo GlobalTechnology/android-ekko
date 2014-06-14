@@ -568,18 +568,19 @@ public final class ResourceManager {
 
         // determine stream type
         final StreamType type;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // HLS dynamic stream selection is broke in 4.4
-            // https://code.google.com/p/android/issues/detail?id=63346
-            type = StreamType.SINGLE_HLS;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            // HLSv3 support was added in ICS, use MP4 for previous versions of Android
+            // http://developer.android.com/guide/appendix/media-formats.html
+            type = StreamType.MP4;
 //        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 //            // multiple issues with HLS before 4.2
 //            // http://www.jwplayer.com/blog/the-pain-of-live-streaming-on-android/
 //            type = StreamType.MP4;
-        } else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            // HLSv3 support was added in ICS, use MP4 for previous versions of Android
-            // http://developer.android.com/guide/appendix/media-formats.html
-            type = StreamType.MP4;
+        } else if (Build.VERSION.RELEASE.equals("4.4.1") || Build.VERSION.RELEASE.equals("4.4.2")) {
+            // HLS dynamic stream selection is broke in 4.4 (fixed in 4.4.3)
+            // we can still use a SINGLE HLS stream when available
+            // https://code.google.com/p/android/issues/detail?id=63346
+            type = StreamType.SINGLE_HLS;
         } else {
             // we want to default to regular HLS
             type = StreamType.HLS;
