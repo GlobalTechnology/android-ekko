@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
@@ -129,6 +130,11 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
                                 case PROVIDER_UNKNOWN:
                                     final Intent intent = providerIntent(getActivity(), resource);
                                     if (intent != null) {
+                                        if (intent.resolveActivity(this.getActivity().getPackageManager()) == null) {
+                                            Toast.makeText(getActivity(), R.string.media_unable_to_play,
+                                                           Toast.LENGTH_LONG).show();
+                                            return;
+                                        }
                                         startActivity(intent);
                                         return;
                                     }

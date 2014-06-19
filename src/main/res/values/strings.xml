@@ -26,6 +26,9 @@
     <string name="quiz_show_answers">Show Answers</string>
     <string name="quiz_finish">Continue</string>
 
+    <!-- Media strings -->
+    <string name="media_unable_to_play">Unable to play selected video</string>
+
     <!-- deprecated -->
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
