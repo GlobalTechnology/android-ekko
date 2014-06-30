@@ -6,13 +6,13 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.11.1'
+        classpath 'com.android.tools.build:gradle:0.12.0'
         classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.407.0'
 //        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
 }
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'newrelic'
 //apply plugin: 'android-test'
 
@@ -28,15 +28,15 @@ def generateVersionCode(version) {
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1"
+    compileSdkVersion 20
+    buildToolsVersion "20"
 
     defaultConfig {
         versionName project.version
         versionCode generateVersionCode(project.version)
 
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 20
 
         buildConfigField "String", "ARCLIGHT_API_KEY", "\"52d40edd323002.56665774\""
         buildConfigField "String", "ARCLIGHT_API_URI", "\"https://api.arclight.org/\""
