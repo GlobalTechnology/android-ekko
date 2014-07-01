@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
+        android:name="org.ekkoproject.android.player.EkkolabsApplication"
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -36,5 +37,18 @@
         <service
             android:exported="false"
             android:name="org.ekkoproject.android.player.sync.EkkoSyncService"/>
+
+        <service
+            android:name="com.jesusfilmmedia.eventtracker.EventTrackerService"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.jesusfilmmedia.eventtracker.ConnectivityReceiver"
+            android:exported="false" >
+
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

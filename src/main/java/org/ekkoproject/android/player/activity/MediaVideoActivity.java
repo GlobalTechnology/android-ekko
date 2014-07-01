@@ -17,9 +17,13 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.jesusfilmmedia.eventtracker.EventTracker;
+import com.jesusfilmmedia.eventtracker.PlayEventReport;
+
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.services.ResourceManager;
+import org.ekkoproject.android.player.view.ListenerVideoView;
 
 import java.io.File;
 
@@ -37,9 +41,12 @@ public class MediaVideoActivity extends Activity {
     private boolean mPlaying = true;
     private int mPos = -1;
 
+    private PlayEventReport mPlayEventReport = null;
+    private double mTotalMediaLengthInMilliseconds;
+
     // Views
     private View mRoot = null;
-    private VideoView mVideoPlayer = null;
+    private ListenerVideoView mVideoPlayer = null;
     private MediaController mController = null;
 
     public static Intent newIntent(final Context context, final long courseId, final String resourceId) {
@@ -132,6 +139,30 @@ public class MediaVideoActivity extends Activity {
             final MediaPlayerListener listener = new MediaPlayerListener();
             mVideoPlayer.setOnCompletionListener(listener);
 
+            mVideoPlayer.setVideoViewListener(new ListenerVideoView.VideoViewListener() {
+                @Override
+                public void onPlay() {
+                    if(mPlayEventReport != null) {
+                        EventTracker.getInstance().playStarted(mPlayEventReport);
+                        mTotalMediaLengthInMilliseconds = mVideoPlayer.getDuration();
+                    }
+                }
+
+                @Override
+                public void onPause() {
+                    if(mPlayEventReport != null) {
+                        EventTracker.getInstance().playPaused(mPlayEventReport);
+                    }
+                }
+
+                @Override
+                public void onStop() {
+                    if(mPlayEventReport != null) {
+                        EventTracker.getInstance().playStopped(mPlayEventReport, mTotalMediaLengthInMilliseconds);
+                    }
+                }
+            });
+
             // MediaPlayer controller
             mController = new MediaController(this);
             mVideoPlayer.setMediaController(mController);
@@ -152,7 +183,7 @@ public class MediaVideoActivity extends Activity {
 
     private void findViews() {
         mRoot = findView(View.class, android.R.id.content);
-        mVideoPlayer = findView(VideoView.class, R.id.video);
+        mVideoPlayer = findView(ListenerVideoView.class, R.id.video);
     }
 
     private void clearViews() {
@@ -208,6 +239,10 @@ public class MediaVideoActivity extends Activity {
             // try streaming the file directly
             final Uri streamUri = mResources.getStreamUri(resource);
             if (streamUri != null) {
+                if(resource.isArclight()) {
+                    String sessionId = streamUri.getQueryParameter("apiSessionId");
+                    mPlayEventReport = EventTracker.getInstance().createPlayEventReport(resource.getRefId(), sessionId, true);
+                }
                 return streamUri;
             }
 
