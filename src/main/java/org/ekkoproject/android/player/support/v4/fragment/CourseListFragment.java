@@ -20,10 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
 import org.ccci.gto.android.common.support.v4.fragment.AbstractListFragment;
 import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.services.GoogleAnalyticsService;
 import org.ekkoproject.android.player.support.v4.adapter.CourseListCursorAdapter;
 import org.ekkoproject.android.player.support.v4.content.CourseListCursorLoader;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
@@ -86,6 +90,14 @@ public class CourseListFragment extends AbstractListFragment {
                 this.viewState = savedState.getBundle(ARG_VIEWSTATE);
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Tracker tracker = GoogleAnalyticsService.getTracker(getActivity());
+        tracker.setScreenName(this.showAll ? "All Courses" : "My Courses");
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
     @Override

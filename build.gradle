@@ -44,6 +44,7 @@ android {
         buildConfigField "String", "NEW_RELIC_API_KEY", "\"AA42125d6f913bc0928dd33727113953b59e070b5d\""
         buildConfigField "long", "THEKEY_CLIENTID", "85613451684391165L"
         buildConfigField "String", "YOUTUBE_API_KEY", "\"AIzaSyAuKlaTyF_c0DSNP8MyPe6ABoFq_5cDFh8\""
+        buildConfigField "String", "GOOGLE_ANALYTICS_CLIENT_ID", "\"UA-29919940-4\""
     }
 
     compileOptions {
@@ -110,11 +111,12 @@ dependencies {
     compile group: 'org.slf4j',              name: 'slf4j-android',              version: '1.7.7',          ext: 'jar'
     compile group: 'com.viewpagerindicator', name: 'library',                    version: '2.4.2-SNAPSHOT', ext: 'aar'
     compile group: 'com.thinkfree.android',  name: 'showlicense',                version: '0.1',            ext: 'jar'
-    compile group: 'org.ccci.gto.android',   name: 'gto-support',                version: '0.3.0',          ext: 'jar'
+    compile group: 'org.ccci.gto.android',   name: 'gto-support',                version: '0.3.1-SNAPSHOT', ext: 'jar'
     compile group: 'me.thekey.android',      name: 'thekey-api',                 version: '0.6.0',          ext: 'jar'
     compile group: 'me.thekey.android',      name: 'thekey-lib',                 version: '0.6.0',          ext: 'aar'
 
     compile 'com.newrelic.agent.android:android-agent:3.407.0'
+    compile 'com.google.android.gms:play-services:4.4.52'
 
 //    testCompile 'junit:junit:4.11'
 //    testCompile 'org.robolectric:robolectric:2.3'

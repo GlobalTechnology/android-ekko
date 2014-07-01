@@ -28,11 +28,14 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.thinkfree.showlicense.android.ShowLicense;
 
 import org.ccci.gto.android.common.adapter.MenuListAdapter;
 import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
+import org.ekkoproject.android.player.services.GoogleAnalyticsService;
 import org.ekkoproject.android.player.support.v4.fragment.CourseFragment;
 import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
@@ -346,6 +349,10 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
         // Create and show the login dialog only if it is not currently displayed
         final FragmentManager fm = this.getSupportFragmentManager();
         if (fm.findFragmentByTag("loginDialog") == null) {
+            Tracker tracker = GoogleAnalyticsService.getTracker(this);
+            tracker.setScreenName("Login");
+            tracker.send(new HitBuilders.AppViewBuilder().build());
+
             LoginDialogFragment.builder().clientId(THEKEY_CLIENTID).build().show(
                     fm.beginTransaction().addToBackStack("loginDialog"), "loginDialog");
         }

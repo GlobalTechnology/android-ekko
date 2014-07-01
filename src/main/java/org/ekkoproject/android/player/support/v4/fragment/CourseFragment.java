@@ -19,11 +19,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.ccci.gto.android.common.support.v4.widget.MultiDrawerListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentPagerAdapter;
 import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Manifest;
+import org.ekkoproject.android.player.services.GoogleAnalyticsService;
 import org.ekkoproject.android.player.widget.FocusingDrawerListener;
+import org.ekkoproject.android.player.widget.GoogleAnalyticsDrawerListener;
 
 import java.util.List;
 
@@ -107,6 +113,16 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
         // hide root menu items
         menu.setGroupVisible(R.id.rootMenuItems, false);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Tracker tracker = GoogleAnalyticsService.getTracker(getActivity());
+        tracker.setScreenName("Course");
+        tracker.send(new HitBuilders.AppViewBuilder()
+                .setCustomDimension(1, Long.toString(getCourseId()))
+                .build());
     }
 
     @Override
@@ -248,7 +264,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
     private void setupNavigationDrawer() {
         if (this.drawerLayout != null) {
-            this.drawerLayout.setDrawerListener(new FocusingDrawerListener());
+            this.drawerLayout.setDrawerListener(new MultiDrawerListener(new FocusingDrawerListener(), new GoogleAnalyticsDrawerListener()));
         }
     }
 
