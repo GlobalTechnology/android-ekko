@@ -25,6 +25,7 @@ import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.model.Option;
+import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.model.Progress;
 import org.ekkoproject.android.player.model.Question;
 import org.ekkoproject.android.player.model.Quiz;
@@ -235,6 +236,12 @@ public final class ProgressManager {
 
     public final Pair<Integer, Integer> getCourseProgress(final long courseId) {
         assertNotOnUiThread();
+
+        // return no progress if current user doesn't have permission
+        final Permission permission = this.dao.find(Permission.class, mGuid, courseId);
+        if (permission == null  || !permission.isContentVisible()) {
+            return Pair.create(0, 1);
+        }
 
         // look up lesson & progress
         final Set<String> progress = this.getProgress(courseId);
