@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:background="#000000">
 
-    <org.ekkoproject.android.player.view.ListenerVideoView
+    <org.ccci.gto.android.common.widget.StateAwareVideoView
         android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

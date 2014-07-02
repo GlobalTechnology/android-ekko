@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -20,10 +21,10 @@ import android.widget.VideoView;
 import com.jesusfilmmedia.eventtracker.EventTracker;
 import com.jesusfilmmedia.eventtracker.PlayEventReport;
 
+import org.ccci.gto.android.common.widget.StateAwareVideoView;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.services.ResourceManager;
-import org.ekkoproject.android.player.view.ListenerVideoView;
 
 import java.io.File;
 
@@ -36,17 +37,15 @@ public class MediaVideoActivity extends Activity {
     private long mCourseId = INVALID_COURSE;
     private String mResourceId = null;
 
+    EventTracker mEventTracker = null;
     private ResourceManager mResources = null;
 
     private boolean mPlaying = true;
     private int mPos = -1;
 
-    private PlayEventReport mPlayEventReport = null;
-    private double mTotalMediaLengthInMilliseconds;
-
     // Views
     private View mRoot = null;
-    private ListenerVideoView mVideoPlayer = null;
+    private VideoView mVideoPlayer = null;
     private MediaController mController = null;
 
     public static Intent newIntent(final Context context, final long courseId, final String resourceId) {
@@ -64,11 +63,12 @@ public class MediaVideoActivity extends Activity {
         this.setContentView(R.layout.activity_media_video);
         this.findViews();
 
+        mEventTracker = EventTracker.getInstance();
+        mResources = ResourceManager.getInstance(this);
+
         final Intent intent = getIntent();
         mCourseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
         mResourceId = intent.getStringExtra(EXTRA_RESOURCEID);
-
-        mResources = ResourceManager.getInstance(this);
 
         // process saved state
         if (savedState != null) {
@@ -139,30 +139,6 @@ public class MediaVideoActivity extends Activity {
             final MediaPlayerListener listener = new MediaPlayerListener();
             mVideoPlayer.setOnCompletionListener(listener);
 
-            mVideoPlayer.setVideoViewListener(new ListenerVideoView.VideoViewListener() {
-                @Override
-                public void onPlay() {
-                    if(mPlayEventReport != null) {
-                        EventTracker.getInstance().playStarted(mPlayEventReport);
-                        mTotalMediaLengthInMilliseconds = mVideoPlayer.getDuration();
-                    }
-                }
-
-                @Override
-                public void onPause() {
-                    if(mPlayEventReport != null) {
-                        EventTracker.getInstance().playPaused(mPlayEventReport);
-                    }
-                }
-
-                @Override
-                public void onStop() {
-                    if(mPlayEventReport != null) {
-                        EventTracker.getInstance().playStopped(mPlayEventReport, mTotalMediaLengthInMilliseconds);
-                    }
-                }
-            });
-
             // MediaPlayer controller
             mController = new MediaController(this);
             mVideoPlayer.setMediaController(mController);
@@ -183,7 +159,7 @@ public class MediaVideoActivity extends Activity {
 
     private void findViews() {
         mRoot = findView(View.class, android.R.id.content);
-        mVideoPlayer = findView(ListenerVideoView.class, R.id.video);
+        mVideoPlayer = findView(VideoView.class, R.id.video);
     }
 
     private void clearViews() {
@@ -215,9 +191,9 @@ public class MediaVideoActivity extends Activity {
         }
     }
 
-    private class LoadVideoAsyncTask extends AsyncTask<Void, Void, Uri> {
+    private class LoadVideoAsyncTask extends AsyncTask<Void, Void, Pair<Resource, Uri>> {
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public final AsyncTask<Void, Void, Uri> execute() {
+        public final AsyncTask<Void, Void, Pair<Resource, Uri>> execute() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 return super.executeOnExecutor(THREAD_POOL_EXECUTOR);
             } else {
@@ -226,43 +202,73 @@ public class MediaVideoActivity extends Activity {
         }
 
         @Override
-        protected Uri doInBackground(final Void... params) {
+        protected Pair<Resource, Uri> doInBackground(final Void... params) {
             // resolve the resource
             final Resource resource = mResources.resolveResource(mCourseId, mResourceId);
 
             // check to see if the file has been downloaded already
             File file = mResources.getFile(resource, FLAG_DONT_DOWNLOAD);
             if (file != null) {
-                return Uri.parse(file.getAbsolutePath());
+                return Pair.create(resource, Uri.parse(file.getAbsolutePath()));
             }
 
             // try streaming the file directly
             final Uri streamUri = mResources.getStreamUri(resource);
             if (streamUri != null) {
-                if(resource.isArclight()) {
-                    String sessionId = streamUri.getQueryParameter("apiSessionId");
-                    mPlayEventReport = EventTracker.getInstance().createPlayEventReport(resource.getRefId(), sessionId, true);
-                }
-                return streamUri;
+                return Pair.create(resource, streamUri);
             }
 
             // try downloading the resource now
             file = mResources.getFile(resource);
             if (file != null) {
-                return Uri.parse(file.getAbsolutePath());
+                return Pair.create(resource, Uri.parse(file.getAbsolutePath()));
             }
 
-            // no video uri found
+            // no video found
             return null;
         }
 
         @Override
-        protected void onPostExecute(final Uri uri) {
-            super.onPostExecute(uri);
+        protected void onPostExecute(final Pair<Resource, Uri> video) {
+            super.onPostExecute(video);
 
-            // set the video file on the player
-            if (mVideoPlayer != null) {
-                mVideoPlayer.setVideoURI(uri);
+            // configure the video player if we have one
+            if (mVideoPlayer != null && video.second != null) {
+                // set the video file on the player
+                mVideoPlayer.setVideoURI(video.second);
+
+                // for Arclight videos we need to monitor playback events (if possible)
+                if (video.first != null && video.first.isArclight() && mVideoPlayer instanceof StateAwareVideoView) {
+                    ((StateAwareVideoView) mVideoPlayer).setPlaybackListener(
+                            new StateAwareVideoView.SimplePlaybackListener() {
+                                private final PlayEventReport mReport = mEventTracker
+                                        .createPlayEventReport(video.first.getRefId(),
+                                                               video.second.getQueryParameter("apiSessionId"), true);
+                                private double mTotalMediaLengthInMilliseconds = 0;
+
+                                @Override
+                                public void onStart(final StateAwareVideoView view) {
+                                    mEventTracker.playStarted(mReport);
+                                    mTotalMediaLengthInMilliseconds = mVideoPlayer.getDuration();
+                                }
+
+                                @Override
+                                public void onPause(final StateAwareVideoView view) {
+                                    mEventTracker.playPaused(mReport);
+                                }
+
+                                @Override
+                                public void onResume(StateAwareVideoView view) {
+                                    mEventTracker.playResumed(mReport);
+                                }
+
+                                @Override
+                                public void onStop(final StateAwareVideoView view) {
+                                    mEventTracker.playStopped(mReport, mTotalMediaLengthInMilliseconds);
+                                }
+                            }
+                    );
+                }
             }
         }
     }
