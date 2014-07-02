@@ -19,17 +19,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import org.ccci.gto.android.common.support.v4.widget.MultiDrawerListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.adapter.ManifestContentPagerAdapter;
 import org.ekkoproject.android.player.model.CourseContent;
 import org.ekkoproject.android.player.model.Manifest;
-import org.ekkoproject.android.player.services.GoogleAnalyticsService;
+import org.ekkoproject.android.player.services.GoogleAnalyticsManager;
 import org.ekkoproject.android.player.widget.FocusingDrawerListener;
-import org.ekkoproject.android.player.widget.GoogleAnalyticsDrawerListener;
 
 import java.util.List;
 
@@ -45,6 +41,8 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     private boolean contentPagerInitialized = true;
     private ViewPager contentPager = null;
     private Parcelable contentPagerState = null;
+
+    private GoogleAnalyticsManager mGoogleAnalytics;
 
     public static CourseFragment newInstance(final int layout, final String guid, final long courseId) {
         final CourseFragment fragment = new CourseFragment();
@@ -63,6 +61,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     public void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
+        mGoogleAnalytics = GoogleAnalyticsManager.getInstance(getActivity());
         this.setHasOptionsMenu(true);
 
         // load arguments
@@ -118,11 +117,7 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
     @Override
     public void onStart() {
         super.onStart();
-        Tracker tracker = GoogleAnalyticsService.getTracker(getActivity());
-        tracker.setScreenName("Course");
-        tracker.send(new HitBuilders.AppViewBuilder()
-                .setCustomDimension(1, Long.toString(getCourseId()))
-                .build());
+        mGoogleAnalytics.sendEvent("Course", getCourseId());
     }
 
     @Override
@@ -264,7 +259,14 @@ public class CourseFragment extends AbstractManifestAwareFragment implements Les
 
     private void setupNavigationDrawer() {
         if (this.drawerLayout != null) {
-            this.drawerLayout.setDrawerListener(new MultiDrawerListener(new FocusingDrawerListener(), new GoogleAnalyticsDrawerListener()));
+            this.drawerLayout.setDrawerListener(
+                    new MultiDrawerListener(new FocusingDrawerListener(), new DrawerLayout.SimpleDrawerListener() {
+                        @Override
+                        public void onDrawerOpened(final View drawerView) {
+                            mGoogleAnalytics.sendEvent("Course Navigation", getCourseId());
+                        }
+                    })
+            );
         }
     }
 
