@@ -13,17 +13,13 @@
         android:logo="@drawable/ic_logo"
         android:theme="@style/Theme.Ekko">
         <activity
-            android:name="org.ekkoproject.android.player.activity.SplashScreenActivity"
-            android:screenOrientation="sensorPortrait"
-            android:theme="@android:style/Theme.NoTitleBar">
+            android:name="org.ekkoproject.android.player.activity.MainActivity"
+            android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name="org.ekkoproject.android.player.activity.MainActivity"
-            android:screenOrientation="sensorPortrait"/>
         <activity
             android:name="org.ekkoproject.android.player.activity.MediaImageActivity"
             android:screenOrientation="sensor"
@@ -33,6 +29,11 @@
             android:screenOrientation="sensor"
             android:configChanges="orientation|screenSize"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+
+        <!-- Legacy splash screen activity -->
+        <activity-alias
+            android:name="org.ekkoproject.android.player.activity.SplashScreenActivity"
+            android:targetActivity="org.ekkoproject.android.player.activity.MainActivity"/>
 
         <service
             android:exported="false"
