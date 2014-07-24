@@ -71,7 +71,7 @@ android {
         }
         release {
             runProguard true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), file('proguard.cfg')
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), file('proguard.pro')
             signingConfig signingConfigs.release
         }
     }
