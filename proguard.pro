@@ -46,3 +46,10 @@
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }
+
+
+# Arclight - Event Tracker
+-keepclassmembers class com.jesusfilmmedia.eventtracker.EventReport { <fields>; }
+-keepclassmembers class com.jesusfilmmedia.eventtracker.PlayEventReport { <fields>; }
+-keepclassmembers class com.jesusfilmmedia.eventtracker.EventTrackerService$EventType { <fields>; }
+-keepclassmembers class com.jesusfilmmedia.eventtracker.EventTrackerService$EventReportHolder { <fields>; }
