@@ -1,5 +1,8 @@
 package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
+import static org.ekkoproject.android.player.BuildConfig.ARCLIGHT_API_KEY;
+import static org.ekkoproject.android.player.BuildConfig.PACKAGE_NAME;
+import static org.ekkoproject.android.player.BuildConfig.VERSION_NAME;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_NONE;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_UNKNOWN;
@@ -17,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.jesusfilmmedia.eventtracker.EventTracker;
 
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
@@ -120,31 +125,42 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
                         // mark the media as viewed
                         this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
 
-                        // check to see if the resource is a provider resource
-                        if (resource != null && resource.isUri()) {
-                            switch (resource.getProvider()) {
-                                case PROVIDER_NONE:
-                                    break;
-                                case PROVIDER_YOUTUBE:
-                                case PROVIDER_VIMEO:
-                                case PROVIDER_UNKNOWN:
-                                    final Intent intent = providerIntent(getActivity(), resource);
-                                    if (intent != null) {
-                                        if (intent.resolveActivity(this.getActivity().getPackageManager()) == null) {
-                                            Toast.makeText(getActivity(), R.string.media_unable_to_play,
-                                                           Toast.LENGTH_LONG).show();
+                        // do some special processing for certain resource types
+                        if (resource != null) {
+                            // check to see if the resource is a provider resource
+                            if (resource.isUri()) {
+                                switch (resource.getProvider()) {
+                                    case PROVIDER_NONE:
+                                        break;
+                                    case PROVIDER_YOUTUBE:
+                                    case PROVIDER_VIMEO:
+                                    case PROVIDER_UNKNOWN:
+                                        final Intent intent = providerIntent(getActivity(), resource);
+                                        if (intent != null) {
+                                            if (intent.resolveActivity(this.getActivity().getPackageManager()) ==
+                                                    null) {
+                                                Toast.makeText(getActivity(), R.string.media_unable_to_play,
+                                                               Toast.LENGTH_LONG).show();
+                                                return;
+                                            }
+                                            startActivity(intent);
                                             return;
                                         }
-                                        startActivity(intent);
+                                    default:
                                         return;
-                                    }
-                                default:
-                                    return;
+                                }
+                            }
+
+                            // Initialize Arclight Event Tracker for Arclight resources
+                            if (resource.isArclight()) {
+                                EventTracker.getInstance()
+                                        .initialize(getActivity(), ARCLIGHT_API_KEY, PACKAGE_NAME, VERSION_NAME);
                             }
                         }
 
-                        startActivity(MediaVideoActivity
-                                              .newIntent(getActivity(), this.getCourseId(), this.media.getResource()));
+                        // start video activity
+                        startActivity(MediaVideoActivity.newIntent(getActivity(), this.getCourseId(),
+                                                                   this.media.getResource()));
                     } else if (this.media.isImage()) {
                         // mark the media as viewed
                         this.getProgressManager().recordProgressAsync(this.getCourseId(), this.mediaId);
