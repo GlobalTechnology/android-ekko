@@ -18,7 +18,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.internal.view.menu.MenuBuilder;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,12 +37,10 @@ import org.ekkoproject.android.player.support.v4.fragment.CourseFragment;
 import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
-import me.thekey.android.TheKey;
-import me.thekey.android.lib.TheKeyImpl;
 import me.thekey.android.lib.content.TheKeyBroadcastReceiver;
 import me.thekey.android.lib.support.v4.dialog.LoginDialogFragment;
 
-public class MainActivity extends ActionBarActivity implements OnNavigationListener {
+public class MainActivity extends BaseActivity implements OnNavigationListener {
     private static final String STATE_DRAWER_INDICATOR = MainActivity.class + ".STATE_DRAWER_INDICATOR";
 
     private DrawerLayout drawerLayout = null;
@@ -52,7 +49,6 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
 
     private String mGuid;
     private GoogleAnalyticsManager mGoogleAnalytics;
-    private TheKey mTheKey;
     private final TheKeyBroadcastReceiver mTheKeyReceiver = new TheKeyBroadcastReceiver() {
         @Override
         protected void onLogin(final String guid) {
@@ -79,7 +75,6 @@ public class MainActivity extends ActionBarActivity implements OnNavigationListe
     public void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
         mGoogleAnalytics = GoogleAnalyticsManager.getInstance(this);
-        mTheKey = TheKeyImpl.getInstance(this, THEKEY_CLIENTID);
         this.setContentView(R.layout.activity_main);
         this.findViews();
         this.setupActionBar();
