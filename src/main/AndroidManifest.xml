@@ -36,19 +36,18 @@
             android:targetActivity="org.ekkoproject.android.player.activity.MainActivity"/>
 
         <service
-            android:exported="false"
-            android:name="org.ekkoproject.android.player.sync.EkkoSyncService"/>
+            android:name="org.ekkoproject.android.player.sync.EkkoSyncService"
+            android:exported="false"/>
 
         <service
             android:name="com.jesusfilmmedia.eventtracker.EventTrackerService"
-            android:exported="false" />
+            android:exported="false"/>
 
         <receiver
             android:name="com.jesusfilmmedia.eventtracker.ConnectivityReceiver"
-            android:exported="false" >
-
+            android:exported="false">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
     </application>
