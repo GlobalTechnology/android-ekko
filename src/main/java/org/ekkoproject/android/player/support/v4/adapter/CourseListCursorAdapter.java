@@ -36,12 +36,10 @@ import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.EnrollmentState;
 import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.services.ProgressManager;
-import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.NotEnrolledDialogFragment;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 import org.ekkoproject.android.player.tasks.EnrollmentRunnable;
-import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
-import org.ekkoproject.android.player.view.ResourceImageView;
+import org.ekkoproject.android.player.util.ResourceUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -53,7 +51,6 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
 
     private final FragmentActivity mActivity;
     private final String mGuid;
-    private final ResourceManager resourceManager;
     private final ProgressManager progressManager;
 
     private NavigationListener mNavigationListener = null;
@@ -62,7 +59,6 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         super(activity, layout, null, FROM, TO, 0);
         mActivity = activity;
         mGuid = guid;
-        this.resourceManager = ResourceManager.getInstance(activity);
         this.progressManager = ProgressManager.getInstance(activity, mGuid);
         this.setViewBinder(new CourseViewBinder());
     }
@@ -294,15 +290,10 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         public boolean setViewValue(final View view, final Cursor c, final int columnIndex) {
             switch (view.getId()) {
                 case R.id.banner:
-                    if (view instanceof ResourceImageView) {
-                        ((ResourceImageView) view).setResource(
-                                c.getLong(c.getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)),
-                                c.getString(columnIndex));
-                    } else if (view instanceof ImageView) {
-                        ((ImageView) view).setImageDrawable(null);
-                        new LoadImageResourceAsyncTask(resourceManager, (ImageView) view, c.getLong(
-                                c.getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)), c.getString(columnIndex))
-                                .execute();
+                    if (view instanceof ImageView) {
+                        ResourceUtils.setImage((ImageView) view,
+                                               c.getLong(c.getColumnIndex(Contract.Course.COLUMN_NAME_COURSE_ID)),
+                                               c.getString(columnIndex));
                     }
                     return true;
                 case R.id.progress:

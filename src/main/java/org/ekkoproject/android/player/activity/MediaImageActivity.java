@@ -11,19 +11,15 @@ import android.view.View;
 import android.widget.ImageView;
 
 import org.ekkoproject.android.player.R;
-import org.ekkoproject.android.player.services.ResourceManager;
-import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
-import org.ekkoproject.android.player.view.ResourceImageView;
+import org.ekkoproject.android.player.util.ResourceUtils;
 
 public class MediaImageActivity extends Activity {
     private static final String EXTRA_RESOURCEID = MediaImageActivity.class.getName() + ".EXTRA_RESOURCEID";
 
-    private ResourceManager resources = null;
-
     private long courseId = INVALID_COURSE;
     private String resourceId = null;
 
-    private ImageView image = null;
+    private ImageView mImage = null;
 
     public static Intent newIntent(final Context context, final long courseId, final String resourceId) {
         final Intent intent = new Intent(context, MediaImageActivity.class);
@@ -36,7 +32,6 @@ public class MediaImageActivity extends Activity {
 
     @Override
     protected void onCreate(final Bundle savedState) {
-        this.resources = ResourceManager.getInstance(this);
         super.onCreate(savedState);
 
         final Intent intent = getIntent();
@@ -51,7 +46,7 @@ public class MediaImageActivity extends Activity {
     /** END lifecycle */
 
     private void findViews() {
-        this.image = findView(ImageView.class, R.id.image);
+        mImage = findView(ImageView.class, R.id.image);
     }
 
     private <T extends View> T findView(final Class<T> clazz, final int id) {
@@ -63,13 +58,6 @@ public class MediaImageActivity extends Activity {
     }
 
     private void updateImage() {
-        if (this.image != null) {
-            if (this.image instanceof ResourceImageView) {
-                ((ResourceImageView) this.image).setResource(this.courseId, this.resourceId);
-            } else {
-                this.image.setImageDrawable(null);
-                new LoadImageResourceAsyncTask(this.resources, this.image, this.courseId, this.resourceId).execute();
-            }
-        }
+        ResourceUtils.setImage(mImage, this.courseId, this.resourceId);
     }
 }

@@ -8,10 +8,14 @@ import static org.ekkoproject.android.player.model.Resource.PROVIDER_YOUTUBE;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.ImageView;
 
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 import org.ekkoproject.android.player.model.Resource;
+import org.ekkoproject.android.player.services.ResourceManager;
+import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
+import org.ekkoproject.android.player.view.ResourceImageView;
 
 import java.util.List;
 import java.util.Locale;
@@ -99,5 +103,15 @@ public final class ResourceUtils {
         }
 
         return null;
+    }
+
+    public static void setImage(final ImageView view, final long courseId, final String resource) {
+        if (view instanceof ResourceImageView) {
+            ((ResourceImageView) view).setResource(courseId, resource);
+        } else if (view != null) {
+            view.setImageDrawable(null);
+            new LoadImageResourceAsyncTask(ResourceManager.getInstance(view.getContext()), view, courseId, resource)
+                    .execute();
+        }
     }
 }

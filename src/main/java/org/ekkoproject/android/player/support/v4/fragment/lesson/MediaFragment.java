@@ -11,7 +11,6 @@ import static org.ekkoproject.android.player.model.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,10 +29,8 @@ import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.model.Resource;
-import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.support.v4.fragment.AbstractManifestAwareFragment;
-import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
-import org.ekkoproject.android.player.view.ResourceImageView;
+import org.ekkoproject.android.player.util.ResourceUtils;
 
 public class MediaFragment extends AbstractManifestAwareFragment implements View.OnClickListener {
     private static final String ARG_MEDIAID = MediaFragment.class.getName() + ".ARG_MEDIAID";
@@ -41,11 +38,10 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
     private String lessonId = null;
     private String mediaId = null;
 
-    private ResourceManager resourceManager = null;
     private Media media = null;
 
     private View openButton = null;
-    private ImageView thumbnail = null;
+    private ImageView mThumbnail = null;
 
     public static MediaFragment newInstance(final String guid, final long courseId, final String lessonId,
                                             final String mediaId) {
@@ -61,12 +57,6 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
     }
 
     /** BEGIN lifecycle */
-
-    @Override
-    public void onAttach(final Activity activity) {
-        super.onAttach(activity);
-        this.resourceManager = ResourceManager.getInstance(activity);
-    }
 
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -183,12 +173,12 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
 
     private void findViews() {
         this.openButton = findView(View.class, R.id.openButton);
-        this.thumbnail = findView(ImageView.class, R.id.thumbnail);
+        mThumbnail = findView(ImageView.class, R.id.thumbnail);
     }
 
     private void clearViews() {
         this.openButton = null;
-        this.thumbnail = null;
+        mThumbnail = null;
     }
 
     private void setupOpenButton() {
@@ -198,7 +188,7 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
     }
 
     private void updateMediaThumbnail() {
-        if (this.thumbnail != null) {
+        if (mThumbnail != null) {
             // find the resource id for the thumbnail
             String resourceId = null;
             if (this.media != null) {
@@ -212,13 +202,7 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
             }
 
             // update the view
-            if (this.thumbnail instanceof ResourceImageView) {
-                ((ResourceImageView) this.thumbnail).setResource(this.getCourseId(), resourceId);
-            } else {
-                this.thumbnail.setImageDrawable(null);
-                new LoadImageResourceAsyncTask(this.resourceManager, this.thumbnail, this.getCourseId(), resourceId)
-                        .execute();
-            }
+            ResourceUtils.setImage(mThumbnail, getCourseId(), resourceId);
         }
     }
 }

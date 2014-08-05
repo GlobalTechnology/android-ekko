@@ -10,9 +10,7 @@ import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Lesson;
 import org.ekkoproject.android.player.model.Media;
 import org.ekkoproject.android.player.services.CourseManager;
-import org.ekkoproject.android.player.services.ResourceManager;
-import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
-import org.ekkoproject.android.player.view.ResourceImageView;
+import org.ekkoproject.android.player.util.ResourceUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,8 +22,6 @@ public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Me
     private static final int VIEW_TYPE_IMAGE = 1;
     private static final int VIEW_TYPE_VIDEO = 2;
 
-    private final ResourceManager resourceManager;
-
     private List<Media> media = NO_MEDIA;
 
     private int audioView = DEFAULT_LAYOUT;
@@ -34,7 +30,6 @@ public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Me
 
     public ManifestLessonMediaAdapter(final Context context, final String lessonId) {
         super(context, lessonId);
-        this.resourceManager = ResourceManager.getInstance(context);
     }
 
     public void setAudioView(final int layout) {
@@ -114,22 +109,13 @@ public class ManifestLessonMediaAdapter extends AbstractManifestLessonAdapter<Me
 
         // set the thumbnail image
         final View thumbnailView = view.findViewById(R.id.thumbnail);
-        if (thumbnailView instanceof ResourceImageView) {
+        if (thumbnailView instanceof ImageView) {
             if (thumbnail != null) {
-                ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), thumbnail);
+                ResourceUtils.setImage((ImageView) thumbnailView, getCourseId(), thumbnail);
             } else if (media.isImage()) {
-                ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), resource);
+                ResourceUtils.setImage((ImageView) thumbnailView, getCourseId(), resource);
             } else {
-                ((ResourceImageView) thumbnailView).setResource(this.getCourseId(), null);
-            }
-        } else if (thumbnailView instanceof ImageView) {
-            ((ImageView) thumbnailView).setImageDrawable(null);
-            if (thumbnail != null) {
-                new LoadImageResourceAsyncTask(this.resourceManager, (ImageView) thumbnailView, this.getCourseId(),
-                        thumbnail).execute();
-            } else if (media.isImage() && resource != null) {
-                new LoadImageResourceAsyncTask(this.resourceManager, (ImageView) thumbnailView, this.getCourseId(),
-                        resource).execute();
+                ResourceUtils.setImage((ImageView) thumbnailView, getCourseId(), null);
             }
         }
 
