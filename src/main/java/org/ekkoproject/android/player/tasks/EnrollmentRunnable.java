@@ -44,7 +44,7 @@ public class EnrollmentRunnable implements Runnable {
                         // check to see if the course is now visible to the user
                         final Permission permission = course != null ? course.getPermission() : null;
                         if (permission != null && permission.isContentVisible()) {
-                            mOnNavigationListener.onSelectCourse(course.getId());
+                            mOnNavigationListener.showCourse(course.getId());
                         }
                     }
                     break;

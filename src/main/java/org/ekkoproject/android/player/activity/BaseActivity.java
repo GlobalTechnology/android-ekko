@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +30,9 @@ import android.widget.ListView;
 import com.thinkfree.showlicense.android.ShowLicense;
 
 import org.ccci.gto.android.common.adapter.MenuListAdapter;
+import org.ccci.gto.android.common.util.ThreadUtils;
+import org.ekkoproject.android.player.BuildConfig;
+import org.ekkoproject.android.player.OnNavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.services.GoogleAnalyticsManager;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
@@ -39,7 +44,7 @@ import me.thekey.android.lib.TheKeyImpl;
 import me.thekey.android.lib.content.TheKeyBroadcastReceiver;
 import me.thekey.android.lib.support.v4.dialog.LoginDialogFragment;
 
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends ActionBarActivity implements OnNavigationListener {
     private static final String STATE_DRAWER_INDICATOR = BaseActivity.class + ".STATE_DRAWER_INDICATOR";
 
     private static final long INITIAL_SYNC_MAX_AGE = 3 * 60 * 60 * 1000; // 3 hours
@@ -80,6 +85,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         this.setupActionBar();
         this.setupNavigationDrawer();
 
+        // load the current guid from the saved state
         if (savedState != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                 mGuid = savedState.getString(STATE_GUID, null);
@@ -88,11 +94,15 @@ public abstract class BaseActivity extends ActionBarActivity {
             }
         }
 
+        // initialize guid if we don't have one
+        if (mGuid == null) {
+            updateUser(mTheKey.getGuid());
+        }
+
         // start an initial background sync if we haven't done one recently
         // XXX: is this necessary?
         if (mLastSync == null || mLastSync.before(new Date(System.currentTimeMillis() - INITIAL_SYNC_MAX_AGE))) {
-            final String guid = mTheKey.getGuid();
-            EkkoSyncService.syncCourses(this, guid != null ? guid : GUID_GUEST);
+            EkkoSyncService.syncCourses(this, mGuid);
             mLastSync = new Date();
         }
     }
@@ -149,8 +159,14 @@ public abstract class BaseActivity extends ActionBarActivity {
         // trigger a fresh sync of the courses
         EkkoSyncService.syncCourses(this, newGuid);
 
-        // reset Navigation Drawer Menu
+        // reset menus
+        supportInvalidateOptionsMenu();
         updateNavigationDrawerMenu();
+
+        // show root My Courses if the user has changed
+        if (oldGuid != null) {
+            this.showCourseList(false);
+        }
     }
 
     @Override
@@ -169,9 +185,21 @@ public abstract class BaseActivity extends ActionBarActivity {
                     }
                 }
 
-                // trigger the back function
-                // XXX: is this right?
-                this.onBackPressed();
+                // Navigate up the activity stack
+                final Intent intent = NavUtils.getParentActivityIntent(this);
+                if (NavUtils.shouldUpRecreateTask(this, intent)) {
+                    TaskStackBuilder.create(this).addNextIntentWithParentStack(intent).startActivities();
+                } else {
+                    NavUtils.navigateUpTo(this, intent);
+                }
+                overridePendingTransition(0, 0);
+
+                return true;
+            case R.id.myCourses:
+                this.showCourseList(false);
+                return true;
+            case R.id.allCourses:
+                this.showCourseList(true);
                 return true;
             case R.id.login:
                 this.showLoginDialog();
@@ -302,6 +330,29 @@ public abstract class BaseActivity extends ActionBarActivity {
                 ((MenuListAdapter) adapter).synchronizeMenu();
             }
         }
+    }
+
+    @Override
+    public void showCourseList(final boolean showAll) {
+        if (BuildConfig.DEBUG) {
+            ThreadUtils.assertOnUiThread();
+        }
+
+        final Intent intent = CourseListActivity.newIntent(this, showAll);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
+
+    @Override
+    public void showCourse(final long courseId) {
+        if (BuildConfig.DEBUG) {
+            ThreadUtils.assertOnUiThread();
+        }
+
+        final Intent intent = CourseActivity.newIntent(this, courseId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
     }
 
     private void showLoginDialog() {

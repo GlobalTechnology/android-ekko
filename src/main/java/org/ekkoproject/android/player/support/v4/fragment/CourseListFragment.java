@@ -152,7 +152,7 @@ public class CourseListFragment extends AbstractListFragment {
     public void onListItemClick(final ListView l, final View v, final int position, final long id) {
         final OnNavigationListener listener = this.getListener(OnNavigationListener.class);
         if(listener != null) {
-            listener.onSelectCourse(id);
+            listener.showCourse(id);
         }
     }
 
