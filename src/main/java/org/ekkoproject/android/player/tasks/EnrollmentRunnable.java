@@ -1,5 +1,6 @@
 package org.ekkoproject.android.player.tasks;
 
+import android.app.Activity;
 import android.content.Context;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
@@ -10,6 +11,7 @@ import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Permission;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
 
+// TODO: convert this to an AsyncTask to avoid leaky mActivity code & allow canceling of enrollment
 public class EnrollmentRunnable implements Runnable {
     public static final int ENROLL = 1;
     public static final int UNENROLL = 2;
@@ -20,11 +22,13 @@ public class EnrollmentRunnable implements Runnable {
     private final String guid;
     private final long id;
 
+    private Activity mActivity = null;
     private NavigationListener mNavigationListener = null;
 
-    public EnrollmentRunnable(final Context context, final String guid, final int type, final long id) {
-        mContext = context.getApplicationContext();
-        this.api = EkkoHubApi.getInstance(context, guid);
+    public EnrollmentRunnable(final Activity activity, final String guid, final int type, final long id) {
+        mContext = activity.getApplicationContext();
+        mActivity = activity;
+        this.api = EkkoHubApi.getInstance(activity, guid);
         this.type = type;
         this.guid = guid;
         this.id = id;
@@ -44,7 +48,12 @@ public class EnrollmentRunnable implements Runnable {
                         // check to see if the course is now visible to the user
                         final Permission permission = course != null ? course.getPermission() : null;
                         if (permission != null && permission.isContentVisible()) {
-                            mNavigationListener.showCourse(course.getId());
+                            mActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mNavigationListener.showCourse(course.getId());
+                                }
+                            });
                         }
                     }
                     break;

@@ -10,6 +10,7 @@ import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.UNENROLL;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -237,17 +238,18 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
     }
 
     private static class CoursePopupMenuClickListener implements PopupMenu.OnMenuItemClickListener {
-        private final Context mContext;
+        private final Activity mActivity;
         private final String mGuid;
         private final EkkoDao dao;
         private final CourseViewHolder holder;
 
         private NavigationListener mNavigationListener = null;
 
-        private CoursePopupMenuClickListener(final Context context, final String guid, final CourseViewHolder holder) {
-            mContext = context;
+        private CoursePopupMenuClickListener(final Activity activity, final String guid,
+                                             final CourseViewHolder holder) {
+            mActivity = activity;
             mGuid = guid;
-            this.dao = EkkoDao.getInstance(context);
+            this.dao = EkkoDao.getInstance(activity);
             this.holder = holder;
         }
 
@@ -260,12 +262,12 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             final int id = item.getItemId();
             switch (id) {
                 case R.id.enroll:
-                    final EnrollmentRunnable task = new EnrollmentRunnable(mContext, mGuid, ENROLL, holder.courseId);
+                    final EnrollmentRunnable task = new EnrollmentRunnable(mActivity, mGuid, ENROLL, holder.courseId);
                     task.setNavigationListener(mNavigationListener);
                     task.schedule();
                     return true;
                 case R.id.unenroll:
-                    new EnrollmentRunnable(mContext, mGuid, UNENROLL, holder.courseId).schedule();
+                    new EnrollmentRunnable(mActivity, mGuid, UNENROLL, holder.courseId).schedule();
                     return true;
                 case R.id.show:
                 case R.id.hide:
@@ -277,7 +279,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                             dao.update(permission, new String[] {Contract.Permission.COLUMN_HIDDEN});
 
                             //XXX: this is a quick hack, we should move the course/manifest update broadcasts to a common service
-                            EkkoSyncService.broadcastCoursesUpdate(mContext);
+                            EkkoSyncService.broadcastCoursesUpdate(mActivity);
                         }
                     });
                     return true;
