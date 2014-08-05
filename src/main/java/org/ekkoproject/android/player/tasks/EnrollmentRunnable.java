@@ -4,7 +4,7 @@ import android.content.Context;
 
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
-import org.ekkoproject.android.player.OnNavigationListener;
+import org.ekkoproject.android.player.NavigationListener;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Permission;
@@ -20,7 +20,7 @@ public class EnrollmentRunnable implements Runnable {
     private final String guid;
     private final long id;
 
-    private OnNavigationListener mOnNavigationListener = null;
+    private NavigationListener mNavigationListener = null;
 
     public EnrollmentRunnable(final Context context, final String guid, final int type, final long id) {
         mContext = context.getApplicationContext();
@@ -30,8 +30,8 @@ public class EnrollmentRunnable implements Runnable {
         this.id = id;
     }
 
-    public void setOnNavigationListener(final OnNavigationListener listener) {
-        this.mOnNavigationListener = listener;
+    public void setNavigationListener(final NavigationListener listener) {
+        this.mNavigationListener = listener;
     }
 
     @Override
@@ -40,11 +40,11 @@ public class EnrollmentRunnable implements Runnable {
             switch (this.type) {
                 case ENROLL:
                     final Course course = api.enroll(this.id);
-                    if (mOnNavigationListener != null) {
+                    if (mNavigationListener != null) {
                         // check to see if the course is now visible to the user
                         final Permission permission = course != null ? course.getPermission() : null;
                         if (permission != null && permission.isContentVisible()) {
-                            mOnNavigationListener.showCourse(course.getId());
+                            mNavigationListener.showCourse(course.getId());
                         }
                     }
                     break;

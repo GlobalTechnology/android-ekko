@@ -28,7 +28,7 @@ import android.widget.ProgressBar;
 
 import org.ccci.gto.android.common.util.CursorUtils;
 import org.ccci.gto.android.common.util.ViewUtils;
-import org.ekkoproject.android.player.OnNavigationListener;
+import org.ekkoproject.android.player.NavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
@@ -55,7 +55,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
     private final ResourceManager resourceManager;
     private final ProgressManager progressManager;
 
-    private OnNavigationListener mOnNavigationListener = null;
+    private NavigationListener mNavigationListener = null;
 
     public CourseListCursorAdapter(final FragmentActivity activity, final String guid, final int layout) {
         super(activity, layout, null, FROM, TO, 0);
@@ -66,8 +66,8 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         this.setViewBinder(new CourseViewBinder());
     }
 
-    public void setOnNavigationListener(final OnNavigationListener listener) {
-        this.mOnNavigationListener = listener;
+    public void setNavigationListener(final NavigationListener listener) {
+        this.mNavigationListener = listener;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     final PopupMenu popup = new PopupMenu(mActivity, actionMenu);
                     final CoursePopupMenuClickListener listener =
                             new CoursePopupMenuClickListener(mActivity, mGuid, holder);
-                    listener.setOnNavigationListener(mOnNavigationListener);
+                    listener.setNavigationListener(mNavigationListener);
                     popup.setOnMenuItemClickListener(listener);
                     popup.inflate(R.menu.popup_course_card);
                     final Menu menu = popup.getMenu();
@@ -242,7 +242,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
         private final EkkoDao dao;
         private final CourseViewHolder holder;
 
-        private OnNavigationListener mOnNavigationListener = null;
+        private NavigationListener mNavigationListener = null;
 
         private CoursePopupMenuClickListener(final Context context, final String guid, final CourseViewHolder holder) {
             mContext = context;
@@ -251,8 +251,8 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             this.holder = holder;
         }
 
-        public void setOnNavigationListener(final OnNavigationListener listener) {
-            this.mOnNavigationListener = listener;
+        public void setNavigationListener(final NavigationListener listener) {
+            this.mNavigationListener = listener;
         }
 
         @Override
@@ -261,7 +261,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
             switch (id) {
                 case R.id.enroll:
                     final EnrollmentRunnable task = new EnrollmentRunnable(mContext, mGuid, ENROLL, holder.courseId);
-                    task.setOnNavigationListener(mOnNavigationListener);
+                    task.setNavigationListener(mNavigationListener);
                     task.schedule();
                     return true;
                 case R.id.unenroll:

@@ -32,7 +32,7 @@ import com.thinkfree.showlicense.android.ShowLicense;
 import org.ccci.gto.android.common.adapter.MenuListAdapter;
 import org.ccci.gto.android.common.util.ThreadUtils;
 import org.ekkoproject.android.player.BuildConfig;
-import org.ekkoproject.android.player.OnNavigationListener;
+import org.ekkoproject.android.player.NavigationListener;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.services.GoogleAnalyticsManager;
 import org.ekkoproject.android.player.sync.EkkoSyncService;
@@ -44,7 +44,7 @@ import me.thekey.android.lib.TheKeyImpl;
 import me.thekey.android.lib.content.TheKeyBroadcastReceiver;
 import me.thekey.android.lib.support.v4.dialog.LoginDialogFragment;
 
-public abstract class BaseActivity extends ActionBarActivity implements OnNavigationListener {
+public abstract class BaseActivity extends ActionBarActivity implements NavigationListener {
     private static final String STATE_DRAWER_INDICATOR = BaseActivity.class + ".STATE_DRAWER_INDICATOR";
 
     private static final long INITIAL_SYNC_MAX_AGE = 3 * 60 * 60 * 1000; // 3 hours

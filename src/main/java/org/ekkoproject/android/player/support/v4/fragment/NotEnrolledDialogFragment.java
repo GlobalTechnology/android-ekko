@@ -18,7 +18,7 @@ import android.text.Html;
 
 import org.ccci.gto.android.common.support.v4.app.SimpleLoaderCallbacks;
 import org.ccci.gto.android.common.support.v4.fragment.AbstractDialogFragment;
-import org.ekkoproject.android.player.OnNavigationListener;
+import org.ekkoproject.android.player.NavigationListener;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.support.v4.content.CourseLoader;
 import org.ekkoproject.android.player.tasks.EnrollmentRunnable;
@@ -76,7 +76,7 @@ public class NotEnrolledDialogFragment extends AbstractDialogFragment {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         final EnrollmentRunnable task = new EnrollmentRunnable(getActivity(), mGuid, ENROLL, courseId);
-                        task.setOnNavigationListener(getListener(OnNavigationListener.class));
+                        task.setNavigationListener(getListener(NavigationListener.class));
                         task.schedule();
                     }
                 }).setNegativeButton("Cancel", null);

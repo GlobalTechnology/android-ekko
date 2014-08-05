@@ -1,6 +1,6 @@
 package org.ekkoproject.android.player;
 
-public interface OnNavigationListener {
+public interface NavigationListener {
     void showCourseList(boolean showAll);
 
     /**

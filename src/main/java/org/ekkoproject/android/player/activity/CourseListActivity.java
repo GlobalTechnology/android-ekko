@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.ccci.gto.android.common.util.ThreadUtils;
+import org.ekkoproject.android.player.BuildConfig;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.support.v4.fragment.CourseListFragment;
 import org.slf4j.Logger;
@@ -47,6 +49,10 @@ public class CourseListActivity extends BaseActivity {
 
     @Override
     public void showCourseList(final boolean showAll) {
+        if (BuildConfig.DEBUG) {
+            ThreadUtils.assertOnUiThread();
+        }
+
         showCourseListFragment(showAll);
     }
 
