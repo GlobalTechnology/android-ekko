@@ -1,20 +1,15 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.12.2'
         classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.419.0'
-//        classpath 'com.squareup.gradle:gradle-android-test-plugin:0.9.1-SNAPSHOT'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'newrelic'
-//apply plugin: 'android-test'
 
 group 'org.ccci.gto.android'
 version '0.9.6-SNAPSHOT'
@@ -119,10 +114,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:4.4.52'
 
     compile 'com.jesusfilmmedia:eventtracker:2.0'
-
-//    testCompile 'junit:junit:4.11'
-//    testCompile 'org.robolectric:robolectric:2.3'
-//    testCompile 'com.squareup:fest-android:1.0.+'
 }
 
 apply from: 'maven_publish.gradle'
