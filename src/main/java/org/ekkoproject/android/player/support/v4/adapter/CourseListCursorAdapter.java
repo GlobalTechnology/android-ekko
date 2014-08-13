@@ -1,9 +1,6 @@
 package org.ekkoproject.android.player.support.v4.adapter;
 
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
-import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_APPROVAL;
-import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_DISABLED;
-import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_OPEN;
 import static org.ekkoproject.android.player.model.Course.ENROLLMENT_TYPE_UNKNOWN;
 import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.ENROLL;
 import static org.ekkoproject.android.player.tasks.EnrollmentRunnable.UNENROLL;
@@ -91,25 +88,8 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                     // toggle enrollment MenuItem visibility
                     {
                         // calculate enrollment state
-                        EnrollmentState state = EnrollmentState.DISABLED;
-                        if (holder.enrolled) {
-                            state = EnrollmentState.ENROLLED;
-                        } else if (holder.pending) {
-                            state = EnrollmentState.PENDING;
-                        } else {
-                            state = EnrollmentState.UNENROLLED;
-                        }
-                        switch (holder.enrollmentType) {
-                            case ENROLLMENT_TYPE_OPEN:
-                                if (state == EnrollmentState.PENDING) {
-                                    state = EnrollmentState.UNENROLLED;
-                                }
-                            case ENROLLMENT_TYPE_APPROVAL:
-                                break;
-                            case ENROLLMENT_TYPE_DISABLED:
-                            default:
-                                state = EnrollmentState.DISABLED;
-                        }
+                        final EnrollmentState state =
+                                EnrollmentState.determineState(holder.enrollmentType, holder.enrolled, holder.pending);
 
                         // toggle MenuItem visibility
                         menu.setGroupVisible(R.id.enrollment, false);
