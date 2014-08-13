@@ -1,8 +1,5 @@
 package org.ekkoproject.android.player.activity;
 
-import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
-import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,12 +7,10 @@ import android.os.Bundle;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.support.v4.fragment.CourseFragment;
 
-public class CourseActivity extends BaseActivity {
-    private long mCourseId = INVALID_COURSE;
-
+public class CourseActivity extends AbstractCourseActivity {
     public static Intent newIntent(final Context context, final long courseId) {
-        final Intent intent = new Intent(context, CourseActivity.class);
-        intent.putExtra(EXTRA_COURSEID, courseId);
+        final Intent intent = AbstractCourseActivity.newIntent(courseId);
+        intent.setClass(context, CourseActivity.class);
         return intent;
     }
 
@@ -24,13 +19,6 @@ public class CourseActivity extends BaseActivity {
     @Override
     protected void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
-        setupNavigationDrawer();
-
-        // resolve the course id
-        final Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_COURSEID)) {
-            mCourseId = intent.getLongExtra(EXTRA_COURSEID, INVALID_COURSE);
-        }
 
         // show course fragment if we aren't restoring state
         if (savedState == null) {
@@ -39,19 +27,6 @@ public class CourseActivity extends BaseActivity {
     }
 
     /* END lifecycle */
-
-    private void setupNavigationDrawer() {
-        if (mDrawerToggle != null) {
-            // disable the drawer indicator
-            mDrawerToggle.setDrawerIndicatorEnabled(false);
-        }
-    }
-
-    @Override
-    public void showCourseList(boolean showAll) {
-        super.showCourseList(showAll);
-        finish();
-    }
 
     private void showCourseFragment() {
         final CourseFragment fragment =
