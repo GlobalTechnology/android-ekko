@@ -36,10 +36,10 @@ android {
         buildConfigField "String", "ARCLIGHT_API_KEY", "\"52d40edd323002.56665774\""
         buildConfigField "String", "ARCLIGHT_API_URI", "\"https://api.arclight.org/\""
         buildConfigField "String", "EKKO_SMX_API_URI", "\"https://services.gcx.org/ekko/v1/\""
+        buildConfigField "String", "GOOGLE_ANALYTICS_CLIENT_ID", "\"UA-29919940-4\""
         buildConfigField "String", "NEW_RELIC_API_KEY", "\"AA42125d6f913bc0928dd33727113953b59e070b5d\""
         buildConfigField "long", "THEKEY_CLIENTID", "85613451684391165L"
         buildConfigField "String", "YOUTUBE_API_KEY", "\"AIzaSyAuKlaTyF_c0DSNP8MyPe6ABoFq_5cDFh8\""
-        buildConfigField "String", "GOOGLE_ANALYTICS_CLIENT_ID", "\"UA-29919940-4\""
     }
 
     compileOptions {
@@ -61,6 +61,7 @@ android {
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
 
+            buildConfigField "String", "EKKO_SMX_API_URI", "\"https://servicesdev.gcx.org/ekko/v1/\""
             buildConfigField "String", "NEW_RELIC_API_KEY", "\"AA10ca156dd8c21018710ba9ba8fc4bf7e019aa80a\""
             buildConfigField "String", "YOUTUBE_API_KEY", "\"AIzaSyDeJCVnQsv2J7SbjGdJa2jcdfz2cSw-9B0\""
         }
@@ -68,14 +69,6 @@ android {
             runProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), file('proguard.pro')
             signingConfig signingConfigs.release
-        }
-    }
-
-    productFlavors {
-        development {
-            buildConfigField "String", "EKKO_SMX_API_URI", "\"https://servicesdev.gcx.org/ekko/v1/\""
-        }
-        production {
         }
     }
 }
@@ -119,14 +112,10 @@ dependencies {
 apply from: 'maven_publish.gradle'
 afterEvaluate { project ->
     artifacts {
-        archives(file("build/outputs/apk/ekko-production-release.apk")) {
-            type 'apk'
-            builtBy assembleProductionRelease
-        }
-        archives(file("build/outputs/proguard/production/release/mapping.txt")) {
+        archives(file("build/outputs/proguard/release/mapping.txt")) {
             classifier 'mapping'
             type 'txt'
-            builtBy proguardProductionRelease
+            builtBy proguardRelease
         }
         archives androidSourcesJar
 //        archives androidJavadocsJar
