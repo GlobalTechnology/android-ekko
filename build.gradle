@@ -128,7 +128,7 @@ afterEvaluate { project ->
             type 'txt'
             builtBy proguardProductionRelease
         }
-//        archives androidSourcesJar
+        archives androidSourcesJar
 //        archives androidJavadocsJar
     }
 }
