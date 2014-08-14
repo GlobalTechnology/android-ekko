@@ -1,7 +1,11 @@
 package org.ekkoproject.android.player;
 
+import com.google.common.base.Function;
 import com.thinkfree.showlicense.License;
 import com.thinkfree.showlicense.LicensedProject;
+
+import org.ekkoproject.android.player.model.Course;
+import org.ekkoproject.android.player.model.Permission;
 
 public final class Constants {
     public final static long INVALID_ID = Long.MIN_VALUE;
@@ -30,6 +34,20 @@ public final class Constants {
             // This is a best guess about the license, I couldn't find a license for the library, just for code samples
             new LicensedProject("YouTube Android Player API", null,
                                 "https://developers.google.com/youtube/android/player/", License.APACHE2),
+    };
+
+    /* common guava functions */
+    public static final Function<Course, Long> FUNCTION_COURSE_TO_COURSE_ID = new Function<Course, Long>() {
+        @Override
+        public Long apply(final Course input) {
+            return input != null ? input.getId() : INVALID_COURSE;
+        }
+    };
+    public static final Function<Permission, Long> FUNCTION_PERMISSION_TO_COURSE_ID = new Function<Permission, Long>() {
+        @Override
+        public Long apply(final Permission permission) {
+            return permission != null ? permission.getCourseId() : INVALID_COURSE;
+        }
     };
 
     /** XML constants */

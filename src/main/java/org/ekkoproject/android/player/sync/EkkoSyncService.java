@@ -2,6 +2,8 @@ package org.ekkoproject.android.player.sync;
 
 import static org.ekkoproject.android.player.Constants.EXTRA_COURSEID;
 import static org.ekkoproject.android.player.Constants.EXTRA_GUID;
+import static org.ekkoproject.android.player.Constants.FUNCTION_COURSE_TO_COURSE_ID;
+import static org.ekkoproject.android.player.Constants.FUNCTION_PERMISSION_TO_COURSE_ID;
 import static org.ekkoproject.android.player.Constants.INVALID_COURSE;
 import static org.ekkoproject.android.player.services.ResourceManager.FLAG_TYPE_IMAGE;
 
@@ -10,10 +12,15 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.LongSparseArray;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.primitives.Longs;
+
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.app.ThreadedIntentService;
 import org.ccci.gto.android.common.db.AbstractDao.Transaction;
+import org.ekkoproject.android.player.BroadcastUtils;
 import org.ekkoproject.android.player.api.EkkoHubApi;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
@@ -24,6 +31,7 @@ import org.ekkoproject.android.player.model.Resource;
 import org.ekkoproject.android.player.services.ManifestManager;
 import org.ekkoproject.android.player.services.ResourceManager;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,8 +58,8 @@ public class EkkoSyncService extends ThreadedIntentService {
         super("ekko_sync_service");
     }
 
-    public static void broadcastCoursesUpdate(final Context context) {
-        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent().setAction(ACTION_UPDATE_COURSES));
+    public static void broadcastCoursesUpdate(final Context context, final long... courses) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(BroadcastUtils.updateCoursesBroadcast(courses));
     }
 
     public static void syncCourses(final Context context, final String guid) {
@@ -178,7 +186,8 @@ public class EkkoSyncService extends ThreadedIntentService {
 
                 // broadcast that courses were just updated
                 if (courses.size() > 0) {
-                    broadcastCoursesUpdate(this);
+                    broadcastCoursesUpdate(this, Longs.toArray(
+                            Collections2.transform(courses, FUNCTION_COURSE_TO_COURSE_ID)));
                 }
 
                 // update values
@@ -197,17 +206,24 @@ public class EkkoSyncService extends ThreadedIntentService {
             // delete any permissions not returned
             final Transaction tx = this.dao.beginTransaction();
             try {
-                final List<Permission> known = this.dao.get(Permission.class, Contract.Permission.COLUMN_GUID + " = ?",
-                                                            new String[] {guid});
-                for (final Permission permission : known) {
-                    if (!visible.contains(permission.getCourseId())) {
-                        this.dao.delete(permission);
-                    }
+                final List<Permission> known =
+                        this.dao.get(Permission.class, Contract.Permission.COLUMN_GUID + " = ?", new String[] {guid});
+                final List<Permission> toDelete =
+                        new ArrayList<>(Collections2.filter(known, new Predicate<Permission>() {
+                            @Override
+                            public boolean apply(final Permission permission) {
+                                return !visible.contains(permission.getCourseId());
+                            }
+                        }));
+
+                for (final Permission permission : toDelete) {
+                    this.dao.delete(permission);
                 }
 
                 // broadcast a courses update
                 if (known.size() > 0) {
-                    broadcastCoursesUpdate(this);
+                    broadcastCoursesUpdate(this, Longs.toArray(
+                            Collections2.transform(toDelete, FUNCTION_PERMISSION_TO_COURSE_ID)));
                 }
 
                 tx.setTransactionSuccessful();
@@ -222,7 +238,7 @@ public class EkkoSyncService extends ThreadedIntentService {
         final Course course = this.getApi(guid).getCourse(courseId);
         if (course != null) {
             this.processCourse(guid, course, true);
-            broadcastCoursesUpdate(this);
+            broadcastCoursesUpdate(this, courseId);
         } else {
             // we didn't get a course back, so remove permissions for the current user
             this.dao.delete(new Permission(courseId, guid));
