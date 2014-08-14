@@ -30,8 +30,14 @@ public final class CourseMapper extends AbstractMapper<Course> {
             case Contract.Course.COLUMN_NAME_BANNER_RESOURCE:
                 values.put(field, course.getBanner());
                 break;
+            case Contract.Course.COLUMN_AUTHOR_NAME:
+                values.put(field, course.getAuthorName());
+                break;
             case Contract.Course.COLUMN_DESCRIPTION:
                 values.put(field, course.getDescription());
+                break;
+            case Contract.Course.COLUMN_COPYRIGHT:
+                values.put(field, course.getCopyright());
                 break;
             case Contract.Course.COLUMN_ENROLLMENT_TYPE:
                 values.put(field, course.getEnrollmentType());
@@ -65,7 +71,9 @@ public final class CourseMapper extends AbstractMapper<Course> {
         course.setVersion(this.getInt(c, Contract.Course.COLUMN_NAME_VERSION));
         course.setTitle(this.getString(c, Contract.Course.COLUMN_NAME_TITLE));
         course.setBanner(this.getString(c, Contract.Course.COLUMN_NAME_BANNER_RESOURCE));
+        course.setAuthorName(this.getString(c, Contract.Course.COLUMN_AUTHOR_NAME));
         course.setDescription(this.getString(c, Contract.Course.COLUMN_DESCRIPTION));
+        course.setCopyright(this.getString(c, Contract.Course.COLUMN_COPYRIGHT));
         course.setEnrollmentType(this.getInt(c, Contract.Course.COLUMN_ENROLLMENT_TYPE, ENROLLMENT_TYPE_UNKNOWN));
         course.setPublicCourse(this.getBool(c, Contract.Course.COLUMN_PUBLIC, false));
         course.setManifestFile(this.getString(c, Contract.Course.COLUMN_NAME_MANIFEST_FILE));

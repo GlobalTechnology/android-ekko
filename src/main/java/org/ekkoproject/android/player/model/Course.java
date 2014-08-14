@@ -28,7 +28,9 @@ public class Course {
 
     private String title;
     private String banner;
+    private String authorName;
     private String description;
+    private String copyright;
 
     private int enrollmentType = ENROLLMENT_TYPE_UNKNOWN;
     private boolean publicCourse = false;
@@ -55,12 +57,28 @@ public class Course {
         this.title = title;
     }
 
+    public String getAuthorName() {
+        return this.authorName;
+    }
+
+    public void setAuthorName(final String authorName) {
+        this.authorName = authorName;
+    }
+
     public String getDescription() {
         return this.description;
     }
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public String getCopyright() {
+        return this.copyright;
+    }
+
+    public void setCopyright(final String copyright) {
+        this.copyright = copyright;
     }
 
     public int getVersion() {
@@ -230,7 +248,9 @@ public class Course {
                     if (meta != null) {
                         this.title = meta.getTitle();
                         this.banner = meta.getBanner();
+                        this.authorName = meta.getAuthorName();
                         this.description = meta.getDescription();
+                        this.copyright = meta.getCopyright();
                     }
                     continue;
                 } else if (XML.ELEMENT_RESOURCES.equals(name)) {

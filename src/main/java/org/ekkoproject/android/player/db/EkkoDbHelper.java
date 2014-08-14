@@ -22,10 +22,13 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
      * 13: 11/13/2013
      * 14: 01/06/2014
      * 15: 01/07/2014
+     * v0.9.3
      * 16: 01/24/2014
      * 17: 01/27/2014
+     * v0.9.4 - v0.9.5
+     * 18: 08/14/2014
      */
-    public static final int DATABASE_VERSION = 17;
+    public static final int DATABASE_VERSION = 18;
     public static final String DATABASE_NAME = "Ekko.db";
 
     private final Context mContext;
@@ -115,6 +118,12 @@ public class EkkoDbHelper extends SQLiteOpenHelper {
                 db.execSQL(Contract.CachedArclightResource.SQL_V17_CREATE_TABLE);
             case 17:
                 if (newVersion <= 17) {
+                    break;
+                }
+                db.execSQL(Contract.Course.SQL_V18_ALTER_AUTHOR_NAME);
+                db.execSQL(Contract.Course.SQL_V18_ALTER_COPYRIGHT);
+            case 18:
+                if (newVersion <= 18) {
                     break;
                 }
                 break;
