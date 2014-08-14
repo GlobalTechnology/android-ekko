@@ -1,9 +1,6 @@
 package org.ekkoproject.android.player.model;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.collect.ForwardingList;
 
 import org.ekkoproject.android.player.Constants.XML;
 import org.ekkoproject.android.player.util.ParserUtils;
@@ -11,15 +8,20 @@ import org.ekkoproject.android.player.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class CourseList {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CourseList extends ForwardingList<Course> {
+    private final ArrayList<Course> mCourses = new ArrayList<>();
+
     private int start;
     private int limit;
     private boolean hasMore;
 
-    private List<Course> courses = new ArrayList<Course>();
-
-    public List<Course> getCourses() {
-        return Collections.unmodifiableList(this.courses);
+    @Override
+    protected final List<Course> delegate() {
+        return mCourses;
     }
 
     public int getStart() {
@@ -56,7 +58,7 @@ public class CourseList {
             if (XML.NS_HUB.equals(ns) && XML.ELEMENT_COURSE.equals(name)) {
                 final Course course = Course.fromXml(parser);
                 if (course != null) {
-                    this.courses.add(course);
+                    mCourses.add(course);
                 }
                 continue;
             }

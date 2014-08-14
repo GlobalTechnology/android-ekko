@@ -161,7 +161,7 @@ public class EkkoSyncService extends ThreadedIntentService {
             if (courses != null) {
                 final Transaction tx = this.dao.beginTransaction();
                 try {
-                    for (final Course course : courses.getCourses()) {
+                    for (final Course course : courses) {
                         this.processCourse(guid, course, true);
 
                         // record as visible if we have permissions
@@ -177,7 +177,7 @@ public class EkkoSyncService extends ThreadedIntentService {
                 }
 
                 // broadcast that courses were just updated
-                if (courses.getCourses().size() > 0) {
+                if (courses.size() > 0) {
                     broadcastCoursesUpdate(this);
                 }
 
