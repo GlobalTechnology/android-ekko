@@ -5,6 +5,7 @@ import static org.ekkoproject.android.player.Constants.GUID_GUEST;
 import static org.ekkoproject.android.player.Constants.LICENSED_PROJECTS;
 import static org.ekkoproject.android.player.Constants.STATE_GUID;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -76,6 +77,7 @@ public abstract class BaseActivity extends ActionBarActivity implements Navigati
     /* BEGIN lifecycle */
 
     @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     protected void onCreate(final Bundle savedState) {
         super.onCreate(savedState);
         mGoogleAnalytics = GoogleAnalyticsManager.getInstance(this);
