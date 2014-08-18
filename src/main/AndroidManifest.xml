@@ -23,7 +23,7 @@
         </activity>
 
         <activity
-            android:name=".activity.CourseListActivity"
+            android:name="org.ekkoproject.android.player.activity.CourseListActivity"
             android:screenOrientation="sensorPortrait"
             android:launchMode="singleTop"/>
         <activity
