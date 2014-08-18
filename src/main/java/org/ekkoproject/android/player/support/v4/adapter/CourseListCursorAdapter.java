@@ -255,7 +255,7 @@ public class CourseListCursorAdapter extends SimpleCursorAdapter {
                             dao.update(permission, new String[] {Contract.Permission.COLUMN_HIDDEN});
 
                             //XXX: this is a quick hack, we should move the course/manifest update broadcasts to a common service
-                            EkkoSyncService.broadcastCoursesUpdate(mActivity);
+                            EkkoSyncService.broadcastCoursesUpdate(mActivity, holder.courseId);
                         }
                     });
                     return true;

@@ -1,14 +1,13 @@
 package org.ekkoproject.android.player.support.v4.content;
 
 import static org.ekkoproject.android.player.Constants.GUID_GUEST;
-import static org.ekkoproject.android.player.sync.EkkoSyncService.ACTION_UPDATE_COURSES;
 
 import android.content.Context;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.util.Pair;
 
 import org.ccci.gto.android.common.support.v4.content.CursorBroadcastReceiverLoader;
+import org.ekkoproject.android.player.BroadcastUtils;
 import org.ekkoproject.android.player.db.Contract;
 import org.ekkoproject.android.player.db.EkkoDao;
 import org.ekkoproject.android.player.model.Course;
@@ -22,7 +21,7 @@ public class CourseListCursorLoader extends CursorBroadcastReceiverLoader {
     private final boolean all;
 
     public CourseListCursorLoader(final Context context, final String guid, final boolean all) {
-        super(context, new IntentFilter(ACTION_UPDATE_COURSES));
+        super(context, BroadcastUtils.updateCoursesFilter());
         this.dao = EkkoDao.getInstance(context);
         mGuid = guid != null ? guid.toUpperCase(Locale.US) : GUID_GUEST;
         this.all = all;
