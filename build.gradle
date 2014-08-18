@@ -91,20 +91,20 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.android.support',    name: 'appcompat-v7',               version: '19.1.0',         ext: 'aar'
-    compile group: 'com.android.support',    name: 'support-v4',                 version: '19.1.0',         ext: 'jar'
+    compile 'com.android.support:appcompat-v7:20.0.0@aar'
+    compile 'com.android.support:support-v4:20.0.0@aar'
     compile group: 'com.google.android',     name: 'youtube-android-player-api', version: '1.0.0',          ext: 'jar'
     compile group: 'com.google.guava',       name: 'guava',                      version: '17.0',           ext: 'jar'
 //    compile group: 'org.slf4j',              name: 'slf4j-api',                  version: '1.7.7',          ext: 'jar'
 //    compile group: 'org.slf4j',              name: 'slf4j-android',              version: '1.7.7',          ext: 'jar'
     compile group: 'com.viewpagerindicator', name: 'library',                    version: '2.4.2-SNAPSHOT', ext: 'aar'
     compile group: 'com.thinkfree.android',  name: 'showlicense',                version: '0.1',            ext: 'jar'
-    compile group: 'org.ccci.gto.android',   name: 'gto-support',                version: '0.3.1',          ext: 'jar'
+    compile 'org.ccci.gto.android:gto-support:0.4.0-SNAPSHOT@aar'
     compile group: 'me.thekey.android',      name: 'thekey-api',                 version: '0.6.0',          ext: 'jar'
     compile group: 'me.thekey.android',      name: 'thekey-lib',                 version: '0.6.0',          ext: 'aar'
 
     compile 'com.newrelic.agent.android:android-agent:3.419.0'
-    compile 'com.google.android.gms:play-services:4.4.52'
+    compile 'com.google.android.gms:play-services:5.2.08'
 
     compile 'com.jesusfilmmedia:eventtracker:2.0'
 }
