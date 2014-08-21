@@ -11,13 +11,8 @@
 }
 
 
-# Strip out SLF4J logging
--assumenosideeffects class org.slf4j.Logger {
-    *** debug(...);
-    *** info(...);
-    *** trace(...);
-    *** warn(...);
-}
+# Strip out SLF4J
+-assumenosideeffects class org.slf4j.** { *; }
 
 
 # newrelic settings
