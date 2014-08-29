@@ -18,9 +18,8 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import com.jesusfilmmedia.eventtracker.EventTracker;
-import com.jesusfilmmedia.eventtracker.PlayEventReport;
-
+import org.arclight.eventtracker.EventTracker;
+import org.arclight.eventtracker.PlayEventReport;
 import org.ccci.gto.android.common.widget.StateAwareVideoView;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.model.Resource;

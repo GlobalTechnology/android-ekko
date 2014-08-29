@@ -60,11 +60,11 @@
             android:exported="false"/>
 
         <service
-            android:name="com.jesusfilmmedia.eventtracker.EventTrackerService"
+            android:name="org.arclight.eventtracker.EventTrackerService"
             android:exported="false"/>
 
         <receiver
-            android:name="com.jesusfilmmedia.eventtracker.ConnectivityReceiver"
+            android:name="org.arclight.eventtracker.ConnectivityReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>

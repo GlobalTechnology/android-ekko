@@ -44,7 +44,7 @@
 
 
 # Arclight - Event Tracker
--keepclassmembers class com.jesusfilmmedia.eventtracker.EventReport { <fields>; }
--keepclassmembers class com.jesusfilmmedia.eventtracker.PlayEventReport { <fields>; }
--keepclassmembers class com.jesusfilmmedia.eventtracker.EventTrackerService$EventType { <fields>; }
--keepclassmembers class com.jesusfilmmedia.eventtracker.EventTrackerService$EventReportHolder { <fields>; }
+-keepclassmembers class org.arclight.eventtracker.EventReport { <fields>; }
+-keepclassmembers class org.arclight.eventtracker.PlayEventReport { <fields>; }
+-keepclassmembers class org.arclight.eventtracker.EventTrackerService$EventType { <fields>; }
+-keepclassmembers class org.arclight.eventtracker.EventTrackerService$EventReportHolder { <fields>; }

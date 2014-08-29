@@ -20,8 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.jesusfilmmedia.eventtracker.EventTracker;
-
+import org.arclight.eventtracker.EventTracker;
 import org.ekkoproject.android.player.R;
 import org.ekkoproject.android.player.activity.MediaImageActivity;
 import org.ekkoproject.android.player.activity.MediaVideoActivity;
