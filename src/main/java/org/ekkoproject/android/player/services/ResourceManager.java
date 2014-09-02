@@ -21,6 +21,8 @@ import com.google.common.io.BaseEncoding;
 import org.ccci.gto.android.common.api.ApiSocketException;
 import org.ccci.gto.android.common.api.InvalidSessionApiException;
 import org.ccci.gto.android.common.model.Dimension;
+import org.ccci.gto.android.common.support.v4.util.MultiKeyLruCache;
+import org.ccci.gto.android.common.support.v4.util.WeakMultiKeyLruCache;
 import org.ccci.gto.android.common.util.BitmapUtils;
 import org.ccci.gto.android.common.util.IOUtils;
 import org.ekkoproject.android.player.api.ArclightApi;
@@ -34,8 +36,6 @@ import org.ekkoproject.android.player.model.CachedUriResource;
 import org.ekkoproject.android.player.model.Course;
 import org.ekkoproject.android.player.model.Manifest;
 import org.ekkoproject.android.player.model.Resource;
-import org.ekkoproject.android.player.util.MultiKeyLruCache;
-import org.ekkoproject.android.player.util.WeakMultiKeyLruCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
