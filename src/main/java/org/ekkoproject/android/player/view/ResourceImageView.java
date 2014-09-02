@@ -6,6 +6,7 @@ import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MA
 import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MIN_BITMAP_HEIGHT;
 import static org.ekkoproject.android.player.services.ResourceManager.DEFAULT_MIN_BITMAP_WIDTH;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -17,15 +18,14 @@ import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 
 public interface ResourceImageView {
-    public final class Helper {
+    public static final class Helper {
         private final ImageView mView;
         private final ResourceManager mResources;
 
         private long mCourseId = INVALID_COURSE;
         private String mResourceId = null;
         private Dimension mSize = new Dimension(DEFAULT_MIN_BITMAP_WIDTH, DEFAULT_MIN_BITMAP_HEIGHT);
-        private int mMaxWidth = DEFAULT_MAX_BITMAP_WIDTH;
-        private int mMaxHeight = DEFAULT_MAX_BITMAP_HEIGHT;
+        private Dimension mMaxSize = new Dimension(DEFAULT_MAX_BITMAP_WIDTH, DEFAULT_MAX_BITMAP_HEIGHT);
 
         public Helper(final ImageView view) {
             mView = view;
@@ -50,15 +50,15 @@ public interface ResourceImageView {
             }
         }
 
+        @SuppressLint("DrawAllocation")
         @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
         public void onDraw(final Canvas canvas) {
             // update the maxSize (only on ICS where we can get the actual max size)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 final int maxWidth = canvas.getMaximumBitmapWidth();
                 final int maxHeight = canvas.getMaximumBitmapHeight();
-                if (mMaxWidth != maxWidth || mMaxHeight != maxHeight) {
-                    mMaxWidth = maxWidth;
-                    mMaxHeight = maxHeight;
+                if (mMaxSize.width != maxWidth || mMaxSize.height != maxHeight) {
+                    mMaxSize = new Dimension(maxWidth, maxHeight);
                     this.triggerUpdate();
                 }
             }
@@ -66,8 +66,7 @@ public interface ResourceImageView {
 
         private void triggerUpdate() {
             if (mCourseId != INVALID_COURSE && mResourceId != null) {
-                final ResourceManager.BitmapOptions opts =
-                        new ResourceManager.BitmapOptions(mSize, new Dimension(mMaxWidth, mMaxHeight));
+                final ResourceManager.BitmapOptions opts = new ResourceManager.BitmapOptions(mSize, mMaxSize);
                 new LoadImageResourceAsyncTask(mResources, mView, mCourseId, mResourceId, opts).execute();
             } else {
                 // clear the image and any pending image_loader_task
