@@ -20,7 +20,6 @@ import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 public interface ResourceImageView {
     public static final class Helper {
         private final ImageView mView;
-        private final ResourceManager mResources;
 
         private long mCourseId = INVALID_COURSE;
         private String mResourceId = null;
@@ -29,7 +28,6 @@ public interface ResourceImageView {
 
         public Helper(final ImageView view) {
             mView = view;
-            mResources = ResourceManager.getInstance(mView.getContext());
         }
 
         public void setResource(final long courseId, final String resourceId) {
@@ -67,7 +65,7 @@ public interface ResourceImageView {
         private void triggerUpdate() {
             if (mCourseId != INVALID_COURSE && mResourceId != null) {
                 final ResourceManager.BitmapOptions opts = new ResourceManager.BitmapOptions(mSize, mMaxSize);
-                new LoadImageResourceAsyncTask(mResources, mView, mCourseId, mResourceId, opts).execute();
+                new LoadImageResourceAsyncTask(mView, mCourseId, mResourceId, opts).execute();
             } else {
                 // clear the image and any pending image_loader_task
                 mView.setTag(R.id.image_loader_task, null);

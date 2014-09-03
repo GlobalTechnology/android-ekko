@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 
 import org.ekkoproject.android.player.model.Resource;
-import org.ekkoproject.android.player.services.ResourceManager;
 import org.ekkoproject.android.player.tasks.LoadImageResourceAsyncTask;
 import org.ekkoproject.android.player.view.ResourceImageView;
 
@@ -110,8 +109,7 @@ public final class ResourceUtils {
             ((ResourceImageView) view).setResource(courseId, resource);
         } else if (view != null) {
             view.setImageDrawable(null);
-            new LoadImageResourceAsyncTask(ResourceManager.getInstance(view.getContext()), view, courseId, resource)
-                    .execute();
+            new LoadImageResourceAsyncTask(view, courseId, resource).execute();
         }
     }
 }

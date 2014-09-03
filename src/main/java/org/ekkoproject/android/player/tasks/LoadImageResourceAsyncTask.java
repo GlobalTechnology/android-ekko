@@ -42,25 +42,23 @@ public final class LoadImageResourceAsyncTask extends AsyncTask<Void, Void, Bitm
     private final String mResourceId;
     private final ResourceManager.BitmapOptions mOpts;
 
-    public LoadImageResourceAsyncTask(final ResourceManager manager, final ImageView view, final long courseId,
-                                      final String resourceId) {
-        this(manager, view, courseId, resourceId, view.getWidth(), view.getHeight());
+    public LoadImageResourceAsyncTask(final ImageView view, final long courseId, final String resourceId) {
+        this(view, courseId, resourceId, view.getWidth(), view.getHeight());
     }
 
-    public LoadImageResourceAsyncTask(final ResourceManager manager, final ImageView view, final long courseId,
-                                      final String resourceId, final int width, final int height) {
-        this(manager, view, courseId, resourceId,
-             new ResourceManager.BitmapOptions(width > 0 ? width : DEFAULT_MIN_BITMAP_WIDTH,
-                                               height > 0 ? height : DEFAULT_MIN_BITMAP_HEIGHT));
+    public LoadImageResourceAsyncTask(final ImageView view, final long courseId, final String resourceId, final int w,
+                                      final int h) {
+        this(view, courseId, resourceId, new ResourceManager.BitmapOptions(w > 0 ? w : DEFAULT_MIN_BITMAP_WIDTH,
+                                                                           h > 0 ? h : DEFAULT_MIN_BITMAP_HEIGHT));
     }
 
-    public LoadImageResourceAsyncTask(final ResourceManager resources, final ImageView view, final long courseId,
-                                      final String resourceId, final ResourceManager.BitmapOptions opts) {
-        mResources = resources;
+    public LoadImageResourceAsyncTask(final ImageView view, final long courseId, final String resourceId,
+                                      final ResourceManager.BitmapOptions opts) {
+        mResources = ResourceManager.getInstance(view.getContext());
+        mView = new WeakReference<>(view);
         mCourseId = courseId;
         mResourceId = resourceId;
         mOpts = opts;
-        mView = new WeakReference<>(view);
 
         view.setTag(R.id.image_loader_task, new WeakReference<AsyncTask<?, ?, ?>>(this));
     }

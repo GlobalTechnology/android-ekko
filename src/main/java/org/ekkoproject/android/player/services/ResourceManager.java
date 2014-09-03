@@ -223,7 +223,7 @@ public final class ResourceManager {
     private static final Object LOCK_INSTANCE = new Object();
 
     private ResourceManager(final Context ctx) {
-        this.context = ctx.getApplicationContext();
+        this.context = ctx;
         this.api = EkkoHubApi.getInstance(this.context);
         this.arclightApi = ArclightApi.getInstance();
         this.dao = EkkoDao.getInstance(ctx);
@@ -247,7 +247,7 @@ public final class ResourceManager {
     public static ResourceManager getInstance(final Context context) {
         synchronized (LOCK_INSTANCE) {
             if (instance == null) {
-                instance = new ResourceManager(context);
+                instance = new ResourceManager(context.getApplicationContext());
             }
         }
 
