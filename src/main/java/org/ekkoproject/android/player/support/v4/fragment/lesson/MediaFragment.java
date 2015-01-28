@@ -1,7 +1,6 @@
 package org.ekkoproject.android.player.support.v4.fragment.lesson;
 
 import static org.ekkoproject.android.player.BuildConfig.ARCLIGHT_API_KEY;
-import static org.ekkoproject.android.player.BuildConfig.PACKAGE_NAME;
 import static org.ekkoproject.android.player.BuildConfig.VERSION_NAME;
 import static org.ekkoproject.android.player.fragment.Constants.ARG_CONTENTID;
 import static org.ekkoproject.android.player.model.Resource.PROVIDER_NONE;
@@ -11,6 +10,7 @@ import static org.ekkoproject.android.player.model.Resource.PROVIDER_YOUTUBE;
 import static org.ekkoproject.android.player.util.ResourceUtils.providerIntent;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -142,8 +142,9 @@ public class MediaFragment extends AbstractManifestAwareFragment implements View
 
                             // Initialize Arclight Event Tracker for Arclight resources
                             if (resource.isArclight()) {
+                                final Context context = getActivity();
                                 EventTracker.getInstance()
-                                        .initialize(getActivity(), ARCLIGHT_API_KEY, PACKAGE_NAME, VERSION_NAME);
+                                        .initialize(context, ARCLIGHT_API_KEY, context.getPackageName(), VERSION_NAME);
                             }
                         }
 
