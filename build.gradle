@@ -3,8 +3,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.2'
-        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.429.0'
+        classpath 'com.android.tools.build:gradle:1.0.1'
+        classpath 'com.newrelic.agent.android:agent-gradle-plugin:4.178.0'
     }
 }
 
@@ -23,8 +23,8 @@ def generateVersionCode(version) {
 }
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion "20"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         versionName project.version
@@ -66,7 +66,7 @@ android {
             buildConfigField "String", "YOUTUBE_API_KEY", "\"AIzaSyDeJCVnQsv2J7SbjGdJa2jcdfz2cSw-9B0\""
         }
         release {
-            runProguard true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), file('proguard.pro')
             signingConfig signingConfigs.release
         }
@@ -94,17 +94,17 @@ dependencies {
     compile 'com.android.support:appcompat-v7:20.0.0'
     compile 'com.android.support:support-v4:20.0.0'
     compile 'com.google.android:youtube-android-player-api:1.0.0'
-    compile 'com.google.android.gms:play-services:5.2.08'
+    compile 'com.google.android.gms:play-services:6.5.87'
     compile 'com.google.guava:guava:18.0'
     compile 'org.arclight:eventtracker:1.1-beta1'
-    compile 'com.newrelic.agent.android:android-agent:3.429.0'
+    compile 'com.newrelic.agent.android:android-agent:4.178.0'
     compile 'com.viewpagerindicator:library:2.4.2-SNAPSHOT@aar'
     compile 'com.thinkfree.android:showlicense:0.1'
-    compile 'me.thekey.android:thekey-api:0.7.0-SNAPSHOT'
-    compile 'me.thekey.android:thekey-lib:0.7.0-SNAPSHOT'
-    compile 'org.ccci.gto.android:gto-support:0.4.0-SNAPSHOT'
-    compile 'org.slf4j:slf4j-android:1.7.7'
-    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'me.thekey.android:thekey-api:0.7.0'
+    compile 'me.thekey.android:thekey-lib:0.7.0'
+    compile 'org.ccci.gto.android:gto-support:0.4.0'
+    compile 'org.slf4j:slf4j-android:1.7.10'
+    compile 'org.slf4j:slf4j-api:1.7.10'
 
     // eventtracker transitive dependencies
     compile 'com.google.code.gson:gson:2.3'
